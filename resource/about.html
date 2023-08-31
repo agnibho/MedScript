@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>About</title>
+  </head>
+  <body>
+    <h1>MedScript</h1>
+    <p>Version 0.1</p>
+    <p>Copyright &copy; <span id="copyright"></span> Dr. Agnibho Mondal</p>
+    <p>Licence: GPL v3</p>
+  </body>
+  <script>
+    (function(){
+      start=2023
+      end=new Date().getFullYear()
+      if(start == end){
+        txt=start;
+      }
+      else{
+        txt=start+"-"+end
+      }
+      document.getElementById("copyright").textContent=txt;
+    })()
+  </script>
+</html>

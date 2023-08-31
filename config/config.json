@@ -1,0 +1,7 @@
+{
+    "data_directory": "data",
+    "config_directory": "config",
+    "template_directory": "template",
+    "template": "default",
+    "prescriber": "prescriber.json"
+}
