@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import QMainWindow, QToolBar, QFileDialog
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QAction
 from PyQt6.QtCore import QUrl
-import webbrowser
+import os, webbrowser
 
 class RenderBox(QMainWindow):
 
@@ -45,7 +45,7 @@ class RenderBox(QMainWindow):
     def update(self, file):
         try:
             self.file=file
-            self.webview.load(QUrl("file://"+self.file))
+            self.webview.load(QUrl("file:///"+self.file.replace(os.sep, "/")))
         except Exception as e:
             QMessageBox.warning(self,"Display failed", "Failed to display file.")
             self.hide()

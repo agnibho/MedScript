@@ -22,4 +22,4 @@ class ViewBox(QMainWindow):
         self.setCentralWidget(self.webview)
 
     def open(self, file):
-        self.webview.load(QUrl("file://"+os.path.abspath(file)))
+        self.webview.load(QUrl("file:///"+os.path.abspath(file).replace(os.sep, "/")))
