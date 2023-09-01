@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   id="svg2"
+   sodipodi:docname="icon_refresh.svg"
+   viewBox="0 0 187.99999 188"
+   version="1.1"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   width="188"
+   height="188"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <title
+     id="title1">Reload icon</title>
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="base"
+     bordercolor="#666666"
+     inkscape:pageshadow="2"
+     inkscape:window-y="2"
+     fit-margin-left="0"
+     pagecolor="#ffffff"
+     fit-margin-top="0"
+     inkscape:window-maximized="1"
+     inkscape:zoom="1.7904509"
+     inkscape:window-x="961"
+     inkscape:window-height="1053"
+     showgrid="false"
+     borderopacity="1.0"
+     inkscape:current-layer="layer1"
+     inkscape:cx="41.330371"
+     inkscape:cy="115.33408"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="957"
+     inkscape:pageopacity="0.0"
+     inkscape:document-units="px"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1">
+    <inkscape:grid
+       id="grid3766"
+       dotted="true"
+       originy="-682.61218"
+       enabled="true"
+       originx="-344.9375"
+       visible="false"
+       snapvisiblegridlinesonly="true"
+       type="xygrid"
+       empspacing="5"
+       spacingy="1"
+       spacingx="1"
+       units="px" />
+  </sodipodi:namedview>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     transform="translate(-344.94,-314.12)">
+    <path
+       id="path3768"
+       style="color:#000000;text-indent:0;text-transform:none;fill:none;fill-opacity:1;stroke:#000000;stroke-width:3.36943;stroke-opacity:1"
+       inkscape:connector-curvature="0"
+       d="m 531.38247,315.05072 -31.10786,24.14426 c -16.36017,-13.4019 -37.37033,-21.54267 -60.19071,-21.54267 -51.57597,0 -93.96106,41.40823 -93.96106,91.78813 0,50.38323 42.3885,90.85233 93.96106,90.85233 40.43169,0 75.17703,-24.82562 88.31562,-59.84112 l -33.66466,-8.01323 c -9.00918,20.75374 -29.88672,35.07078 -54.65096,35.07078 -33.15023,0 -59.44754,-25.68749 -59.44754,-58.07276 0,-32.38361 26.2956,-59.00856 59.44754,-59.00856 12.29962,0 23.60106,3.72022 33.02546,9.99073 l -30.78808,23.93611 89.06221,16.13103 v -85.44069 z" />
+  </g>
+  <metadata
+     id="metadata1">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:publisher>
+          <cc:Agent
+             rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Reload icon</dc:title>
+        <dc:date>2012-07-06T14:30:15</dc:date>
+        <dc:source>https://openclipart.org/detail/171074/reload-icon-by-mlampret-171074</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>mlampret</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>black</rdf:li>
+            <rdf:li>free</rdf:li>
+            <rdf:li>icon</rdf:li>
+            <rdf:li>icons</rdf:li>
+            <rdf:li>recycle</rdf:li>
+            <rdf:li>reload</rdf:li>
+            <rdf:li>simple</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:description>simple reload / recycle icon</dc:description>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>

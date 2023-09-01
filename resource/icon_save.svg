@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   id="svg1468"
+   sodipodi:docname="Anonymous_Floppy_disk_icon.svg"
+   viewBox="0 0 187.5 187.5"
+   sodipodi:version="0.32"
+   version="1.0"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape"
+   y="0"
+   x="0"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="base"
+     bordercolor="#666666"
+     inkscape:pageshadow="2"
+     inkscape:window-width="957"
+     pagecolor="#ffffff"
+     inkscape:zoom="1.8346667"
+     inkscape:window-x="961"
+     showgrid="false"
+     borderopacity="1.0"
+     inkscape:current-layer="svg1468"
+     inkscape:cx="93.477469"
+     inkscape:cy="93.477469"
+     inkscape:window-y="2"
+     inkscape:window-height="1053"
+     inkscape:pageopacity="0.0"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:window-maximized="0" />
+  <g
+     id="layer1"
+     transform="matrix(1.6722896,0,0,1.6528135,-62.011974,-59.380917)">
+    <g
+       id="g2098"
+       transform="translate(11.649,12.217)">
+      <rect
+         id="rect2052"
+         style="fill:#ffffff;stroke:#000000;stroke-width:3.063;stroke-linejoin:round"
+         rx="2.97"
+         ry="2.8871"
+         height="110.2"
+         width="108.4"
+         y="25.341"
+         x="27.357" />
+      <rect
+         id="rect2054"
+         style="fill:#ffffff;stroke:#000000;stroke-width:3.063;stroke-linejoin:round"
+         rx="2.0453999"
+         ry="1.4744999"
+         height="56.282001"
+         width="74.653"
+         y="25.702999"
+         x="44.497002" />
+      <rect
+         id="rect2056"
+         style="fill:#ffffff;stroke:#000000;stroke-width:3.063;stroke-linejoin:round"
+         rx="1.8157001"
+         ry="1.2523"
+         height="31.224001"
+         width="50.282001"
+         y="104.02"
+         x="54.873001" />
+      <rect
+         id="rect2060"
+         style="fill:#ffffff;stroke:#000000;stroke-width:3.063;stroke-linejoin:round"
+         rx="1.8157001"
+         ry="1.2523"
+         height="31.224001"
+         width="38.050999"
+         y="104.02"
+         x="54.419998" />
+      <rect
+         id="rect2058"
+         style="fill:#000000"
+         height="20.587"
+         width="9.9589005"
+         y="108.85"
+         x="59.660999" />
+    </g>
+  </g>
+  <metadata
+     id="metadata1">
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+        <dc:publisher>
+          <cc:Agent
+             rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>Floppy disk icon</dc:title>
+        <dc:date>2006-12-26T00:00:00</dc:date>
+        <dc:description />
+        <dc:source>https://openclipart.org/detail/24502/-by--24502</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Anonymous</dc:title>
+          </cc:Agent>
+        </dc:creator>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>

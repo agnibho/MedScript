@@ -6,7 +6,7 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 import os, sys, datetime, dateutil.parser, webbrowser
-from PyQt6.QtCore import QDateTime, pyqtSignal
+from PyQt6.QtCore import QDateTime, QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog
 from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
@@ -191,20 +191,33 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("MedScript")
         self.setGeometry(100, 100, 600, 400)
 
+        icon_open=QIcon("resource/icon_open.svg")
+        icon_save=QIcon("resource/icon_save.svg")
+        icon_render=QIcon("resource/icon_render.svg")
+        icon_refresh=QIcon("resource/icon_refresh.svg")
+
         action_new=QAction("New", self)
         action_new.triggered.connect(self.cmd_new)
         action_open=QAction("Open", self)
+        action_open2=QAction(icon_open, "Open", self)
         action_open.triggered.connect(self.cmd_open)
+        action_open2.triggered.connect(self.cmd_open)
         action_save=QAction("Save", self)
+        action_save2=QAction(icon_save, "Save", self)
         action_save.triggered.connect(self.cmd_save)
+        action_save2.triggered.connect(self.cmd_save)
         action_save_as=QAction("Save As", self)
         action_save_as.triggered.connect(self.cmd_save_as)
         action_refresh=QAction("Refresh", self)
+        action_refresh2=QAction(icon_refresh, "Refresh", self)
         action_refresh.triggered.connect(self.cmd_refresh)
+        action_refresh2.triggered.connect(self.cmd_refresh)
         action_quit=QAction("Quit", self)
         action_quit.triggered.connect(self.cmd_quit)
         action_render=QAction("Render", self)
+        action_render2=QAction(icon_render, "Render", self)
         action_render.triggered.connect(self.cmd_render)
+        action_render2.triggered.connect(self.cmd_render)
         action_prescriber=QAction("Prescriber", self)
         action_prescriber.triggered.connect(self.cmd_prescriber)
         action_about=QAction("About", self)
@@ -228,10 +241,11 @@ class MainWindow(QMainWindow):
         menu_help.addAction(action_help)
 
         toolbar=QToolBar("Main Toolbar", floatable=False, movable=False)
-        toolbar.addAction(action_open)
-        toolbar.addAction(action_save)
-        toolbar.addAction(action_refresh)
-        toolbar.addAction(action_render)
+        toolbar.setIconSize(QSize(16, 16))
+        toolbar.addAction(action_open2)
+        toolbar.addAction(action_save2)
+        toolbar.addAction(action_refresh2)
+        toolbar.addAction(action_render2)
         self.addToolBar(toolbar)
 
         tab_info=QWidget(self)
