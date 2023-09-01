@@ -1,39 +1,54 @@
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 4px;
-  margin-bottom: 2px;
-}
-
-table.container {
-}
-
-table.prescription {
-}
-
-table.collapsed {
+table {
+	width: 100%;
 	border-collapse: collapse;
 }
 
-table.nobottom {
-	border-bottom: none;
+td {
+	vertical-align: top;
 }
 
-td.header {
+.container {
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
 }
 
-table.footer {
-	margin-top: "100px"
+.header, .footer {
+	width: 95%;
+	position: fixed;
+	left: 50%;
+	transform: translateX(-50%);
+	background: white;
+}
+.header {
+	top: 0;
+	border-bottom: 2px solid black;
 }
 
-td.sign {
+.footer {
+	bottom: 0;
 	border-top: 2px solid black;
 }
 
-td.text {
-	whites-space: pre-wrap;
+.header, .header-space {
+	height: 200px;
 }
 
-.bordered {
-	border: 2px solid black;
+.footer, .footer-space {
+	height: 100px;
+}
+
+.patient {
+	border-bottom: 2px solid black;
+}
+
+.sign {
+	border-top: 2px solid black;
+}
+
+.formatted {
+	white-space: pre-wrap;
+	padding: 10px;
 }
 
 .ltxt {
@@ -46,6 +61,26 @@ td.text {
 
 .ctxt {
 	text-align: center;
+}
+
+.bordered {
+	border: 2px solid black;
+}
+
+.lbordered {
+	border-left: 2px dotted black;
+}
+
+.rbordered {
+	border-right: 2px dotted black;
+}
+
+.tbordered {
+	border-top: 2px solid black;
+}
+
+.bbordered {
+	border-bottom: 2px solid black;
 }
 
 .w0 {

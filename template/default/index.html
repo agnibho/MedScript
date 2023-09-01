@@ -5,67 +5,74 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <table class="container w100">
-      <thead>
-        <tr>
-          <td>
-            <table class="header w100 bordered">
-              <tr>
-                <td class="w60">
-                  <h1>{{prescriber.name}}</h1>
-                  <h2>{{prescriber.qualification}}</h2>
-                  <h3>{{prescriber.registration}}</h3>
-                </td>
-                <td class="w40">
-                  <p class="text">{{prescriber.address}}</p>
-                  <p>{% if prescriber.contact %}Contact: {{prescriber.contact}}{% endif %}</p>
-                  <p>{{prescriber.extra}}</p>
-                </td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <div class="prescription">
-              <table class="w100 bordered nobottom">
-                <tr><td class="rtxt" colspan="3"><small>{% if id %}ID: {{id}}{% endif %}</small></td></tr>
-                <tr><td><h4>Name: {{name}}</h4></td><td><h4>Age: {{age}}</h4></td><td><h4>Sex: {{sex}}</h4></td></tr>
-                <tr><td colspan="3"><small>{% if address %}Address: {{address}}{% endif %} {% if contact %}Contact: {{contact}}{% endif %} {% if extra %}({{extra}}){% endif %}</small></td></tr>
-              </table>
-              <table class="w100 bordered collapsed">
-                <tr>
-                  <td class="w40 bordered"><h4>Clinical Notes</h4></td>
-                  <td class="w60 bordered"><h4>Advice</h4></td>
-                </tr>
-                <tr>
-                  <td class="text bordered">
-                    <p>{{note}}</p>
-                    <p>{{report}}</p>
-                  </td>
-                  <td class="text bordered">
-                    <p>{{medication}}</p>
-                    <p>{{investigation}}</p>
-                    <p>{{advice}}</p>
-                  </td>
-                </tr>
-              </table>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-      <tfoot>
-        <tr>
-          <td>
-            <table class="footer w100 bordered">
-              <tr><td class="w75">{% if mode %}Consultation: {mode}}{% endif %}<br>{% if daw %}Dispense as written{% endif %}</td><td class="w25"><br><br></td></tr>
-              <tr><td><h4>{{date.strftime("%B %d, %Y %I:%M %p")}}</h4></td><td class="sign"><h4>Signature</h4></td></tr>
-            </table>
-          </td>
-        </tr>
-      </tfoot>
-    </table>
+    <div class="container">
+      <div class="header" style="position:fixed;top:0">
+        <table class="w100">
+          <tr>
+            <td class="w60">
+              <h1>{{prescriber.name}}</h1>
+              <h2>{{prescriber.qualification}}</h2>
+              <h3>{{prescriber.registration}}</h3>
+            </td>
+            <td class="w40">
+              <p class="formatted">{{prescriber.address}}</p>
+              <p>{% if prescriber.contact %}Contact: {{prescriber.contact}}{% endif %}</p>
+              <p class="formatted">{{prescriber.extra}}</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="content">
+        <table>
+          <thead><tr><td><div class="header-space"></div></td></tr></thead>
+          <tbody>
+            <tr>
+              <td>
+                <table class="patient">
+                  <tr>
+                    <td class="rtxt" colspan="3"><small>{% if id %}ID: {{id}}{% endif %}</small></td>
+                  </tr>
+                  <tr>
+                    <td><p><strong>Name:</strong> {{name}}</p></td>
+                    <td><p><strong>Age:</strong> {{age}}</p></td>
+                    <td><p><strong>Sex:</strong> {{sex}}</p></td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><small>{% if address %}Address: {{address}}{% endif %} {% if contact %}Contact: {{contact}}{% endif %}</small></td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><small>{% if extra %}{{extra}}{% endif %}</small></td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td class="w40 bbordered ctxt"><p><strong>Clinical Notes</strong></p></td>
+                    <td class="w60 bbordered ctxt"><p><strong>Advice</strong></p></td>
+                  </tr>
+                  <tr>
+                    <td class="formatted rbordered">
+                      <p>{{note}}</p>
+                      <p>{{report}}</p>
+                    </td>
+                    <td class="formatted lbordered">
+                      <p>{{medication}}</p>
+                      <p>{{investigation}}</p>
+                      <p>{{advice}}</p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot><tr><td><div class="footer-space"></div></td></tr></tfoot>
+        </table>
+      </div>
+      <div class="footer">
+        <table class="w100">
+          <tr><td class="w75">{% if mode %}Consultation: {{mode}}{% endif %}<br>{% if daw %}Dispense as written{% endif %}</td><td class="w25"><br><br></td></tr>
+          <tr><td><p>{{date.strftime("%B %d, %Y %I:%M %p")}}</p></td><td class="sign"><p>Signature</p></td></tr>
+        </table>
+      </div>
+    </div>
   </body>
 </html>
