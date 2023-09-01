@@ -65,6 +65,10 @@ class MainWindow(QMainWindow):
         Path(self.current_file.file).touch()
         self.cmd_save()
 
+    def cmd_refresh(self):
+        self.update_instance()
+        self.load_interface_from_instance()
+
     def cmd_quit(self):
         sys.exit()
 
@@ -195,6 +199,8 @@ class MainWindow(QMainWindow):
         action_save.triggered.connect(self.cmd_save)
         action_save_as=QAction("Save As", self)
         action_save_as.triggered.connect(self.cmd_save_as)
+        action_refresh=QAction("Refresh", self)
+        action_refresh.triggered.connect(self.cmd_refresh)
         action_quit=QAction("Quit", self)
         action_quit.triggered.connect(self.cmd_quit)
         action_render=QAction("Render", self)
@@ -206,7 +212,6 @@ class MainWindow(QMainWindow):
         action_help=QAction("Help", self)
         action_help.triggered.connect(self.cmd_help)
 
-
         menubar=self.menuBar()
         menu_file=menubar.addMenu("File")
         menu_file.addAction(action_new)
@@ -215,16 +220,17 @@ class MainWindow(QMainWindow):
         menu_file.addAction(action_save_as)
         menu_file.addAction(action_quit)
         menu_prepare=menubar.addMenu("Prepare")
-        menu_prepare.addAction(action_prescriber)
         menu_prepare.addAction(action_render)
+        menu_prepare.addAction(action_refresh)
+        menu_prepare.addAction(action_prescriber)
         menu_help=menubar.addMenu("Help")
         menu_help.addAction(action_about)
         menu_help.addAction(action_help)
 
         toolbar=QToolBar("Main Toolbar", floatable=False, movable=False)
-        toolbar.addAction(action_new)
         toolbar.addAction(action_open)
         toolbar.addAction(action_save)
+        toolbar.addAction(action_refresh)
         toolbar.addAction(action_render)
         self.addToolBar(toolbar)
 
