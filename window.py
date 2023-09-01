@@ -190,11 +190,13 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("MedScript")
         self.setGeometry(100, 100, 600, 400)
+        self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
 
-        icon_open=QIcon("resource/icon_open.svg")
-        icon_save=QIcon("resource/icon_save.svg")
-        icon_render=QIcon("resource/icon_render.svg")
-        icon_refresh=QIcon("resource/icon_refresh.svg")
+        icon_open=QIcon(os.path.join("resource", "icon_open.svg"))
+        icon_save=QIcon(os.path.join("resource", "icon_save.svg"))
+        icon_render=QIcon(os.path.join("resource", "icon_render.svg"))
+        icon_refresh=QIcon(os.path.join("resource", "icon_refresh.svg"))
+
 
         action_new=QAction("New", self)
         action_new.triggered.connect(self.cmd_new)
