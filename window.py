@@ -77,7 +77,8 @@ class MainWindow(QMainWindow):
         self.load_interface_from_instance()
 
     def cmd_quit(self):
-        sys.exit()
+        if(self.confirm_exit()):
+            sys.exit()
 
     def cmd_render(self):
         self.update_instance()
@@ -237,6 +238,16 @@ class MainWindow(QMainWindow):
     def load_attachment(self, attachments):
         for attach in attachments:
             self.input_attachment.addItem(attach)
+
+    def confirm_exit(self):
+        self.update_instance()
+        return not (self.save_state!=md5(self.prescription.get_json().encode()).hexdigest() and QMessageBox.StandardButton.No==QMessageBox.question(self,"Confirm exit", "Unsaved changes may be lost. Confirm exit?"))
+
+    def closeEvent(self, event):
+        if(self.confirm_exit()):
+            event.accept()
+        else:
+            event.ignore()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
