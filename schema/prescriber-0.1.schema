@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "qualification": {
+      "type": "string"
+    },
+    "registration": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "contact": {
+      "type": "string"
+    },
+    "extra": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "qualification",
+    "registration",
+    "address",
+    "contact",
+    "extra"
+  ]
+}
+

@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "age": {
+      "type": "string"
+    },
+    "sex": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "contact": {
+      "type": "string"
+    },
+    "extra": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string"
+    },
+    "daw": {
+      "type": "boolean"
+    },
+    "note": {
+      "type": "string"
+    },
+    "report": {
+      "type": "string"
+    },
+    "investigation": {
+      "type": "string"
+    },
+    "medication": {
+      "type": "string"
+    },
+    "advice": {
+      "type": "string"
+    },
+    "prescriber": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "qualification": {
+          "type": "string"
+        },
+        "registration": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "contact": {
+          "type": "string"
+        },
+        "extra": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "qualification",
+        "registration",
+        "address",
+        "contact",
+        "extra"
+      ]
+    }
+  },
+  "required": [
+    "date",
+    "id",
+    "name",
+    "age",
+    "sex",
+    "address",
+    "contact",
+    "extra",
+    "mode",
+    "daw",
+    "note",
+    "report",
+    "investigation",
+    "medication",
+    "advice",
+    "prescriber"
+  ]
+}
