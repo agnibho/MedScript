@@ -6,8 +6,8 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 import os, sys, datetime, dateutil.parser, webbrowser
-from PyQt6.QtCore import QDateTime, QSize, pyqtSignal
-from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog
+from PyQt6.QtCore import Qt, QDateTime, QSize, pyqtSignal
+from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QCompleter
 from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
@@ -337,6 +337,8 @@ class MainWindow(QMainWindow):
         self.input_note_preset.addItems(self.preset_note.data.keys())
         self.input_note_preset.setCurrentIndex(-1)
         self.input_note_preset.setEditable(True)
+        self.input_note_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_note_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
         self.input_note_preset.setPlaceholderText("Select a preset")
         self.input_note_preset.currentIndexChanged.connect(self.insert_preset_note)
         self.input_note=QTextEdit(self)
@@ -351,6 +353,8 @@ class MainWindow(QMainWindow):
         self.input_report_preset.addItems(self.preset_report.data.keys())
         self.input_report_preset.setCurrentIndex(-1)
         self.input_report_preset.setEditable(True)
+        self.input_report_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_report_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
         self.input_report_preset.setPlaceholderText("Select a preset")
         self.input_report_preset.currentIndexChanged.connect(self.insert_preset_report)
         self.input_report=QTextEdit(self)
@@ -365,6 +369,8 @@ class MainWindow(QMainWindow):
         self.input_investigation_preset.addItems(self.preset_investigation.data.keys())
         self.input_investigation_preset.setCurrentIndex(-1)
         self.input_investigation_preset.setEditable(True)
+        self.input_investigation_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_investigation_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
         self.input_investigation_preset.setPlaceholderText("Select a preset")
         self.input_investigation_preset.currentIndexChanged.connect(self.insert_preset_investigation)
         self.input_investigation=QTextEdit(self)
@@ -379,6 +385,8 @@ class MainWindow(QMainWindow):
         self.input_medication_preset.addItems(self.preset_medication.data.keys())
         self.input_medication_preset.setCurrentIndex(-1)
         self.input_medication_preset.setEditable(True)
+        self.input_medication_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_medication_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
         self.input_medication_preset.setPlaceholderText("Select a preset")
         self.input_medication_preset.currentIndexChanged.connect(self.insert_preset_medication)
         self.input_medication=QTextEdit(self)
@@ -393,6 +401,8 @@ class MainWindow(QMainWindow):
         self.input_advice_preset.addItems(self.preset_advice.data.keys())
         self.input_advice_preset.setCurrentIndex(-1)
         self.input_advice_preset.setEditable(True)
+        self.input_advice_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_advice_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
         self.input_advice_preset.setPlaceholderText("Select a preset")
         self.input_advice_preset.currentIndexChanged.connect(self.insert_preset_advice)
         self.input_advice=QTextEdit(self)
