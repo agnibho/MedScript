@@ -247,7 +247,7 @@ class MainWindow(QMainWindow):
         self.preset_note=Preset(os.path.join(config["preset_directory"], "note.csv"))
         self.preset_report=Preset(os.path.join(config["preset_directory"], "report.csv"))
         self.preset_investigation=Preset(os.path.join(config["preset_directory"], "investigation.csv"))
-        self.preset_medication=Preset(os.path.join(config["preset_directory"], "medication.csv"))
+        self.preset_medication=Preset(os.path.join(config["preset_directory"], "medication.csv"), text_as_key=True)
         self.preset_advice=Preset(os.path.join(config["preset_directory"], "advice.csv"))
 
         action_new=QAction("New", self)
