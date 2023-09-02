@@ -6,17 +6,19 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 import os, sys, datetime, dateutil.parser, webbrowser
-from PyQt6.QtCore import QDateTime, QSize, pyqtSignal
-from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog
+from PyQt6.QtCore import Qt, QDateTime, QSize, pyqtSignal
+from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QCompleter, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
+from config import config
 from prescription import Prescription
 from renderer import Renderer
 from filehandler import FileHandler
 from renderbox import RenderBox
 from setting import EditPrescriber
 from viewbox import ViewBox
+from preset import Preset
 
 class MainWindow(QMainWindow):
 
@@ -26,6 +28,7 @@ class MainWindow(QMainWindow):
     prescription=Prescription()
     renderer=Renderer()
     save_state=md5("".encode()).hexdigest()
+    unchanged_state=False
 
     def cmd_new(self):
         self.prescription.set_data()
@@ -41,36 +44,41 @@ class MainWindow(QMainWindow):
             self.load_interface_from_instance()
             self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
             self.load_attachment(self.current_file.list())
+            self.unchanged_state=True
         except Exception as e:
             QMessageBox.warning(self,"Open failed", "Failed to open file.")
             print(e)
 
-    def cmd_save(self):
-        try:
-            if not os.path.exists(self.current_file.file):
-                self.current_file.set_file(QFileDialog.getSaveFileName()[0])
-            for i in range(self.input_attachment.count()):
-                self.current_file.copy(self.input_attachment.item(i).text())
-            self.update_instance()
-            self.prescription.write_to(os.path.join(self.current_file.directory.name, "prescription.json"))
-            self.current_file.save()
-            self.load_interface_from_instance()
-            self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
-        except Exception as e:
-            QMessageBox.warning(self,"Save failed", "Failed to save file.")
-            print(e)
+    def cmd_save(self, save_as=False):
+        if(save_as or not self.unchanged_state or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm change", "Modify the original file?")):
+            try:
+                if not os.path.exists(self.current_file.file):
+                    self.current_file.set_file(QFileDialog.getSaveFileName()[0])
+                for i in range(self.input_attachment.count()):
+                    self.current_file.copy(self.input_attachment.item(i).text())
+                self.update_instance()
+                self.prescription.write_to(os.path.join(self.current_file.directory.name, "prescription.json"))
+                config["template"]=os.path.join(config["template_directory"], self.input_template.currentText())
+                self.current_file.save()
+                self.unchanged_state=False
+                self.load_interface_from_instance()
+                self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
+            except Exception as e:
+                QMessageBox.warning(self,"Save failed", "Failed to save file.")
+                print(e)
 
     def cmd_save_as(self):
         self.current_file.set_file(QFileDialog.getSaveFileName()[0])
         Path(self.current_file.file).touch()
-        self.cmd_save()
+        self.cmd_save(save_as=True)
 
     def cmd_refresh(self):
         self.update_instance()
         self.load_interface_from_instance()
 
     def cmd_quit(self):
-        sys.exit()
+        if(self.confirm_exit()):
+            sys.exit()
 
     def cmd_render(self):
         self.update_instance()
@@ -91,6 +99,51 @@ class MainWindow(QMainWindow):
     def cmd_help(self):
         self.viewbox.open(os.path.join("resource", "help.html"))
         self.viewbox.show()
+
+    def insert_preset_note(self):
+        try:
+            self.input_note.insertPlainText(self.preset_note.data[self.input_note_preset.currentText()])
+            self.input_note_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_note.insertPlainText("\n")
+        except KeyError:
+            pass
+
+    def insert_preset_report(self):
+        try:
+            self.input_report.insertPlainText(self.preset_report.data[self.input_report_preset.currentText()])
+            self.input_report_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_report.insertPlainText("\n")
+        except KeyError:
+            pass
+
+    def insert_preset_investigation(self):
+        try:
+            self.input_investigation.insertPlainText(self.preset_investigation.data[self.input_investigation_preset.currentText()])
+            self.input_investigation_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_investigation.insertPlainText("\n")
+        except KeyError:
+            pass
+
+    def insert_preset_medication(self):
+        try:
+            self.input_medication.insertPlainText(self.preset_medication.data[self.input_medication_preset.currentText()])
+            self.input_medication_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_medication.insertPlainText("\n")
+        except KeyError:
+            pass
+
+    def insert_preset_advice(self):
+        try:
+            self.input_advice.insertPlainText(self.preset_advice.data[self.input_advice_preset.currentText()])
+            self.input_advice_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_advice.insertPlainText("\n")
+        except KeyError:
+            pass
 
     def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", note="", report="", investigation="", medication="", advice=""):
         try:
@@ -119,6 +172,7 @@ class MainWindow(QMainWindow):
             self.input_investigation.setText(investigation)
             self.input_medication.setText(medication)
             self.input_advice.setText(advice)
+            self.label_prescriber.setText(self.prescription.prescriber.name)
         except Exception as e:
             QMessageBox.warning(self,"Failed to load", "Failed to load the data into the application.")
             print(e)
@@ -185,6 +239,16 @@ class MainWindow(QMainWindow):
         for attach in attachments:
             self.input_attachment.addItem(attach)
 
+    def confirm_exit(self):
+        self.update_instance()
+        return not (self.save_state!=md5(self.prescription.get_json().encode()).hexdigest() and QMessageBox.StandardButton.No==QMessageBox.question(self,"Confirm exit", "Unsaved changes may be lost. Confirm exit?"))
+
+    def closeEvent(self, event):
+        if(self.confirm_exit()):
+            event.accept()
+        else:
+            event.ignore()
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -197,6 +261,11 @@ class MainWindow(QMainWindow):
         icon_render=QIcon(os.path.join("resource", "icon_render.svg"))
         icon_refresh=QIcon(os.path.join("resource", "icon_refresh.svg"))
 
+        self.preset_note=Preset(os.path.join(config["preset_directory"], "note.csv"))
+        self.preset_report=Preset(os.path.join(config["preset_directory"], "report.csv"))
+        self.preset_investigation=Preset(os.path.join(config["preset_directory"], "investigation.csv"))
+        self.preset_medication=Preset(os.path.join(config["preset_directory"], "medication.csv"), text_as_key=True)
+        self.preset_advice=Preset(os.path.join(config["preset_directory"], "advice.csv"))
 
         action_new=QAction("New", self)
         action_new.triggered.connect(self.cmd_new)
@@ -248,6 +317,15 @@ class MainWindow(QMainWindow):
         toolbar.addAction(action_save2)
         toolbar.addAction(action_refresh2)
         toolbar.addAction(action_render2)
+        toolbar.addSeparator()
+        self.input_template=QComboBox(self)
+        self.input_template.addItems(os.listdir(config["template_directory"]))
+        toolbar.addWidget(self.input_template)
+        spacer=QWidget(self)
+        spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        toolbar.addWidget(spacer)
+        self.label_prescriber=QLabel(self)
+        toolbar.addWidget(self.label_prescriber)
         self.addToolBar(toolbar)
 
         tab_info=QWidget(self)
@@ -281,36 +359,81 @@ class MainWindow(QMainWindow):
         tab_note=QWidget(self)
         layout_note=QVBoxLayout(tab_note)
         label_note=QLabel("Clinical Notes")
+        self.input_note_preset=QComboBox(self)
+        self.input_note_preset.addItems(self.preset_note.data.keys())
+        self.input_note_preset.setCurrentIndex(-1)
+        self.input_note_preset.setEditable(True)
+        self.input_note_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_note_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
+        self.input_note_preset.setPlaceholderText("Select a preset")
+        self.input_note_preset.currentIndexChanged.connect(self.insert_preset_note)
         self.input_note=QTextEdit(self)
         layout_note.addWidget(label_note)
+        layout_note.addWidget(self.input_note_preset)
         layout_note.addWidget(self.input_note)
 
         tab_report=QWidget(self)
         layout_report=QVBoxLayout(tab_report)
         label_report=QLabel("Available Reports")
+        self.input_report_preset=QComboBox(self)
+        self.input_report_preset.addItems(self.preset_report.data.keys())
+        self.input_report_preset.setCurrentIndex(-1)
+        self.input_report_preset.setEditable(True)
+        self.input_report_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_report_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
+        self.input_report_preset.setPlaceholderText("Select a preset")
+        self.input_report_preset.currentIndexChanged.connect(self.insert_preset_report)
         self.input_report=QTextEdit(self)
         layout_report.addWidget(label_report)
+        layout_report.addWidget(self.input_report_preset)
         layout_report.addWidget(self.input_report)
 
         tab_investigation=QWidget(self)
         layout_investigation=QVBoxLayout(tab_investigation)
         label_investigation=QLabel("Recommended Investigations")
+        self.input_investigation_preset=QComboBox(self)
+        self.input_investigation_preset.addItems(self.preset_investigation.data.keys())
+        self.input_investigation_preset.setCurrentIndex(-1)
+        self.input_investigation_preset.setEditable(True)
+        self.input_investigation_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_investigation_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
+        self.input_investigation_preset.setPlaceholderText("Select a preset")
+        self.input_investigation_preset.currentIndexChanged.connect(self.insert_preset_investigation)
         self.input_investigation=QTextEdit(self)
         layout_investigation.addWidget(label_investigation)
+        layout_investigation.addWidget(self.input_investigation_preset)
         layout_investigation.addWidget(self.input_investigation)
 
         tab_medication=QWidget(self)
         layout_medication=QVBoxLayout(tab_medication)
         label_medication=QLabel("Medication Advice")
+        self.input_medication_preset=QComboBox(self)
+        self.input_medication_preset.addItems(self.preset_medication.data.keys())
+        self.input_medication_preset.setCurrentIndex(-1)
+        self.input_medication_preset.setEditable(True)
+        self.input_medication_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_medication_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
+        self.input_medication_preset.setPlaceholderText("Select a preset")
+        self.input_medication_preset.currentIndexChanged.connect(self.insert_preset_medication)
         self.input_medication=QTextEdit(self)
         layout_medication.addWidget(label_medication)
+        layout_medication.addWidget(self.input_medication_preset)
         layout_medication.addWidget(self.input_medication)
 
         tab_advice=QWidget(self)
         layout_advice=QVBoxLayout(tab_advice)
         label_advice=QLabel("Additional Advice")
+        self.input_advice_preset=QComboBox(self)
+        self.input_advice_preset.addItems(self.preset_advice.data.keys())
+        self.input_advice_preset.setCurrentIndex(-1)
+        self.input_advice_preset.setEditable(True)
+        self.input_advice_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_advice_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
+        self.input_advice_preset.setPlaceholderText("Select a preset")
+        self.input_advice_preset.currentIndexChanged.connect(self.insert_preset_advice)
         self.input_advice=QTextEdit(self)
         layout_advice.addWidget(label_advice)
+        layout_advice.addWidget(self.input_advice_preset)
         layout_advice.addWidget(self.input_advice)
 
         tab_attachment=QWidget(self)
@@ -330,7 +453,6 @@ class MainWindow(QMainWindow):
         layout_attachment2.addWidget(button_add)
         layout_attachment2.addWidget(button_remove)
         layout_attachment2.addWidget(button_open)
-
 
         tab=QTabWidget(self)
         tab.addTab(tab_info, "Patient")
