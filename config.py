@@ -22,6 +22,8 @@ default = {
         "config_directory": "config",
         "template_directory": "template",
         "template": "default",
+        "preset_directory": "preset",
+        "preset_newline": "True",
         "prescriber": "prescriber.json"
         }
 

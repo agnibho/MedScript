@@ -11,12 +11,14 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButt
 from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
+from config import config
 from prescription import Prescription
 from renderer import Renderer
 from filehandler import FileHandler
 from renderbox import RenderBox
 from setting import EditPrescriber
 from viewbox import ViewBox
+from preset import Preset
 
 class MainWindow(QMainWindow):
 
@@ -91,6 +93,51 @@ class MainWindow(QMainWindow):
     def cmd_help(self):
         self.viewbox.open(os.path.join("resource", "help.html"))
         self.viewbox.show()
+
+    def insert_preset_note(self):
+        try:
+            self.input_note.insertPlainText(self.preset_note.data[self.input_note_preset.currentText()])
+            self.input_note_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_note.insertPlainText("\n")
+        except KeyError:
+            pass
+
+    def insert_preset_report(self):
+        try:
+            self.input_report.insertPlainText(self.preset_report.data[self.input_report_preset.currentText()])
+            self.input_report_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_report.insertPlainText("\n")
+        except KeyError:
+            pass
+
+    def insert_preset_investigation(self):
+        try:
+            self.input_investigation.insertPlainText(self.preset_investigation.data[self.input_investigation_preset.currentText()])
+            self.input_investigation_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_investigation.insertPlainText("\n")
+        except KeyError:
+            pass
+
+    def insert_preset_medication(self):
+        try:
+            self.input_medication.insertPlainText(self.preset_medication.data[self.input_medication_preset.currentText()])
+            self.input_medication_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_medication.insertPlainText("\n")
+        except KeyError:
+            pass
+
+    def insert_preset_advice(self):
+        try:
+            self.input_advice.insertPlainText(self.preset_advice.data[self.input_advice_preset.currentText()])
+            self.input_advice_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_advice.insertPlainText("\n")
+        except KeyError:
+            pass
 
     def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", note="", report="", investigation="", medication="", advice=""):
         try:
@@ -197,6 +244,11 @@ class MainWindow(QMainWindow):
         icon_render=QIcon(os.path.join("resource", "icon_render.svg"))
         icon_refresh=QIcon(os.path.join("resource", "icon_refresh.svg"))
 
+        self.preset_note=Preset(os.path.join(config["preset_directory"], "note.csv"))
+        self.preset_report=Preset(os.path.join(config["preset_directory"], "report.csv"))
+        self.preset_investigation=Preset(os.path.join(config["preset_directory"], "investigation.csv"))
+        self.preset_medication=Preset(os.path.join(config["preset_directory"], "medication.csv"))
+        self.preset_advice=Preset(os.path.join(config["preset_directory"], "advice.csv"))
 
         action_new=QAction("New", self)
         action_new.triggered.connect(self.cmd_new)
@@ -281,36 +333,71 @@ class MainWindow(QMainWindow):
         tab_note=QWidget(self)
         layout_note=QVBoxLayout(tab_note)
         label_note=QLabel("Clinical Notes")
+        self.input_note_preset=QComboBox(self)
+        self.input_note_preset.addItems(self.preset_note.data.keys())
+        self.input_note_preset.setCurrentIndex(-1)
+        self.input_note_preset.setEditable(True)
+        self.input_note_preset.setPlaceholderText("Select a preset")
+        self.input_note_preset.currentIndexChanged.connect(self.insert_preset_note)
         self.input_note=QTextEdit(self)
         layout_note.addWidget(label_note)
+        layout_note.addWidget(self.input_note_preset)
         layout_note.addWidget(self.input_note)
 
         tab_report=QWidget(self)
         layout_report=QVBoxLayout(tab_report)
         label_report=QLabel("Available Reports")
+        self.input_report_preset=QComboBox(self)
+        self.input_report_preset.addItems(self.preset_report.data.keys())
+        self.input_report_preset.setCurrentIndex(-1)
+        self.input_report_preset.setEditable(True)
+        self.input_report_preset.setPlaceholderText("Select a preset")
+        self.input_report_preset.currentIndexChanged.connect(self.insert_preset_report)
         self.input_report=QTextEdit(self)
         layout_report.addWidget(label_report)
+        layout_report.addWidget(self.input_report_preset)
         layout_report.addWidget(self.input_report)
 
         tab_investigation=QWidget(self)
         layout_investigation=QVBoxLayout(tab_investigation)
         label_investigation=QLabel("Recommended Investigations")
+        self.input_investigation_preset=QComboBox(self)
+        self.input_investigation_preset.addItems(self.preset_investigation.data.keys())
+        self.input_investigation_preset.setCurrentIndex(-1)
+        self.input_investigation_preset.setEditable(True)
+        self.input_investigation_preset.setPlaceholderText("Select a preset")
+        self.input_investigation_preset.currentIndexChanged.connect(self.insert_preset_investigation)
         self.input_investigation=QTextEdit(self)
         layout_investigation.addWidget(label_investigation)
+        layout_investigation.addWidget(self.input_investigation_preset)
         layout_investigation.addWidget(self.input_investigation)
 
         tab_medication=QWidget(self)
         layout_medication=QVBoxLayout(tab_medication)
         label_medication=QLabel("Medication Advice")
+        self.input_medication_preset=QComboBox(self)
+        self.input_medication_preset.addItems(self.preset_medication.data.keys())
+        self.input_medication_preset.setCurrentIndex(-1)
+        self.input_medication_preset.setEditable(True)
+        self.input_medication_preset.setPlaceholderText("Select a preset")
+        self.input_medication_preset.currentIndexChanged.connect(self.insert_preset_medication)
         self.input_medication=QTextEdit(self)
         layout_medication.addWidget(label_medication)
+        layout_medication.addWidget(self.input_medication_preset)
         layout_medication.addWidget(self.input_medication)
 
         tab_advice=QWidget(self)
         layout_advice=QVBoxLayout(tab_advice)
         label_advice=QLabel("Additional Advice")
+        self.input_advice_preset=QComboBox(self)
+        self.input_advice_preset.addItems(self.preset_advice.data.keys())
+        self.input_advice_preset.setCurrentIndex(-1)
+        self.input_advice_preset.setEditable(True)
+        self.input_advice_preset.setPlaceholderText("Select a preset")
+        self.input_advice_preset.currentIndexChanged.connect(self.insert_preset_advice)
         self.input_advice=QTextEdit(self)
         layout_advice.addWidget(label_advice)
+        layout_advice.addWidget(self.input_advice_preset)
         layout_advice.addWidget(self.input_advice)
 
         tab_attachment=QWidget(self)
@@ -330,7 +417,6 @@ class MainWindow(QMainWindow):
         layout_attachment2.addWidget(button_add)
         layout_attachment2.addWidget(button_remove)
         layout_attachment2.addWidget(button_open)
-
 
         tab=QTabWidget(self)
         tab.addTab(tab_info, "Patient")
