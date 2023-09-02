@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
     prescription=Prescription()
     renderer=Renderer()
     save_state=md5("".encode()).hexdigest()
+    unchanged_state=False
 
     def cmd_new(self):
         self.prescription.set_data()
@@ -43,30 +44,33 @@ class MainWindow(QMainWindow):
             self.load_interface_from_instance()
             self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
             self.load_attachment(self.current_file.list())
+            self.unchanged_state=True
         except Exception as e:
             QMessageBox.warning(self,"Open failed", "Failed to open file.")
             print(e)
 
-    def cmd_save(self):
-        try:
-            if not os.path.exists(self.current_file.file):
-                self.current_file.set_file(QFileDialog.getSaveFileName()[0])
-            for i in range(self.input_attachment.count()):
-                self.current_file.copy(self.input_attachment.item(i).text())
-            self.update_instance()
-            self.prescription.write_to(os.path.join(self.current_file.directory.name, "prescription.json"))
-            config["template"]=os.path.join(config["template_directory"], self.input_template.currentText())
-            self.current_file.save()
-            self.load_interface_from_instance()
-            self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
-        except Exception as e:
-            QMessageBox.warning(self,"Save failed", "Failed to save file.")
-            print(e)
+    def cmd_save(self, save_as=False):
+        if(save_as or not self.unchanged_state or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm change", "Modify the original file?")):
+            try:
+                if not os.path.exists(self.current_file.file):
+                    self.current_file.set_file(QFileDialog.getSaveFileName()[0])
+                for i in range(self.input_attachment.count()):
+                    self.current_file.copy(self.input_attachment.item(i).text())
+                self.update_instance()
+                self.prescription.write_to(os.path.join(self.current_file.directory.name, "prescription.json"))
+                config["template"]=os.path.join(config["template_directory"], self.input_template.currentText())
+                self.current_file.save()
+                self.unchanged_state=False
+                self.load_interface_from_instance()
+                self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
+            except Exception as e:
+                QMessageBox.warning(self,"Save failed", "Failed to save file.")
+                print(e)
 
     def cmd_save_as(self):
         self.current_file.set_file(QFileDialog.getSaveFileName()[0])
         Path(self.current_file.file).touch()
-        self.cmd_save()
+        self.cmd_save(save_as=True)
 
     def cmd_refresh(self):
         self.update_instance()
