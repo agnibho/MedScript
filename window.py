@@ -7,7 +7,7 @@
 
 import os, sys, datetime, dateutil.parser, webbrowser
 from PyQt6.QtCore import Qt, QDateTime, QSize, pyqtSignal
-from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QCompleter
+from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QCompleter, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
@@ -166,6 +166,7 @@ class MainWindow(QMainWindow):
             self.input_investigation.setText(investigation)
             self.input_medication.setText(medication)
             self.input_advice.setText(advice)
+            self.label_prescriber.setText(self.prescription.prescriber.name)
         except Exception as e:
             QMessageBox.warning(self,"Failed to load", "Failed to load the data into the application.")
             print(e)
@@ -300,6 +301,11 @@ class MainWindow(QMainWindow):
         toolbar.addAction(action_save2)
         toolbar.addAction(action_refresh2)
         toolbar.addAction(action_render2)
+        spacer=QWidget(self)
+        spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        toolbar.addWidget(spacer)
+        self.label_prescriber=QLabel()
+        toolbar.addWidget(self.label_prescriber)
         self.addToolBar(toolbar)
 
         tab_info=QWidget(self)
