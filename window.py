@@ -108,47 +108,52 @@ class MainWindow(QMainWindow):
     def insert_preset_note(self):
         try:
             self.input_note.insertPlainText(self.preset_note.data[self.input_note_preset.currentText()])
+        except KeyError:
+            self.input_note.insertPlainText(self.input_note_preset.currentText())
+        finally:
             self.input_note_preset.setCurrentIndex(-1)
             if config["preset_newline"]:
                 self.input_note.insertPlainText("\n")
-        except KeyError:
-            pass
 
     def insert_preset_report(self):
         try:
             self.input_report.insertPlainText(self.preset_report.data[self.input_report_preset.currentText()])
+        except KeyError:
+            self.input_report.insertPlainText(self.input_report_preset.currentText())
+        finally:
             self.input_report_preset.setCurrentIndex(-1)
             if config["preset_newline"]:
                 self.input_report.insertPlainText("\n")
-        except KeyError:
-            pass
 
     def insert_preset_investigation(self):
         try:
             self.input_investigation.insertPlainText(self.preset_investigation.data[self.input_investigation_preset.currentText()])
+        except KeyError:
+            self.input_investigation.insertPlainText(self.input_investigation_preset.currentText())
+        finally:
             self.input_investigation_preset.setCurrentIndex(-1)
             if config["preset_newline"]:
                 self.input_investigation.insertPlainText("\n")
-        except KeyError:
-            pass
 
     def insert_preset_medication(self):
         try:
             self.input_medication.insertPlainText(self.preset_medication.data[self.input_medication_preset.currentText()])
+        except KeyError:
+            self.input_medication.insertPlainText(self.input_medication_preset.currentText())
+        finally:
             self.input_medication_preset.setCurrentIndex(-1)
             if config["preset_newline"]:
                 self.input_medication.insertPlainText("\n")
-        except KeyError:
-            pass
 
     def insert_preset_advice(self):
         try:
             self.input_advice.insertPlainText(self.preset_advice.data[self.input_advice_preset.currentText()])
+        except KeyError:
+            self.input_advice.insertPlainText(self.input_advice_preset.currentText())
+        finally:
             self.input_advice_preset.setCurrentIndex(-1)
             if config["preset_newline"]:
                 self.input_advice.insertPlainText("\n")
-        except KeyError:
-            pass
 
     def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", note="", report="", investigation="", medication="", advice=""):
         try:
