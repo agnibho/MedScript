@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
 
     def cmd_open(self):
         try:
-            self.current_file.set_file(QFileDialog.getOpenFileName()[0])
+            self.current_file.set_file(QFileDialog.getOpenFileName(self, "Open File", config["data_directory"], "Prescriptions (*.mpaz);; All Files (*)")[0])
             self.current_file.open()
             self.prescription.read_from(os.path.join(self.current_file.directory.name,"prescription.json"))
             self.load_interface_from_instance()
@@ -50,13 +50,16 @@ class MainWindow(QMainWindow):
             print(e)
 
     def cmd_save(self, save_as=False):
+        self.update_instance()
+        suggest=self.prescription.id if(self.prescription.id) else self.prescription.name
+        suggest=os.path.abspath(os.path.join(config["data_directory"], suggest)+".mpaz")
         if(save_as or not self.unchanged_state or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm change", "Modify the original file?")):
             try:
                 if not os.path.exists(self.current_file.file):
-                    self.current_file.set_file(QFileDialog.getSaveFileName()[0])
+                    filename=QFileDialog.getSaveFileName(self, "Save File", suggest, "Prescriptions (*.mpaz);; All Files (*)")[0]
+                    self.current_file.set_file(filename)
                 for i in range(self.input_attachment.count()):
                     self.current_file.copy(self.input_attachment.item(i).text())
-                self.update_instance()
                 self.prescription.write_to(os.path.join(self.current_file.directory.name, "prescription.json"))
                 config["template"]=os.path.join(config["template_directory"], self.input_template.currentText())
                 self.current_file.save()
@@ -68,7 +71,9 @@ class MainWindow(QMainWindow):
                 print(e)
 
     def cmd_save_as(self):
-        self.current_file.set_file(QFileDialog.getSaveFileName()[0])
+        suggest=self.prescription.id if(self.prescription.id) else self.prescription.name
+        suggest=os.path.abspath(os.path.join(config["data_directory"], suggest)+".mpaz")
+        self.current_file.set_file(QFileDialog.getSaveFileName(self, "Save File", suggest, "Prescriptions (*.mpaz);; All Files (*)")[0])
         Path(self.current_file.file).touch()
         self.cmd_save(save_as=True)
 
@@ -222,7 +227,7 @@ class MainWindow(QMainWindow):
 
     def add_attachment(self):
         try:
-            new=QFileDialog.getOpenFileName()[0]
+            new=QFileDialog.getOpenFileName(self, "Open File", config["data_directory"], "PDF (*.pdf);; Images (*.jpg, *.jpeg, *.png, *.gif);; All Files (*)")[0]
             if new:
                 self.input_attachment.addItem(new)
         except Exception as e:
@@ -233,7 +238,10 @@ class MainWindow(QMainWindow):
         self.input_attachment.takeItem(self.input_attachment.currentRow())
 
     def open_attachment(self):
-        webbrowser.open(self.input_attachment.currentItem().text())
+        try:
+            webbrowser.open(self.input_attachment.currentItem().text())
+        except AttributeError as e:
+            print(e)
 
     def load_attachment(self, attachments):
         for attach in attachments:
