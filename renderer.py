@@ -22,7 +22,7 @@ class Renderer:
         with open(source, "r") as source_file, open(target, "w") as target_file:
             with open(template) as template_file:
                 template_data = Template(template_file.read())
-                data=json.loads(source_file.read())
+                data=self.process_medication(json.loads(source_file.read()))
                 try:
                     data["date"]=datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M:%S")
                 except Exception as e:
@@ -30,3 +30,11 @@ class Renderer:
                 output=template_data.render(data)
                 target_file.write(output)
         return(target)
+
+    def process_medication(self, data):
+        medication_list=[]
+        for line in data["medication"].splitlines():
+            if(line):
+                medication_list.append([m.strip() for m in line.replace(")", "").split("(")])
+        data["medication_list"]=medication_list
+        return data

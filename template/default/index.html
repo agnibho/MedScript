@@ -54,10 +54,20 @@
                       <p>{{note}}</p>
                       <p>{{report}}</p>
                     </td>
-                    <td class="formatted lbordered">
-                      <p>{{medication}}</p>
-                      <p>{{investigation}}</p>
-                      <p>{{advice}}</p>
+                    <td class="lbordered">
+                      <div>
+                        <ol>
+                          {% for med in medication_list %}
+                          <li><strong>{{med[0]}}</strong><br>
+                            <small><em>{{med[1]}}</em></small></li>
+                          <hr>
+                          {% endfor %}
+                        </ol>
+                      </div>
+                      <div class="formatted">
+                        <p>{{investigation}}</p>
+                        <p>{{advice}}</p>
+                      </div>
                     </td>
                   </tr>
                 </table>
