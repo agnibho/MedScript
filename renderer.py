@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, shutil, tempfile, json, datetime
+import os, shutil, tempfile, json, datetime, re
 from jinja2 import Template
 from config import config
 
@@ -33,8 +33,14 @@ class Renderer:
 
     def process_medication(self, data):
         medication_list=[]
+        pattern=re.compile(r".*?\[(.*)\].*")
         for line in data["medication"].splitlines():
             if(line):
-                medication_list.append([m.strip() for m in line.replace(")", "").split("(")])
+                try:
+                    f2=re.search(pattern, line).group(1)
+                    f1=line.replace("["+f2+"]", "")
+                    medication_list.append([f1, f2])
+                except AttributeError:
+                    medication_list.append([line, ""])
         data["medication_list"]=medication_list
         return data
