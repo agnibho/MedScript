@@ -124,6 +124,16 @@ class MainWindow(QMainWindow):
             self.input_report_preset.setCurrentIndex(-1)
             if config["preset_newline"]:
                 self.input_report.insertPlainText("\n")
+    def insert_preset_advice(self):
+        try:
+            self.input_advice.insertPlainText(self.preset_advice.data[self.input_advice_preset.currentText()])
+        except KeyError:
+            self.input_advice.insertPlainText(self.input_advice_preset.currentText())
+        finally:
+            self.input_advice_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_advice.insertPlainText("\n")
+
 
     def insert_preset_investigation(self):
         try:
@@ -145,17 +155,17 @@ class MainWindow(QMainWindow):
             if config["preset_newline"]:
                 self.input_medication.insertPlainText("\n")
 
-    def insert_preset_advice(self):
+    def insert_preset_additional(self):
         try:
-            self.input_advice.insertPlainText(self.preset_advice.data[self.input_advice_preset.currentText()])
+            self.input_additional.insertPlainText(self.preset_additional.data[self.input_additional_preset.currentText()])
         except KeyError:
-            self.input_advice.insertPlainText(self.input_advice_preset.currentText())
+            self.input_additional.insertPlainText(self.input_additional_preset.currentText())
         finally:
-            self.input_advice_preset.setCurrentIndex(-1)
+            self.input_additional_preset.setCurrentIndex(-1)
             if config["preset_newline"]:
-                self.input_advice.insertPlainText("\n")
+                self.input_additional.insertPlainText("\n")
 
-    def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", note="", report="", investigation="", medication="", advice=""):
+    def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
         try:
             self.statusbar.showMessage(self.current_file.file)
             if date is None:
@@ -166,7 +176,7 @@ class MainWindow(QMainWindow):
                     d=QDateTime.fromString(pdate.strftime("%Y-%m-%d %H:%M:%S"), "yyyy-MM-dd hh:mm:ss")
                 except Exception as e:
                     QMessageBox.warning(self,"Failed to load", str(e))
-                    raise(e)
+                    print(e)
             self.input_date.setDateTime(d)
             self.input_id.setText(id)
             self.input_name.setText(name)
@@ -177,11 +187,13 @@ class MainWindow(QMainWindow):
             self.input_extra.setText(extra)
             self.input_mode.setCurrentText(mode)
             self.input_daw.setChecked(bool(daw))
+            self.input_diagnosis.setText(diagnosis)
             self.input_note.setText(note)
             self.input_report.setText(report)
+            self.input_advice.setText(advice)
             self.input_investigation.setText(investigation)
             self.input_medication.setText(medication)
-            self.input_advice.setText(advice)
+            self.input_additional.setText(additional)
             self.label_prescriber.setText(self.prescription.prescriber.name)
         except Exception as e:
             QMessageBox.warning(self,"Failed to load", "Failed to load the data into the application.")
@@ -200,11 +212,13 @@ class MainWindow(QMainWindow):
                 extra=self.prescription.extra,
                 mode=self.prescription.mode,
                 daw=self.prescription.daw,
+                diagnosis=self.prescription.diagnosis,
                 note=self.prescription.note,
                 report=self.prescription.report,
+                advice=self.prescription.advice,
                 investigation=self.prescription.investigation,
                 medication=self.prescription.medication,
-                advice=self.prescription.advice
+                additional=self.prescription.additional
                 )
 
     def update_instance(self):
@@ -220,11 +234,13 @@ class MainWindow(QMainWindow):
                     extra=self.input_extra.toPlainText(),
                     mode=self.input_mode.currentText(),
                     daw=self.input_daw.isChecked(),
+                    diagnosis=self.input_diagnosis.text(),
                     note=self.input_note.toPlainText(),
                     report=self.input_report.toPlainText(),
+                    advice=self.input_advice.toPlainText(),
                     investigation=self.input_investigation.toPlainText(),
                     medication=self.input_medication.toPlainText(),
-                    advice=self.input_advice.toPlainText()
+                    additional=self.input_additional.toPlainText()
                     )
         except Exception as e:
             QMessageBox.critical(self,"Failed", "Critical failure happned. Please check console for more info.")
@@ -276,9 +292,10 @@ class MainWindow(QMainWindow):
 
         self.preset_note=Preset(os.path.join(config["preset_directory"], "note.csv"))
         self.preset_report=Preset(os.path.join(config["preset_directory"], "report.csv"))
+        self.preset_advice=Preset(os.path.join(config["preset_directory"], "advice.csv"))
         self.preset_investigation=Preset(os.path.join(config["preset_directory"], "investigation.csv"))
         self.preset_medication=Preset(os.path.join(config["preset_directory"], "medication.csv"), text_as_key=True)
-        self.preset_advice=Preset(os.path.join(config["preset_directory"], "advice.csv"))
+        self.preset_additional=Preset(os.path.join(config["preset_directory"], "additonal.csv"))
 
         action_new=QAction("New", self)
         action_new.triggered.connect(self.cmd_new)
@@ -341,6 +358,7 @@ class MainWindow(QMainWindow):
         toolbar.addWidget(self.label_prescriber)
         self.addToolBar(toolbar)
 
+
         tab_info=QWidget(self)
         layout_info=QFormLayout(tab_info)
         self.input_date=QDateTimeEdit(self)
@@ -360,6 +378,8 @@ class MainWindow(QMainWindow):
         layout_info.addRow("Address", self.input_address)
         self.input_contact=QLineEdit(self)
         layout_info.addRow("Contact", self.input_contact)
+        self.input_diagnosis=QLineEdit(self)
+        layout_info.addRow("Diagnosis", self.input_diagnosis)
         self.input_extra=QTextEdit(self)
         layout_info.addRow("Extra", self.input_extra)
         self.input_mode=QComboBox(self)
@@ -409,6 +429,26 @@ class MainWindow(QMainWindow):
         layout_report.addLayout(layout_report2)
         layout_report.addWidget(self.input_report)
 
+        tab_advice=QWidget(self)
+        layout_advice=QVBoxLayout(tab_advice)
+        layout_advice2=QHBoxLayout()
+        label_advice=QLabel("Advice")
+        self.input_advice_preset=QComboBox(self)
+        self.input_advice_preset.addItems(self.preset_advice.data.keys())
+        self.input_advice_preset.setCurrentIndex(-1)
+        self.input_advice_preset.setEditable(True)
+        self.input_advice_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_advice_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
+        self.input_advice_preset.setPlaceholderText("Select a preset")
+        input_advice_preset_btn=QPushButton("Insert")
+        input_advice_preset_btn.clicked.connect(self.insert_preset_advice)
+        layout_advice2.addWidget(self.input_advice_preset, 2)
+        layout_advice2.addWidget(input_advice_preset_btn, 1)
+        self.input_advice=QTextEdit(self)
+        layout_advice.addWidget(label_advice)
+        layout_advice.addLayout(layout_advice2)
+        layout_advice.addWidget(self.input_advice)
+
         tab_investigation=QWidget(self)
         layout_investigation=QVBoxLayout(tab_investigation)
         layout_investigation2=QHBoxLayout()
@@ -449,25 +489,25 @@ class MainWindow(QMainWindow):
         layout_medication.addLayout(layout_medication2)
         layout_medication.addWidget(self.input_medication)
 
-        tab_advice=QWidget(self)
-        layout_advice=QVBoxLayout(tab_advice)
-        layout_advice2=QHBoxLayout()
-        label_advice=QLabel("Additional Advice")
-        self.input_advice_preset=QComboBox(self)
-        self.input_advice_preset.addItems(self.preset_advice.data.keys())
-        self.input_advice_preset.setCurrentIndex(-1)
-        self.input_advice_preset.setEditable(True)
-        self.input_advice_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        self.input_advice_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
-        self.input_advice_preset.setPlaceholderText("Select a preset")
-        input_advice_preset_btn=QPushButton("Insert")
-        input_advice_preset_btn.clicked.connect(self.insert_preset_advice)
-        layout_advice2.addWidget(self.input_advice_preset, 2)
-        layout_advice2.addWidget(input_advice_preset_btn, 1)
-        self.input_advice=QTextEdit(self)
-        layout_advice.addWidget(label_advice)
-        layout_advice.addLayout(layout_advice2)
-        layout_advice.addWidget(self.input_advice)
+        tab_additional=QWidget(self)
+        layout_additional=QVBoxLayout(tab_additional)
+        layout_additional2=QHBoxLayout()
+        label_additional=QLabel("Additional Advice")
+        self.input_additional_preset=QComboBox(self)
+        self.input_additional_preset.addItems(self.preset_additional.data.keys())
+        self.input_additional_preset.setCurrentIndex(-1)
+        self.input_additional_preset.setEditable(True)
+        self.input_additional_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_additional_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
+        self.input_additional_preset.setPlaceholderText("Select a preset")
+        input_additional_preset_btn=QPushButton("Insert")
+        input_additional_preset_btn.clicked.connect(self.insert_preset_additional)
+        layout_additional2.addWidget(self.input_additional_preset, 2)
+        layout_additional2.addWidget(input_additional_preset_btn, 1)
+        self.input_additional=QTextEdit(self)
+        layout_additional.addWidget(label_additional)
+        layout_additional.addLayout(layout_additional2)
+        layout_additional.addWidget(self.input_additional)
 
         tab_attachment=QWidget(self)
         layout_attachment=QVBoxLayout(tab_attachment)
@@ -491,9 +531,10 @@ class MainWindow(QMainWindow):
         tab.addTab(tab_info, "Patient")
         tab.addTab(tab_note, "Clinical")
         tab.addTab(tab_report, "Report")
+        tab.addTab(tab_advice, "Advice")
         tab.addTab(tab_investigation, "Investigation")
         tab.addTab(tab_medication, "Medication")
-        tab.addTab(tab_advice, "Advice")
+        tab.addTab(tab_additional, "Additional")
         tab.addTab(tab_attachment, "Attachment")
 
         self.setCentralWidget(tab)

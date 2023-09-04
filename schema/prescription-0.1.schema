@@ -32,10 +32,16 @@
     "daw": {
       "type": "boolean"
     },
+    "diagnosis": {
+      "type": "string"
+    },
     "note": {
       "type": "string"
     },
     "report": {
+      "type": "string"
+    },
+    "advice": {
       "type": "string"
     },
     "investigation": {
@@ -44,7 +50,7 @@
     "medication": {
       "type": "string"
     },
-    "advice": {
+    "additional": {
       "type": "string"
     },
     "prescriber": {
