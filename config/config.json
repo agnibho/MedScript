@@ -1,9 +1,11 @@
 {
-    "data_directory": "data",
     "config_directory": "config",
+    "data_directory": "data",
+    "document_directory": "document",
+    "prescriber_directory": "prescriber",
+    "prescriber": "prescriber",
     "template_directory": "template",
     "template": "default",
     "preset_directory": "preset",
-    "preset_newline": "True",
-    "prescriber": "prescriber.json"
+    "preset_newline": "True"
 }

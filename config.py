@@ -7,6 +7,8 @@
 
 import argparse, json, os
 
+default_config_file=os.path.abspath(os.path.join("config", "config.json"))
+
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", nargs="?")
 parser.add_argument("-c", "--config")
@@ -14,18 +16,20 @@ parser.add_argument("-p", "--prescriber")
 args = parser.parse_args()
 
 if(args.config is None):
-    config_file=os.path.join("config", "config.json")
+    config_file=default_config_file
 else:
     config_file=args.config
 
 default = {
-        "data_directory": "data",
         "config_directory": "config",
+        "data_directory": "data",
+        "document_directory": "document",
+        "prescriber_directory": "prescriber",
+        "prescriber": "prescriber",
         "template_directory": "template",
         "template": "default",
         "preset_directory": "preset",
-        "preset_newline": "True",
-        "prescriber": "prescriber.json"
+        "preset_newline": "True"
         }
 
 with open(config_file) as conf:
@@ -33,9 +37,14 @@ with open(config_file) as conf:
 
 config = default | read
 config["filename"]=args.filename
+config["data_directory"]=os.path.abspath(config["data_directory"])
+config["document_directory"]=os.path.join(config["data_directory"], config["document_directory"])
+config["template_directory"]=os.path.join(config["data_directory"], config["template_directory"])
 config["template"]=os.path.join(config["template_directory"], config["template"])
 if(args.prescriber is None):
-    config["prescriber"]=os.path.join(config["config_directory"], config["prescriber"])
+    config["prescriber_directory"]=os.path.join(config["data_directory"], config["prescriber_directory"])
+    config["prescriber"]=os.path.join(config["prescriber_directory"], config["prescriber"])
+    if (not config["prescriber"].endswith(".json")): config["prescriber"]=config["prescriber"]+".json"
 else:
     if(not os.path.isabs(args.prescriber)):
         args.prescriber=os.path.join(config["config_directory"], args.prescriber)

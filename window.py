@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
 
     def cmd_open(self):
         try:
-            self.current_file.set_file(QFileDialog.getOpenFileName(self, "Open File", config["data_directory"], "Prescriptions (*.mpaz);; All Files (*)")[0])
+            self.current_file.set_file(QFileDialog.getOpenFileName(self, "Open File", config["document_directory"], "Prescriptions (*.mpaz);; All Files (*)")[0])
             self.current_file.open()
             self.prescription.read_from(os.path.join(self.current_file.directory.name,"prescription.json"))
             self.load_interface_from_instance()
@@ -52,7 +52,7 @@ class MainWindow(QMainWindow):
     def cmd_save(self, save_as=False):
         self.update_instance()
         suggest=self.prescription.id if(self.prescription.id) else self.prescription.name
-        suggest=os.path.abspath(os.path.join(config["data_directory"], suggest)+".mpaz")
+        suggest=os.path.abspath(os.path.join(config["document_directory"], suggest)+".mpaz")
         if(save_as or not self.unchanged_state or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm change", "Modify the original file?")):
             try:
                 if not os.path.exists(self.current_file.file):
@@ -72,7 +72,7 @@ class MainWindow(QMainWindow):
 
     def cmd_save_as(self):
         suggest=self.prescription.id if(self.prescription.id) else self.prescription.name
-        suggest=os.path.abspath(os.path.join(config["data_directory"], suggest)+".mpaz")
+        suggest=os.path.abspath(os.path.join(config["document_directory"], suggest)+".mpaz")
         self.current_file.set_file(QFileDialog.getSaveFileName(self, "Save File", suggest, "Prescriptions (*.mpaz);; All Files (*)")[0])
         Path(self.current_file.file).touch()
         self.cmd_save(save_as=True)
@@ -248,7 +248,7 @@ class MainWindow(QMainWindow):
 
     def add_attachment(self):
         try:
-            new=QFileDialog.getOpenFileName(self, "Open File", config["data_directory"], "PDF (*.pdf);; Images (*.jpg, *.jpeg, *.png, *.gif);; All Files (*)")[0]
+            new=QFileDialog.getOpenFileName(self, "Open File", config["document_directory"], "PDF (*.pdf);; Images (*.jpg, *.jpeg, *.png, *.gif);; All Files (*)")[0]
             if new:
                 self.input_attachment.addItem(new)
         except Exception as e:
