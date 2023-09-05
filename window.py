@@ -98,11 +98,11 @@ class MainWindow(QMainWindow):
         self.edit_prescriber.show()
 
     def cmd_about(self):
-        self.viewbox.open(os.path.join("resource", "about.html"))
+        self.viewbox.open(os.path.join(config["resource"], "about.html"))
         self.viewbox.show()
 
     def cmd_help(self):
-        self.viewbox.open(os.path.join("resource", "help.html"))
+        self.viewbox.open(os.path.join(config["resource"], "help.html"))
         self.viewbox.show()
 
     def insert_preset_note(self):
@@ -283,12 +283,12 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("MedScript")
         self.setGeometry(100, 100, 600, 400)
-        self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
+        self.setWindowIcon(QIcon(os.path.join(config["resource"], "icon_medscript.ico")))
 
-        icon_open=QIcon(os.path.join("resource", "icon_open.svg"))
-        icon_save=QIcon(os.path.join("resource", "icon_save.svg"))
-        icon_render=QIcon(os.path.join("resource", "icon_render.svg"))
-        icon_refresh=QIcon(os.path.join("resource", "icon_refresh.svg"))
+        icon_open=QIcon(os.path.join(config["resource"], "icon_open.svg"))
+        icon_save=QIcon(os.path.join(config["resource"], "icon_save.svg"))
+        icon_render=QIcon(os.path.join(config["resource"], "icon_render.svg"))
+        icon_refresh=QIcon(os.path.join(config["resource"], "icon_refresh.svg"))
 
         self.preset_note=Preset(os.path.join(config["preset_directory"], "note.csv"))
         self.preset_report=Preset(os.path.join(config["preset_directory"], "report.csv"))
