@@ -1,0 +1,179 @@
+MedScript
+=========
+
+MedScript is a medical prescription writing software. It is primarily for
+medical practitioners for writing prescriptions.
+
+The purpose of the program is to enable medical practitioners to prepare
+computerized prescriptions. The program has been designed after the commonly
+used prescription format among the medical practitioners in India.
+Inclusion of prescription style of other regions will hopefully be implemented
+in future updates.
+
+File
+----
+
+The program uses a custom file format .mpaz (Medical Prescription Archive -
+Zipped). It is a zip file in a specific format. The file can be shared,
+however, no mechanism of ensuring authenticity of a shared file is currently
+in place.
+
+Install
+-------
+
+MedScript can be used by simply downloading it from the repository and running
+it with the Python interpreter. The necessary python libraries need to
+be installed. Alternatively the release versions can be
+downloaded and used directly.
+
+Usage
+-----
+
+The common functionalities of the program can be used within the graphical
+interface. Editing of some configuration files are needed only for the
+advanced features such as custom presets.
+
+When starting the program, the main window of is shown.The menu bar at the top
+can be used to access most of the functions. The toolbar below it contains the
+most commonly used functions for quick access.
+
+### Creating a prescription
+
+A new prescription can be created right from the starting window.
+Alternatively the "New" menu option can be used to create a new
+prescription.
+
+There are eight tabs in the tab bar containing important parts of a
+prescription.
+
+1. Patient tab: It contains the demographical data of the patient, diagnosis
+and a few extra parameters of the prescription.
+
+2. Clinical tab: It contains the clinical note regarding the patient. The
+presets can be selected from the preset box at the top and inserted into the
+note by clicking the insert button.
+
+3. Report tab: It contains the reports shown by the patient. It also has the
+preset option.
+
+4. Advice tab: It contains the primary advices given to the patient. It is
+usually printed at the top of the advice section of the prescription.It also
+has the preset option.
+
+5. Investigation tab: It contains the investigations suggested to the
+patient. It also has the preset option.
+
+6. Medication tab: It contains the medications advised to the patient. It has
+the preset option. It can contain both the generic and brand name of a
+medicine. To insert a alternative name (generic/brand) write it on the same
+line and surround it with square brackets i.e []. It also has the preset
+option.
+
+7. Additional tab: It contains additional advice given to the patient. It is
+commonly printed at the bottom of the prescription.
+
+8. Attachment tab: Files e.g. PDF, images may be attached to the prescription
+file from the attachment tab. These attachments can be viewed later when
+opening the prescription file with the program. However, this attachments are
+not printed with the prescription.
+
+### Saving a prescription
+
+The "Save" or the "Save As" option from the "File" menu can be used to save a
+file created or edited in the program.
+
+### Opening a prescription
+
+The prescriptions are saved in .mpaz files and can be shared easily. To open a
+prescription file, the "Open" option from the file menu can be used.
+Alternatively the file name can be supplied to the program as command line
+argument when starting from the command line.
+
+### Rendering a prescription
+
+The prescriptions can be rendered and subsequently printed from the "Prepare"
+menu by selecting the "Render" option. Note that the files must be saved
+before rendering. The rendered prescription is opened in a separate window. It
+can be saved as PDF or it can be opened in the system browser and printed from
+there.
+
+### Template
+
+The program uses jinja2 template for rendering the prescription. A default
+template is provided with the program. However, other templates (see default
+template for reference) can be created and placed in the template folder to be
+used for rendering the prescriptions. The drop down option in the toolbar can
+be used to switch between available templates.
+
+Note that the templates are packaged with the .mpaz file which can be used for
+rendering. However, modifying/saving the file overwrites it.
+
+Prescriber
+----------
+
+The program is primarily targeted towards individual practitioners. However,
+it can be easily adapted for multiple practitioners.
+
+The data of the practitioner is stored in json files in the prescriber
+directory. The default file to be loaded is configured in the config file. A
+command line option can be used to specify which alternative prescriber file
+to load in the program, e.g. `<program> --prescriber <prescriber file>`.
+
+The data of the currently selected prescriber can be edited using the
+"Prescriber" option under the "Prepare" menu.
+
+Preset
+------
+
+The program uses a preset system to insert repeatedly used text without the
+need to type them. To use this feature the text must be entered beforehand to
+the respective files. These files are in the .csv format and can be edited
+with any spreadsheet editing software.
+
+The preset files are kept in the preset directory. The files associated with
+clinical note, report, advice, investigation, medication and additional are
+note.csv, report.csv, advice.csv, investigation.csv, medication.csv and
+additional.csv. Each file contains a top row indicating the variables in the
+columns. The data is entered in two columns with each row containing a KEY and
+a TEXT. The TEXT can be entered in to the edit area by selecting the KEY from
+the preset input.
+
+Configuration
+-------------
+
+The default configuration file contains sane defaults and the program can be
+used without editing it. However, the json formatted configuration file can be
+edited to further tune the program to the users preference.
+
+The default configuration is the config.json located in the config directory.
+However, a different config file may be provided by using the
+`<program> --config <filename>` command line argument.
+
+It is recommended to use the default config file as base while creating
+another customized config file.
+
+License
+-------
+
+MedScript
+
+Copyright (C) 2023 Dr. Agnibho Mondal
+
+MedScript is free software: you can redistribute it and/or modify it under the
+terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+MedScript is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+MedScript. If not, see <https://www.gnu.org/licenses/>.
+
+Contact
+-------
+
+Dr. Agnibho Mondal
+mondal@agnibho.com
+www.agnibho.com
