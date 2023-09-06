@@ -51,7 +51,15 @@
                   </tr>
                   <tr>
                     <td class="rbordered">
-                      {% if diagnosis %}<p class="formatted"><strong>{{diagnosis}}</strong></p>{% endif %}
+                      {% if diagnosis %}
+                      {% if diagnosis_list|length > 1 %}
+                      <ul>
+                        {% for diag in diagnosis_list %}<li><strong>{{diag}}</strong></li>{% endfor %}
+                      </ul>
+                      {% else %}
+                      <p><strong>{{diagnosis}}</strong></p>
+                      {% endif %}
+                      {% endif %}
                       {% if note %}<p class="formatted">{{note}}</p>{% endif %}
                       {% if report %}<p class="formatted">{{report}}</p>{% endif %}
                     </td>
