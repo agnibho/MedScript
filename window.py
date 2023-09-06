@@ -36,9 +36,12 @@ class MainWindow(QMainWindow):
         self.load_interface()
         self.save_state=md5("".encode()).hexdigest()
 
-    def cmd_open(self):
+    def cmd_open(self, file="data/document/test.mpaz"):
         try:
-            self.current_file.set_file(QFileDialog.getOpenFileName(self, "Open File", config["document_directory"], "Prescriptions (*.mpaz);; All Files (*)")[0])
+            if(file):
+                self.current_file.set_file(file)
+            else:
+                self.current_file.set_file(QFileDialog.getOpenFileName(self, "Open File", config["document_directory"], "Prescriptions (*.mpaz);; All Files (*)")[0])
             self.current_file.open()
             self.prescription.read_from(os.path.join(self.current_file.directory.name,"prescription.json"))
             self.load_interface_from_instance()
@@ -547,5 +550,8 @@ class MainWindow(QMainWindow):
         self.edit_prescriber=EditPrescriber()
         self.viewbox=ViewBox()
 
-        self.cmd_new()
+        if(config["filename"]):
+            self.cmd_open(config["filename"])
+        else:
+            self.cmd_new()
         self.show()

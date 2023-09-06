@@ -45,7 +45,6 @@ config["preset_directory"]=os.path.join(config["data_directory"], config["preset
 config["template_directory"]=os.path.join(config["data_directory"], config["template_directory"])
 config["template"]=os.path.join(config["template_directory"], config["template"])
 config["resource"]=os.path.abspath(os.path.join(real_dir, "resource"))
-print(config["resource"])
 if(args.prescriber is None):
     config["prescriber_directory"]=os.path.join(config["data_directory"], config["prescriber_directory"])
     config["prescriber"]=os.path.join(config["prescriber_directory"], config["prescriber"])
