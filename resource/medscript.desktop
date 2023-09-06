@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=0.2
+Type=Application
+Name=MedScript
+Comment=Prescription writing software
+TryExec=medscript
+Exec=medscript %f
+Icon=medscript
+MimeType=application/zip;
