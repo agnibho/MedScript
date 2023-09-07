@@ -8,7 +8,7 @@ a = Analysis(
     ['medscript.py'],
     pathex=[],
     binaries=[],
-    datas=[('config', 'config'), ('resource', 'resource'), ('template', 'template'), ('data', 'data')],
+    datas=[('config', 'config'), ('resource', 'resource'), ('data', 'data')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
