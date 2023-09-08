@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import argparse, json, os, sys
+import argparse, json, os, sys, shutil
 
 default_config_file=os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "config", "config.json"))
 
@@ -38,8 +38,9 @@ with open(config_file) as conf:
     read = json.loads(conf.read())
 
 config = default | read
+
 config["filename"]=args.filename
-config["data_directory"]=os.path.abspath(os.path.join(real_dir, config["data_directory"]))
+config["data_directory"]=os.path.abspath(os.path.join(real_dir, os.path.expanduser(config["data_directory"])))
 config["document_directory"]=os.path.join(config["data_directory"], config["document_directory"])
 config["preset_directory"]=os.path.join(config["data_directory"], config["preset_directory"])
 config["template_directory"]=os.path.join(config["data_directory"], config["template_directory"])
@@ -57,3 +58,13 @@ else:
     else:
         config["prescriber"]=os.path.join(config["config_directory"], config["prescriber"])
         print("File "+args.prescriber+" not found.")
+
+os.makedirs(config["data_directory"], exist_ok=True)
+os.makedirs(config["document_directory"], exist_ok=True)
+os.makedirs(config["prescriber_directory"], exist_ok=True)
+os.makedirs(config["preset_directory"], exist_ok=True)
+os.makedirs(config["template_directory"], exist_ok=True)
+if not os.path.exists(os.path.join(config["prescriber_directory"], "prescriber.json")):
+    shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "prescriber", "prescriber.json")), os.path.join(config["prescriber_directory"], "prescriber.json"))
+if not os.path.exists(os.path.join(config["template_directory"], "default")):
+    shutil.copytree(os.path.abspath(os.path.join(real_dir, "data", "template", "default")), os.path.join(config["template_directory"], "default"))

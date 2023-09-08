@@ -47,12 +47,12 @@ class FileHandler():
         os.makedirs(template, exist_ok=True)
         shutil.copytree(config["template"], template, dirs_exist_ok=True)
 
-        with ZipFile(self.file, "w") as target:
+        with ZipFile(self.file, "w", strict_timestamps=False) as target:
             for f in glob.glob(os.path.join(self.directory.name, "**" ,"*"), recursive=True):
                 target.write(f, os.path.relpath(f, self.directory.name))
 
     def open(self, file=None):
         if file is not None:
             self.file=file
-        with ZipFile(self.file, "r") as source:
+        with ZipFile(self.file, "r", strict_timestamps=False) as source:
             source.extractall(self.directory.name)
