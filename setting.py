@@ -51,7 +51,7 @@ class EditPrescriber(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle("EditBox")
+        self.setWindowTitle("MedScript")
         self.setGeometry(200, 200, 300, 200)
 
         widget=QWidget(self)
