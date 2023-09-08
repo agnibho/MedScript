@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
         if(self.save_state==md5(self.prescription.get_json().encode()).hexdigest()):
             target=self.renderer.render(self.current_file.directory.name)
             self.signal_view.emit(target)
-            self.renderbox.show()
+            self.renderbox.showMaximized()
         else:
            QMessageBox.information(self,"Save first", "Please save the file before rendering.")
 
@@ -554,4 +554,5 @@ class MainWindow(QMainWindow):
             self.cmd_open(config["filename"])
         else:
             self.cmd_new()
-        self.show()
+        self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
+        self.showMaximized()

@@ -6,7 +6,8 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QPushButton, QLabel, QLineEdit, QTextEdit, QStatusBar, QMessageBox
-import json
+from PyQt6.QtGui import QIcon
+import os, json
 from config import config
 
 class EditPrescriber(QMainWindow):
@@ -75,5 +76,6 @@ class EditPrescriber(QMainWindow):
         self.setStatusBar(self.statusbar)
 
         self.setCentralWidget(widget)
+        self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
 
         self.load()

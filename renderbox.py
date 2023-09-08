@@ -7,7 +7,7 @@
 
 from PyQt6.QtWidgets import QMainWindow, QToolBar, QFileDialog
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtGui import QAction
+from PyQt6.QtGui import QAction, QIcon
 from PyQt6.QtCore import QUrl
 import os, webbrowser
 
@@ -41,6 +41,7 @@ class RenderBox(QMainWindow):
         self.webview=QWebEngineView()
 
         self.setCentralWidget(self.webview)
+        self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
 
     def update(self, file):
         try:

@@ -9,6 +9,7 @@ import os
 from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QIcon
 
 class ViewBox(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -20,6 +21,8 @@ class ViewBox(QMainWindow):
         self.webview=QWebEngineView()
 
         self.setCentralWidget(self.webview)
+        self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
+
 
     def open(self, file):
         self.webview.load(QUrl("file:///"+os.path.abspath(file).replace(os.sep, "/")))
