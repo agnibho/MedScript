@@ -25,7 +25,7 @@ class RenderBox(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle("ViewBox")
+        self.setWindowTitle("MedScript")
         self.setGeometry(100, 100, 600, 400)
 
         action_browse=QAction("Open in Browser", self)
