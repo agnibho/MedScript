@@ -600,9 +600,9 @@ class MainWindow(QMainWindow):
         self.edit_prescriber.signal_save.connect(self.cmd_prescriber_reload)
         self.viewbox=ViewBox()
 
+        self.new_doc()
         if(config["filename"]):
             self.cmd_open(config["filename"])
-        else:
-            self.new_doc()
+
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
         self.showMaximized()
