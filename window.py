@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, sys, datetime, dateutil.parser, webbrowser
+import os, sys, datetime, dateutil.parser, shutil
 from PyQt6.QtCore import Qt, QDateTime, QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QCompleter, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
@@ -284,10 +284,10 @@ class MainWindow(QMainWindow):
     def remove_attachment(self):
         self.input_attachment.takeItem(self.input_attachment.currentRow())
 
-    def open_attachment(self):
+    def save_attachment(self):
         try:
-            webbrowser.open(self.input_attachment.currentItem().text())
-        except AttributeError as e:
+            shutil.copyfile(self.input_attachment.currentItem().text(), QFileDialog.getSaveFileName(self, "Save Attachment", os.path.join(config["document_directory"], os.path.basename(self.input_attachment.currentItem().text())))[0])
+        except Exception as e:
             print(e)
 
     def load_attachment(self, attachments):
@@ -564,14 +564,14 @@ class MainWindow(QMainWindow):
         button_add.clicked.connect(self.add_attachment)
         button_remove=QPushButton("Remove")
         button_remove.clicked.connect(self.remove_attachment)
-        button_open=QPushButton("Open")
-        button_open.clicked.connect(self.open_attachment)
+        button_save=QPushButton("Save")
+        button_save.clicked.connect(self.save_attachment)
         layout_attachment.addWidget(label_attachment)
         layout_attachment.addLayout(layout_attachment2)
         layout_attachment.addWidget(self.input_attachment)
         layout_attachment2.addWidget(button_add)
         layout_attachment2.addWidget(button_remove)
-        layout_attachment2.addWidget(button_open)
+        layout_attachment2.addWidget(button_save)
 
         tab=QTabWidget(self)
         tab.addTab(tab_info, "Patient")
