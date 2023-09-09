@@ -9,8 +9,11 @@ import json
 from config import config
 
 class Prescriber:
-    def __init__(self):
-        self.read_from(config["prescriber"])
+    def __init__(self, file=None):
+        if file is None:
+            self.read_from(config["prescriber"])
+        else:
+            self.read_from(file)
 
     def set_data(self, name="", qualification="", registration="", address="", contact="", extra=""):
         self.name = name
@@ -94,3 +97,6 @@ class Prescription:
         with open(file, "r") as f:
             self.set_data_from_json(json.loads(f.read()))
         self.file=file
+
+    def reload_prescriber(self, file=None):
+        self.prescriber=Prescriber(file)

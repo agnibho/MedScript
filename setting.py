@@ -7,10 +7,13 @@
 
 from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QPushButton, QLabel, QLineEdit, QTextEdit, QStatusBar, QMessageBox
 from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import pyqtSignal
 import os, json
 from config import config
 
 class EditPrescriber(QMainWindow):
+
+    signal_save=pyqtSignal(str)
 
     file=""
     prescriber=""
@@ -42,6 +45,7 @@ class EditPrescriber(QMainWindow):
             with open(self.file, "w") as f:
                 f.write(json.dumps(self.prescriber, indent=4))
             QMessageBox.information(self,"Saved", "Information saved.")
+            self.signal_save.emit(self.file)
             self.hide()
         except Exception as e:
             QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")

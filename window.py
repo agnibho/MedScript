@@ -81,8 +81,7 @@ class MainWindow(QMainWindow):
         self.cmd_save(save_as=True)
 
     def cmd_refresh(self):
-        self.update_instance()
-        self.load_interface_from_instance()
+        self.refresh()
 
     def cmd_quit(self):
         if(self.confirm_exit()):
@@ -99,6 +98,15 @@ class MainWindow(QMainWindow):
 
     def cmd_prescriber(self):
         self.edit_prescriber.show()
+
+    def cmd_prescriber_reload(self, file=None):
+        self.prescription.reload_prescriber(file=None)
+        self.refresh()
+
+    def cmd_switch(self):
+        print("switch")
+        self.prescription.reload_prescriber(QFileDialog.getOpenFileName(self, "Open File", config["prescriber_directory"], "JSON (*.json);; All Files (*)")[0])
+        self.refresh()
 
     def cmd_about(self):
         self.viewbox.open(os.path.join(config["resource"], "about.html"))
@@ -249,6 +257,11 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self,"Failed", "Critical failure happned. Please check console for more info.")
             print(e)
 
+    def refresh(self):
+        self.update_instance()
+        self.load_interface_from_instance()
+
+
     def add_attachment(self):
         try:
             new=QFileDialog.getOpenFileName(self, "Open File", config["document_directory"], "PDF (*.pdf);; Images (*.jpg, *.jpeg, *.png, *.gif);; All Files (*)")[0]
@@ -324,6 +337,8 @@ class MainWindow(QMainWindow):
         action_render2.triggered.connect(self.cmd_render)
         action_prescriber=QAction("Prescriber", self)
         action_prescriber.triggered.connect(self.cmd_prescriber)
+        action_switch=QAction("Switch", self)
+        action_switch.triggered.connect(self.cmd_switch)
         action_about=QAction("About", self)
         action_about.triggered.connect(self.cmd_about)
         action_help=QAction("Help", self)
@@ -340,6 +355,7 @@ class MainWindow(QMainWindow):
         menu_prepare.addAction(action_render)
         menu_prepare.addAction(action_refresh)
         menu_prepare.addAction(action_prescriber)
+        menu_prepare.addAction(action_switch)
         menu_help=menubar.addMenu("Help")
         menu_help.addAction(action_about)
         menu_help.addAction(action_help)
@@ -548,6 +564,7 @@ class MainWindow(QMainWindow):
         self.renderbox=RenderBox()
         self.signal_view.connect(self.renderbox.update)
         self.edit_prescriber=EditPrescriber()
+        self.edit_prescriber.signal_save.connect(self.cmd_prescriber_reload)
         self.viewbox=ViewBox()
 
         if(config["filename"]):
