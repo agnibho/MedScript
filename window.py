@@ -31,26 +31,25 @@ class MainWindow(QMainWindow):
     unchanged_state=False
 
     def cmd_new(self):
-        self.prescription.set_data()
-        self.input_attachment.clear()
-        self.load_interface()
-        self.save_state=md5("".encode()).hexdigest()
+        if(self.confirm_close()):
+            self.new_doc()
 
-    def cmd_open(self, file="data/document/test.mpaz"):
-        try:
-            if(file):
-                self.current_file.set_file(file)
-            else:
-                self.current_file.set_file(QFileDialog.getOpenFileName(self, "Open File", config["document_directory"], "Prescriptions (*.mpaz);; All Files (*)")[0])
-            self.current_file.open()
-            self.prescription.read_from(os.path.join(self.current_file.directory.name,"prescription.json"))
-            self.load_interface_from_instance()
-            self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
-            self.load_attachment(self.current_file.list())
-            self.unchanged_state=True
-        except Exception as e:
-            QMessageBox.warning(self,"Open failed", "Failed to open file.")
-            print(e)
+    def cmd_open(self, file=None):
+        if(self.confirm_close()):
+            try:
+                if(file):
+                    self.current_file.set_file(file)
+                else:
+                    self.current_file.set_file(QFileDialog.getOpenFileName(self, "Open File", config["document_directory"], "Prescriptions (*.mpaz);; All Files (*)")[0])
+                self.current_file.open()
+                self.prescription.read_from(os.path.join(self.current_file.directory.name,"prescription.json"))
+                self.load_interface_from_instance()
+                self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
+                self.load_attachment(self.current_file.list())
+                self.unchanged_state=True
+            except Exception as e:
+                QMessageBox.warning(self,"Open failed", "Failed to open file.")
+                print(e)
 
     def cmd_save(self, save_as=False):
         self.update_instance()
@@ -84,7 +83,7 @@ class MainWindow(QMainWindow):
         self.refresh()
 
     def cmd_quit(self):
-        if(self.confirm_exit()):
+        if(self.confirm_close()):
             sys.exit()
 
     def cmd_render(self):
@@ -267,10 +266,16 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self,"Failed", "Critical failure happned. Please check console for more info.")
             print(e)
 
+    def new_doc(self):
+        self.prescription.set_data()
+        self.input_attachment.clear()
+        self.load_interface()
+        self.update_instance()
+        self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
+
     def refresh(self):
         self.update_instance()
         self.load_interface_from_instance()
-
 
     def add_attachment(self):
         try:
@@ -294,12 +299,13 @@ class MainWindow(QMainWindow):
         for attach in attachments:
             self.input_attachment.addItem(attach)
 
-    def confirm_exit(self):
-        self.update_instance()
-        return not (self.save_state!=md5(self.prescription.get_json().encode()).hexdigest() and QMessageBox.StandardButton.No==QMessageBox.question(self,"Confirm exit", "Unsaved changes may be lost. Confirm exit?"))
+    def confirm_close(self):
+        self.refresh()
+        flag=(self.save_state==md5(self.prescription.get_json().encode()).hexdigest() or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm action", "Unsaved changes may be lost. Continue?"))
+        return flag
 
     def closeEvent(self, event):
-        if(self.confirm_exit()):
+        if(self.confirm_close()):
             event.accept()
         else:
             event.ignore()
@@ -597,6 +603,6 @@ class MainWindow(QMainWindow):
         if(config["filename"]):
             self.cmd_open(config["filename"])
         else:
-            self.cmd_new()
+            self.new_doc()
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
         self.showMaximized()
