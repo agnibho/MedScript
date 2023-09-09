@@ -1,0 +1,140 @@
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+td {
+	vertical-align: top;
+}
+
+.container {
+	width: 95%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.header, .footer {
+	width: 95%;
+	position: fixed;
+	left: 50%;
+	transform: translateX(-50%);
+	background: white;
+}
+.header {
+	top: 0;
+	border-bottom: 2px solid black;
+}
+
+.footer {
+	bottom: 0;
+	border-top: 2px solid black;
+}
+
+.header, .header-space {
+	height: 200px;
+}
+
+.footer, .footer-space {
+	height: 100px;
+}
+
+.patient {
+	border-bottom: 2px solid black;
+}
+
+.sign {
+	border-top: 2px solid black;
+}
+
+.formatted {
+	white-space: pre-wrap;
+	padding: 2px;
+}
+
+.ltxt {
+	text-align: left;
+}
+
+.rtxt {
+	text-align: right;
+}
+
+.ctxt {
+	text-align: center;
+}
+
+.jtxt {
+	text-align: justify;
+}
+
+.bordered {
+	border: 2px solid black;
+}
+
+.lbordered {
+	border-left: 2px dotted black;
+}
+
+.rbordered {
+	border-right: 2px dotted black;
+}
+
+.tbordered {
+	border-top: 2px solid black;
+}
+
+.bbordered {
+	border-bottom: 2px solid black;
+}
+
+.w0 {
+	width: 0%;
+}
+
+.w10 {
+	width: 10%;
+}
+
+.w20 {
+	width: 20%;
+}
+
+.w25 {
+	width: 25%;
+}
+
+.w30 {
+	width: 30%;
+}
+
+.w40 {
+	width: 40%;
+}
+
+.w50 {
+	width: 50%;
+}
+
+.w60 {
+	width: 60%;
+}
+
+.w70 {
+	width: 70%;
+}
+
+.w75 {
+	width: 75%;
+}
+
+.w80 {
+	width: 80%;
+}
+
+.w90 {
+	width: 90%;
+}
+
+.w100 {
+	width: 100%;
+}

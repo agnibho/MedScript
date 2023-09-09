@@ -6,6 +6,7 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 import csv
+from config import config
 
 class Preset():
 
@@ -21,7 +22,7 @@ class Preset():
         try:
             buf={}
             with open(self.file, "r") as f:
-                reader=csv.reader(f)
+                reader=csv.reader(f, delimiter=config["preset_delimiter"])
                 if skip_first:
                     next(reader)
                 for row in reader:
@@ -30,4 +31,6 @@ class Preset():
                         buf[row[1].strip()]=row[1]
             self.data = buf | self.data
         except FileNotFoundError as e:
-            print(e)
+            print(self.file, e)
+        except IndexError as e:
+            print(self.file, e)

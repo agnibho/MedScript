@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prescription</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <div class="container">
+      <div class="header" style="position:fixed;top:0">
+        <table class="w100">
+          <tr>
+            <td class="w60">
+              <h1>{{prescriber.name}}</h1>
+              <h2>{{prescriber.qualification}}</h2>
+              <h3>{{prescriber.registration}}</h3>
+            </td>
+            <td class="w40">
+              <p class="formatted">{{prescriber.address}}</p>
+              <p>{% if prescriber.contact %}Contact: {{prescriber.contact}}{% endif %}</p>
+              <p class="formatted">{{prescriber.extra}}</p>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="content">
+        <table>
+          <thead><tr><td><div class="header-space"></div></td></tr></thead>
+          <tbody>
+            <tr>
+              <td>
+                <table class="patient">
+                  <tr>
+                    <td class="rtxt" colspan="3"><small>{% if id %}ID: {{id}}{% endif %}</small></td>
+                  </tr>
+                  <tr>
+                    <td><p><strong>Name:</strong> {{name}}</p></td>
+                    <td><p><strong>Age:</strong> {{age}}</p></td>
+                    <td><p><strong>Sex:</strong> {{sex}}</p></td>
+                  </tr>
+                  <tr>
+                    <td colspan="3"><small>{% if address %}Address: {{address}}{% endif %} {% if contact %}Contact: {{contact}}{% endif %}</small></td>
+                  </tr>
+                </table>
+                <table>
+                  <tr>
+                    <td>{% if diagnosis %}<strong>Provisional Diagnosis: {{diagnosis}}</strong>{% endif %}</td>
+                  </tr>
+                  <tr>
+                    <td><p class="formatted jtxt">{{extra}}</p></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot><tr><td><div class="footer-space"></div></td></tr></tfoot>
+        </table>
+      </div>
+      <div class="footer">
+        <table class="w100">
+          <tr><td class="w75">{% if mode %}Consultation: {{mode}}{% endif %}<br>{% if daw %}Dispense as written{% endif %}</td><td class="w25"><br><br></td></tr>
+          <tr><td><p>{{date.strftime("%B %d, %Y %I:%M %p")}}</p></td><td class="sign"><p>Signature</p></td></tr>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

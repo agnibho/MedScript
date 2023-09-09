@@ -29,9 +29,10 @@ default = {
         "prescriber_directory": "prescriber",
         "prescriber": "prescriber",
         "template_directory": "template",
-        "template": "default",
+        "template": "default_prescription",
         "preset_directory": "preset",
-        "preset_newline": "True"
+        "preset_newline": "True",
+        "preset_delimiter": ","
         }
 
 with open(config_file) as conf:

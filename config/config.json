@@ -7,5 +7,6 @@
     "template_directory": "template",
     "template": "default",
     "preset_directory": "preset",
-    "preset_newline": "True"
+    "preset_newline": "True",
+    "preset_delimiter": ","
 }

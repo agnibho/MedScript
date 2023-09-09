@@ -116,6 +116,16 @@ class MainWindow(QMainWindow):
         self.viewbox.open(os.path.join(config["resource"], "help.html"))
         self.viewbox.show()
 
+    def insert_preset_extra(self):
+        try:
+            self.input_extra.insertPlainText(self.preset_extra.data[self.input_extra_preset.currentText()])
+        except KeyError:
+            self.input_extra.insertPlainText(self.input_extra_preset.currentText())
+        finally:
+            self.input_extra_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_extra.insertPlainText("\n")
+
     def insert_preset_note(self):
         try:
             self.input_note.insertPlainText(self.preset_note.data[self.input_note_preset.currentText()])
@@ -306,6 +316,7 @@ class MainWindow(QMainWindow):
         icon_render=QIcon(os.path.join(config["resource"], "icon_render.svg"))
         icon_refresh=QIcon(os.path.join(config["resource"], "icon_refresh.svg"))
 
+        self.preset_extra=Preset(os.path.join(config["preset_directory"], "certify.csv"))
         self.preset_note=Preset(os.path.join(config["preset_directory"], "note.csv"))
         self.preset_report=Preset(os.path.join(config["preset_directory"], "report.csv"))
         self.preset_advice=Preset(os.path.join(config["preset_directory"], "advice.csv"))
@@ -368,7 +379,10 @@ class MainWindow(QMainWindow):
         toolbar.addAction(action_render2)
         toolbar.addSeparator()
         self.input_template=QComboBox(self)
-        self.input_template.addItems(os.listdir(config["template_directory"]))
+        templates=os.listdir(config["template_directory"])
+        templates.remove(os.path.basename(config["template"]))
+        templates.insert(0, os.path.basename(config["template"]))
+        self.input_template.addItems(templates)
         toolbar.addWidget(self.input_template)
         spacer=QWidget(self)
         spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -380,6 +394,7 @@ class MainWindow(QMainWindow):
 
         tab_info=QWidget(self)
         layout_info=QFormLayout(tab_info)
+        layout_info2=QHBoxLayout()
         self.input_date=QDateTimeEdit(self)
         self.input_date.setDisplayFormat("MMMM dd, yyyy hh:mm a")
         layout_info.addRow("Date", self.input_date)
@@ -400,6 +415,18 @@ class MainWindow(QMainWindow):
         self.input_diagnosis=QLineEdit(self)
         layout_info.addRow("Diagnosis", self.input_diagnosis)
         self.input_extra=QTextEdit(self)
+        self.input_extra_preset=QComboBox(self)
+        self.input_extra_preset.addItems(self.preset_extra.data.keys())
+        self.input_extra_preset.setCurrentIndex(-1)
+        self.input_extra_preset.setEditable(True)
+        self.input_extra_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_extra_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
+        self.input_extra_preset.setPlaceholderText("Select a preset")
+        input_extra_preset_btn=QPushButton("Insert")
+        input_extra_preset_btn.clicked.connect(self.insert_preset_extra)
+        layout_info2.addWidget(self.input_extra_preset, 2)
+        layout_info2.addWidget(input_extra_preset_btn, 1)
+        layout_info.addRow("Certify", layout_info2)
         layout_info.addRow("Extra", self.input_extra)
         self.input_mode=QComboBox(self)
         self.input_mode.addItems(["In-Person", "Tele-Consultation", "Other"])
