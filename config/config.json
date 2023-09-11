@@ -8,5 +8,7 @@
     "template": "default",
     "preset_directory": "preset",
     "preset_newline": "True",
-    "preset_delimiter": ","
+    "preset_delimiter": ",",
+    "certificate": "",
+    "private_key": ""
 }

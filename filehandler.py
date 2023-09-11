@@ -8,6 +8,7 @@
 import os, shutil, glob, tempfile, json
 from zipfile import ZipFile
 from config import config
+from signature import Signature
 
 class FileHandler():
 
@@ -56,3 +57,41 @@ class FileHandler():
             self.file=file
         with ZipFile(self.file, "r", strict_timestamps=False) as source:
             source.extractall(self.directory.name)
+
+    #def hash(self):
+    #    allfiles=[]
+    #    allhash=""
+    #    #with open(os.path.join(self.directory.name, "prescription.json"), "rb") as f:
+    #    #    print(sha256(f.read()).hexdigest())
+    #    for root, dirs, files in os.walk(self.directory.name):
+    #        for file in files:
+    #            allfiles.append(os.path.join(root, file))
+    #    try:
+    #        allfiles.remove(os.path.join(self.directory.name, "certificate.pem"))
+    #        allfiles.remove(os.path.join(self.directory.name, "signature.p7m"))
+    #    except ValueError as e:
+    #        pass
+    #    for file in allfiles:
+    #        with open(file, "rb") as f:
+    #            allhash=allhash+sha256(f.read()).hexdigest()
+    #    return(allhash)
+
+    def sign(self):
+        with open(os.path.join(self.directory.name, "prescription.json"), "r") as file:
+            data=file.read()
+        signature=Signature.sign(data, certificate=config["certificate"], privkey=config["private_key"])
+        with open(os.path.join(self.directory.name, "signature.p7m"), "w") as file:
+            file.write(signature)
+        shutil.copyfile(config["certificate"], os.path.join(self.directory.name, "certificate.pem"))
+
+    def verify(self):
+        with open(os.path.join(self.directory.name, "prescription.json"), "r") as file:
+            data=file.read()
+        try:
+            with open(os.path.join(self.directory.name, "certificate.pem")) as file:
+                certificate=file.read()
+            with open(os.path.join(self.directory.name, "signature.p7m")) as file:
+                signature=file.read()
+            return Signature.verify(data, certificate=os.path.join(self.directory.name, "certificate.pem"), signature=os.path.join(self.directory.name, "signature.p7m"))
+        except FileNotFoundError as e:
+            print(e)

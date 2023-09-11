@@ -93,7 +93,42 @@ class MainWindow(QMainWindow):
             self.signal_view.emit(target)
             self.renderbox.showMaximized()
         else:
-           QMessageBox.information(self,"Save first", "Please save the file before rendering.")
+           QMessageBox.information(self, "Save first", "Please save the file before rendering.")
+
+    def cmd_sign(self):
+        self.update_instance()
+        if(self.save_state==md5(self.prescription.get_json().encode()).hexdigest()):
+            try:
+                self.current_file.sign()
+                self.cmd_save()
+            except FileNotFoundError as e:
+                print(e)
+                QMessageBox.information(self, "Save first", "Please save the file before signing.")
+            except TypeError as e:
+                print(e)
+                QMessageBox.information(self, "Configure", "Please add valid key and certificate to the config file.")
+            except Exception as e:
+                print(e)
+                QMessageBox.information(self, "Failed", "Failed to sign.")
+        else:
+           QMessageBox.information(self, "Save first", "Please save the file before signing.")
+
+    def cmd_verify(self):
+        try:
+            result=self.current_file.verify()
+            if result is False:
+               QMessageBox.critical(self, "Verification failed", "Signature is invalid.")
+            elif result is None:
+                QMessageBox.warning(self, "No Siganture", "No signature was found.")
+            else:
+                print(result)
+                QMessageBox.information(self, "Valid signature", "Valid signature found with the following information:\n"+result)
+        except FileNotFoundError as e:
+            print(e)
+            QMessageBox.warning(self, "No Siganture", "No signature was found.")
+        except Exception as e:
+            print(e)
+            QMessageBox.warning(self, "Failed", "Failed to verify.")
 
     def cmd_prescriber(self):
         self.edit_prescriber.show()
@@ -352,6 +387,10 @@ class MainWindow(QMainWindow):
         action_render2=QAction(icon_render, "Render", self)
         action_render.triggered.connect(self.cmd_render)
         action_render2.triggered.connect(self.cmd_render)
+        action_sign=QAction("Sign", self)
+        action_sign.triggered.connect(self.cmd_sign)
+        action_verify=QAction("Verify", self)
+        action_verify.triggered.connect(self.cmd_verify)
         action_prescriber=QAction("Prescriber", self)
         action_prescriber.triggered.connect(self.cmd_prescriber)
         action_switch=QAction("Switch", self)
@@ -370,6 +409,8 @@ class MainWindow(QMainWindow):
         menu_file.addAction(action_quit)
         menu_prepare=menubar.addMenu("Prepare")
         menu_prepare.addAction(action_render)
+        menu_prepare.addAction(action_sign)
+        menu_prepare.addAction(action_verify)
         menu_prepare.addAction(action_refresh)
         menu_prepare.addAction(action_prescriber)
         menu_prepare.addAction(action_switch)

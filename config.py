@@ -32,7 +32,9 @@ default = {
         "template": "default_prescription",
         "preset_directory": "preset",
         "preset_newline": "True",
-        "preset_delimiter": ","
+        "preset_delimiter": ",",
+        "private_key": "",
+        "certificate": ""
         }
 
 with open(config_file) as conf:
