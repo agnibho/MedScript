@@ -138,9 +138,11 @@ class MainWindow(QMainWindow):
         self.refresh()
 
     def cmd_switch(self):
-        print("switch")
-        self.prescription.reload_prescriber(QFileDialog.getOpenFileName(self, "Open File", config["prescriber_directory"], "JSON (*.json);; All Files (*)")[0])
-        self.refresh()
+        try:
+            self.prescription.reload_prescriber(QFileDialog.getOpenFileName(self, "Open File", config["prescriber_directory"], "JSON (*.json);; All Files (*)")[0])
+            self.refresh()
+        except FileNotFoundError as e:
+            print(e)
 
     def cmd_about(self):
         self.viewbox.open(os.path.join(config["resource"], "about.html"))
