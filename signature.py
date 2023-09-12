@@ -11,18 +11,17 @@ from hashlib import sha256
 
 class Signature():
 
-    def sign(data, certificate, privkey):
-        try:
-            hash=sha256(data.encode()).hexdigest()
-            smime=SMIME.SMIME()
-            smime.load_key(privkey, certificate)
-            p7=smime.sign(BIO.MemoryBuffer(hash.encode()), SMIME.PKCS7_DETACHED)
-            out=BIO.MemoryBuffer()
-            smime.write(out, p7)
-            return(out.read().decode())
-        except Exception as e:
-            print(e)
-            return None
+    def sign(data, certificate, privkey, password=""):
+        def get_password(*args):
+            print(password)
+            return bytes(password, "ascii")
+        hash=sha256(data.encode()).hexdigest()
+        smime=SMIME.SMIME()
+        smime.load_key(privkey, certificate, get_password)
+        p7=smime.sign(BIO.MemoryBuffer(hash.encode()), SMIME.PKCS7_DETACHED)
+        out=BIO.MemoryBuffer()
+        smime.write(out, p7)
+        return(out.read().decode())
 
     def verify(data, certificate, signature):
         hash=sha256(data.encode()).hexdigest()

@@ -7,10 +7,13 @@
 
 import os, sys, datetime, dateutil.parser, shutil
 from PyQt6.QtCore import Qt, QDateTime, QSize, pyqtSignal
-from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QCompleter, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QInputDialog, QCompleter, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
+from M2Crypto.EVP import EVPError
+from M2Crypto.BIO import BIOError
+from M2Crypto.SMIME import SMIME_Error
 from config import config
 from prescription import Prescription
 from renderer import Renderer
@@ -88,29 +91,45 @@ class MainWindow(QMainWindow):
             sys.exit()
 
     def cmd_render(self):
-        self.update_instance()
+        self.refresh()
         if(self.save_state==md5(self.prescription.get_json().encode()).hexdigest()):
-            target=self.renderer.render(self.current_file.directory.name)
-            self.signal_view.emit(target)
-            self.renderbox.showMaximized()
+            try:
+                target=self.renderer.render(self.current_file.directory.name)
+                self.signal_view.emit(target)
+                self.renderbox.showMaximized()
+            except FileNotFoundError as e:
+                print(e)
+                QMessageBox.information(self, "Save first", "Please save the file before rendering.")
+
         else:
            QMessageBox.information(self, "Save first", "Please save the file before rendering.")
 
     def cmd_sign(self):
-        self.update_instance()
+        self.refresh()
         if(self.save_state==md5(self.prescription.get_json().encode()).hexdigest()):
-            try:
-                self.current_file.sign()
-                self.cmd_save()
-            except FileNotFoundError as e:
-                print(e)
-                QMessageBox.information(self, "Save first", "Please save the file before signing.")
-            except TypeError as e:
-                print(e)
-                QMessageBox.information(self, "Configure", "Please add valid key and certificate to the config file.")
-            except Exception as e:
-                print(e)
-                QMessageBox.information(self, "Failed", "Failed to sign.")
+            password, ok=QInputDialog.getText(self, "Enter password", "Private key password", QLineEdit.EchoMode.Password)
+            if(ok):
+                try:
+                    self.current_file.sign(password)
+                    self.cmd_save()
+                except FileNotFoundError as e:
+                    print(e)
+                    QMessageBox.information(self, "Save first", "Please save the file before signing.")
+                except TypeError as e:
+                    print(e)
+                    QMessageBox.information(self, "Configure", "Please add valid key and certificate to the config file.")
+                except EVPError as e:
+                    print(e)
+                    QMessageBox.information(self, "Check password", "Failed to load key. Please check if password is correct.")
+                except BIOError as e:
+                    print(e)
+                    QMessageBox.information(self, "Not found", "Certifcate and/or key not found.")
+                except SMIME_Error as e:
+                    print(e)
+                    QMessageBox.information(self, "Failed to load", "Failed to sign. Please check if certificate and key match.")
+                except Exception as e:
+                    print(e)
+                    QMessageBox.information(self, "Failed", "Failed to sign.")
         else:
            QMessageBox.information(self, "Save first", "Please save the file before signing.")
 

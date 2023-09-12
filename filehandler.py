@@ -61,10 +61,10 @@ class FileHandler():
         with ZipFile(self.file, "r", strict_timestamps=False) as source:
             source.extractall(self.directory.name)
 
-    def sign(self):
+    def sign(self, password=""):
         with open(os.path.join(self.directory.name, "prescription.json"), "r") as file:
             data=file.read()
-        signature=Signature.sign(data, certificate=config["certificate"], privkey=config["private_key"])
+        signature=Signature.sign(data, certificate=config["certificate"], privkey=config["private_key"], password=password)
         with open(os.path.join(self.directory.name, "signature.p7m"), "w") as file:
             file.write(signature)
         shutil.copyfile(config["certificate"], os.path.join(self.directory.name, "certificate.pem"))
