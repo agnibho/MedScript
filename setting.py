@@ -8,7 +8,6 @@
 from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QCheckBox, QStatusBar, QMessageBox, QFileDialog
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import pyqtSignal
-from copy import deepcopy
 import os, json
 from config import config, config_file
 
@@ -33,8 +32,7 @@ class EditConfiguration(QMainWindow):
 
     def load(self):
         try:
-            self.file=self.config["filename"]
-            self.statusbar.showMessage(self.file)
+            self.statusbar.showMessage(config_file)
             self.input_directory.setText(self.config["data_directory"])
             self.input_prescriber.setText(self.config["prescriber"])
             self.input_newline.setChecked(bool(self.config["preset_newline"]))
@@ -65,7 +63,8 @@ class EditConfiguration(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.config=deepcopy(config)
+        with open(config_file) as f:
+            self.config=json.loads(f.read())
 
         self.setWindowTitle("MedScript")
         self.setGeometry(200, 200, 300, 200)
