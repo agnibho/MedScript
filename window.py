@@ -19,7 +19,7 @@ from prescription import Prescription
 from renderer import Renderer
 from filehandler import FileHandler
 from renderbox import RenderBox
-from setting import EditPrescriber
+from setting import EditConfiguration, EditPrescriber
 from viewbox import ViewBox
 from preset import Preset
 
@@ -149,6 +149,9 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(e)
             QMessageBox.warning(self, "Failed", "Failed to verify.")
+
+    def cmd_configuration(self):
+        self.edit_configuration.show()
 
     def cmd_prescriber(self):
         self.edit_prescriber.show()
@@ -416,6 +419,8 @@ class MainWindow(QMainWindow):
         action_sign.triggered.connect(self.cmd_sign)
         action_verify=QAction("Verify", self)
         action_verify.triggered.connect(self.cmd_verify)
+        action_configuration=QAction("Configuration", self)
+        action_configuration.triggered.connect(self.cmd_configuration)
         action_prescriber=QAction("Settings", self)
         action_prescriber.triggered.connect(self.cmd_prescriber)
         action_switch=QAction("Switch", self)
@@ -437,9 +442,10 @@ class MainWindow(QMainWindow):
         menu_prepare.addAction(action_refresh)
         menu_prepare.addAction(action_sign)
         menu_prepare.addAction(action_verify)
-        menu_prescriber=menubar.addMenu("Prescriber")
-        menu_prescriber.addAction(action_prescriber)
-        menu_prescriber.addAction(action_switch)
+        menu_settings=menubar.addMenu("Settings")
+        menu_settings.addAction(action_configuration)
+        menu_settings.addAction(action_prescriber)
+        menu_settings.addAction(action_switch)
         menu_help=menubar.addMenu("Help")
         menu_help.addAction(action_about)
         menu_help.addAction(action_help)
@@ -663,6 +669,7 @@ class MainWindow(QMainWindow):
 
         self.renderbox=RenderBox()
         self.signal_view.connect(self.renderbox.update)
+        self.edit_configuration=EditConfiguration()
         self.edit_prescriber=EditPrescriber()
         self.edit_prescriber.signal_save.connect(self.cmd_prescriber_reload)
         self.viewbox=ViewBox()
