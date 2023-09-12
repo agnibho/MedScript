@@ -133,6 +133,11 @@ class MainWindow(QMainWindow):
         else:
            QMessageBox.information(self, "Save first", "Please save the file before signing.")
 
+    def cmd_unsign(self):
+        self.current_file.delete_sign()
+        self.cmd_save()
+        self.refresh()
+
     def cmd_verify(self):
         try:
             result=self.current_file.verify()
@@ -417,6 +422,8 @@ class MainWindow(QMainWindow):
         action_render2.triggered.connect(self.cmd_render)
         action_sign=QAction("Sign", self)
         action_sign.triggered.connect(self.cmd_sign)
+        action_unsign=QAction("Unsign", self)
+        action_unsign.triggered.connect(self.cmd_unsign)
         action_verify=QAction("Verify", self)
         action_verify.triggered.connect(self.cmd_verify)
         action_configuration=QAction("Configuration", self)
@@ -441,6 +448,7 @@ class MainWindow(QMainWindow):
         menu_prepare.addAction(action_render)
         menu_prepare.addAction(action_refresh)
         menu_prepare.addAction(action_sign)
+        menu_prepare.addAction(action_unsign)
         menu_prepare.addAction(action_verify)
         menu_settings=menubar.addMenu("Settings")
         menu_settings.addAction(action_configuration)

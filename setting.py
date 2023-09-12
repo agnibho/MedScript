@@ -24,7 +24,7 @@ class EditConfiguration(QMainWindow):
     def select_key(self):
         f=QFileDialog.getOpenFileName(self, "Select Private Key", os.path.expanduser("~"), "PEM (*.pem);; All Files (*)")[0]
         if(f):
-            self.input_prescriber.setText(f)
+            self.input_key.setText(f)
     def select_certificate(self):
         f=QFileDialog.getOpenFileName(self, "Select Certificate", os.path.expanduser("~"), "PEM (*.pem);; All Files (*)")[0]
         if(f):

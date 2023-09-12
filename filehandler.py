@@ -81,5 +81,12 @@ class FileHandler():
         except FileNotFoundError as e:
             print(e)
 
+    def delete_sign(self):
+        try:
+            os.unlink(os.path.join(self.directory.name, "certificate.pem"))
+            os.unlink(os.path.join(self.directory.name, "signature.p7m"))
+        except Exception as e:
+            raise(e)
+
     def is_signed(self):
         return(os.path.exists(os.path.join(self.directory.name, "certificate.pem")) and (os.path.exists(os.path.join(self.directory.name, "signature.p7m"))))
