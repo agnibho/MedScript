@@ -44,21 +44,21 @@ class EditConfiguration(QMainWindow):
             raise(e)
 
     def save(self):
-        try:
-            self.config["data_directory"]=self.input_directory.text()
-            self.config["prescriber"]=self.input_prescriber.text()
-            self.config["preset_newline"]=self.input_newline.isChecked()
-            self.config["preset_delimiter"]=self.input_delimiter.currentText()
-            self.config["private_key"]=self.input_key.text()
-            self.config["certificate"]=self.input_certificate.text()
-            with open(config_file, "w") as f:
-                f.write(json.dumps(self.config, indent=4))
-            QMessageBox.information(self,"Saved", "Configuration saved. Please restart MedScript.")
-            self.hide()
-        except Exception as e:
-            QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
-            raise(e)
-
+        if(QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Save", "This action will overwrite the previous configuration. Continue?")):
+            try:
+                self.config["data_directory"]=self.input_directory.text()
+                self.config["prescriber"]=self.input_prescriber.text()
+                self.config["preset_newline"]=self.input_newline.isChecked()
+                self.config["preset_delimiter"]=self.input_delimiter.currentText()
+                self.config["private_key"]=self.input_key.text()
+                self.config["certificate"]=self.input_certificate.text()
+                with open(config_file, "w") as f:
+                    f.write(json.dumps(self.config, indent=4))
+                QMessageBox.information(self,"Saved", "Configuration saved. Please restart MedScript.")
+                self.hide()
+            except Exception as e:
+                QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
+                raise(e)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -104,9 +104,14 @@ class EditConfiguration(QMainWindow):
         layout_certificate.addWidget(self.input_certificate)
         layout_certificate.addWidget(btn_certificate)
         layout.addRow("X509 Certificate", layout_certificate)
-        button=QPushButton("Save")
-        button.clicked.connect(self.save)
-        layout.addWidget(button)
+        button_save=QPushButton("Save")
+        button_save.clicked.connect(self.save)
+        button_reset=QPushButton("Reset")
+        button_reset.clicked.connect(self.load)
+        layout_btn=QHBoxLayout()
+        layout_btn.addWidget(button_save)
+        layout_btn.addWidget(button_reset)
+        layout.addRow("", layout_btn)
 
         self.statusbar=QStatusBar()
         self.setStatusBar(self.statusbar)
@@ -140,22 +145,22 @@ class EditPrescriber(QMainWindow):
             raise(e)
 
     def save(self):
-        try:
-            self.prescriber["name"]=self.input_name.text()
-            self.prescriber["qualification"]=self.input_qualification.text()
-            self.prescriber["registration"]=self.input_registration.text()
-            self.prescriber["address"]=self.input_address.toPlainText()
-            self.prescriber["contact"]=self.input_contact.text()
-            self.prescriber["extra"]=self.input_extra.toPlainText()
-            with open(self.file, "w") as f:
-                f.write(json.dumps(self.prescriber, indent=4))
-            QMessageBox.information(self,"Saved", "Information saved.")
-            self.signal_save.emit(self.file)
-            self.hide()
-        except Exception as e:
-            QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
-            raise(e)
-
+        if(QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Save", "This action will overwrite the previous information. Continue?")):
+            try:
+                self.prescriber["name"]=self.input_name.text()
+                self.prescriber["qualification"]=self.input_qualification.text()
+                self.prescriber["registration"]=self.input_registration.text()
+                self.prescriber["address"]=self.input_address.toPlainText()
+                self.prescriber["contact"]=self.input_contact.text()
+                self.prescriber["extra"]=self.input_extra.toPlainText()
+                with open(self.file, "w") as f:
+                    f.write(json.dumps(self.prescriber, indent=4))
+                QMessageBox.information(self,"Saved", "Information saved.")
+                self.signal_save.emit(self.file)
+                self.hide()
+            except Exception as e:
+                QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
+                raise(e)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -177,9 +182,14 @@ class EditPrescriber(QMainWindow):
         layout.addRow("Contact", self.input_contact)
         self.input_extra=QTextEdit(self)
         layout.addRow("Extra", self.input_extra)
-        button=QPushButton("Save")
-        button.clicked.connect(self.save)
-        layout.addWidget(button)
+        button_save=QPushButton("Save")
+        button_save.clicked.connect(self.save)
+        button_reset=QPushButton("Reset")
+        button_reset.clicked.connect(self.load)
+        layout_btn=QHBoxLayout()
+        layout_btn.addWidget(button_save)
+        layout_btn.addWidget(button_reset)
+        layout.addRow("", layout_btn)
 
         self.statusbar=QStatusBar()
         self.setStatusBar(self.statusbar)

@@ -428,7 +428,7 @@ class MainWindow(QMainWindow):
         action_verify.triggered.connect(self.cmd_verify)
         action_configuration=QAction("Configuration", self)
         action_configuration.triggered.connect(self.cmd_configuration)
-        action_prescriber=QAction("Settings", self)
+        action_prescriber=QAction("Prescriber", self)
         action_prescriber.triggered.connect(self.cmd_prescriber)
         action_switch=QAction("Switch", self)
         action_switch.triggered.connect(self.cmd_switch)
