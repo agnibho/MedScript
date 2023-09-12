@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
     def cmd_open(self, file=None):
         if(self.confirm_close()):
             try:
+                self.current_file.reset()
                 if(file):
                     self.current_file.set_file(file)
                 else:
@@ -224,7 +225,9 @@ class MainWindow(QMainWindow):
 
     def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
         try:
-            self.statusbar.showMessage(self.current_file.file)
+            file_msg=self.current_file.file if self.current_file.file else "New file"
+            sign_msg="(signed)" if self.current_file.is_signed() else ""
+            self.statusbar.showMessage(file_msg+" "+sign_msg)
             if date is None:
                 d=QDateTime.currentDateTime()
             else:
@@ -304,6 +307,7 @@ class MainWindow(QMainWindow):
             print(e)
 
     def new_doc(self):
+        self.current_file.reset()
         self.prescription.set_data()
         self.input_attachment.clear()
         self.load_interface()
@@ -393,7 +397,7 @@ class MainWindow(QMainWindow):
         action_sign.triggered.connect(self.cmd_sign)
         action_verify=QAction("Verify", self)
         action_verify.triggered.connect(self.cmd_verify)
-        action_prescriber=QAction("Prescriber", self)
+        action_prescriber=QAction("Settings", self)
         action_prescriber.triggered.connect(self.cmd_prescriber)
         action_switch=QAction("Switch", self)
         action_switch.triggered.connect(self.cmd_switch)
@@ -411,11 +415,12 @@ class MainWindow(QMainWindow):
         menu_file.addAction(action_quit)
         menu_prepare=menubar.addMenu("Prepare")
         menu_prepare.addAction(action_render)
+        menu_prepare.addAction(action_refresh)
         menu_prepare.addAction(action_sign)
         menu_prepare.addAction(action_verify)
-        menu_prepare.addAction(action_refresh)
-        menu_prepare.addAction(action_prescriber)
-        menu_prepare.addAction(action_switch)
+        menu_prescriber=menubar.addMenu("Prescriber")
+        menu_prescriber.addAction(action_prescriber)
+        menu_prescriber.addAction(action_switch)
         menu_help=menubar.addMenu("Help")
         menu_help.addAction(action_about)
         menu_help.addAction(action_help)
