@@ -355,7 +355,12 @@ class MainWindow(QMainWindow):
             print(e)
 
     def remove_attachment(self):
-        self.input_attachment.takeItem(self.input_attachment.currentRow())
+        index=self.input_attachment.currentRow()
+        if(index>=0):
+            self.current_file.delete_attachment(self.input_attachment.item(index).text())
+            self.input_attachment.takeItem(index)
+        else:
+            QMessageBox.warning(self, "Select item", "Please select an attachment to remove.")
 
     def save_attachment(self):
         try:
