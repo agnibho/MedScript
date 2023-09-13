@@ -253,7 +253,7 @@ class MainWindow(QMainWindow):
     def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
         try:
             file_msg=self.current_file.file if self.current_file.file else "New file"
-            sign_msg="(signed)" if self.current_file.is_signed() else ""
+            sign_msg="(signed)" if config["smime"] and self.current_file.is_signed() else ""
             self.statusbar.showMessage(file_msg+" "+sign_msg)
             if date is None:
                 d=QDateTime.currentDateTime()
@@ -447,9 +447,10 @@ class MainWindow(QMainWindow):
         menu_prepare=menubar.addMenu("Prepare")
         menu_prepare.addAction(action_render)
         menu_prepare.addAction(action_refresh)
-        menu_prepare.addAction(action_sign)
-        menu_prepare.addAction(action_unsign)
-        menu_prepare.addAction(action_verify)
+        if(config["smime"]):
+            menu_prepare.addAction(action_sign)
+            menu_prepare.addAction(action_unsign)
+            menu_prepare.addAction(action_verify)
         menu_settings=menubar.addMenu("Settings")
         menu_settings.addAction(action_configuration)
         menu_settings.addAction(action_prescriber)

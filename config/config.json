@@ -7,8 +7,10 @@
     "template_directory": "template",
     "template": "default",
     "preset_directory": "preset",
-    "preset_newline": "True",
+    "preset_newline": true,
     "preset_delimiter": ",",
+    "smime": false,
+    "root_bundle": "",
     "certificate": "",
     "private_key": ""
 }

@@ -29,6 +29,10 @@ class EditConfiguration(QMainWindow):
         f=QFileDialog.getOpenFileName(self, "Select Certificate", os.path.expanduser("~"), "PEM (*.pem);; All Files (*)")[0]
         if(f):
             self.input_certificate.setText(f)
+    def select_root(self):
+        f=QFileDialog.getOpenFileName(self, "Select Root Bundle", os.path.expanduser("~"), "PEM (*.pem);; All Files (*)")[0]
+        if(f):
+            self.input_root.setText(f)
 
     def load(self):
         try:
@@ -37,8 +41,10 @@ class EditConfiguration(QMainWindow):
             self.input_prescriber.setText(self.config["prescriber"])
             self.input_newline.setChecked(bool(self.config["preset_newline"]))
             self.input_delimiter.setCurrentText(self.config["preset_delimiter"])
+            self.input_smime.setChecked(bool(self.config["smime"]))
             self.input_key.setText(self.config["private_key"])
             self.input_certificate.setText(self.config["certificate"])
+            self.input_root.setText(self.config["root_bundle"])
         except Exception as e:
             QMessageBox.critical(self,"Failed to load", "Failed to load the data into the application.")
             raise(e)
@@ -50,8 +56,10 @@ class EditConfiguration(QMainWindow):
                 self.config["prescriber"]=self.input_prescriber.text()
                 self.config["preset_newline"]=self.input_newline.isChecked()
                 self.config["preset_delimiter"]=self.input_delimiter.currentText()
+                self.config["smime"]=self.input_smime.isChecked()
                 self.config["private_key"]=self.input_key.text()
                 self.config["certificate"]=self.input_certificate.text()
+                self.config["root_bundle"]=self.input_root.text()
                 with open(config_file, "w") as f:
                     f.write(json.dumps(self.config, indent=4))
                 QMessageBox.information(self,"Saved", "Configuration saved. Please restart MedScript.")
@@ -90,6 +98,8 @@ class EditConfiguration(QMainWindow):
         self.input_delimiter=QComboBox(self)
         self.input_delimiter.addItems([",", ";"])
         layout.addRow("Preset Delimiter", self.input_delimiter)
+        self.input_smime=QCheckBox("Enable digital signature (experimental)", self)
+        layout.addRow("S/MIME", self.input_smime)
         self.input_key=QLineEdit(self)
         btn_key=QPushButton("...", self)
         btn_key.clicked.connect(self.select_key)
@@ -104,6 +114,13 @@ class EditConfiguration(QMainWindow):
         layout_certificate.addWidget(self.input_certificate)
         layout_certificate.addWidget(btn_certificate)
         layout.addRow("X509 Certificate", layout_certificate)
+        self.input_root=QLineEdit(self)
+        btn_root=QPushButton("...", self)
+        btn_root.clicked.connect(self.select_root)
+        layout_root=QHBoxLayout()
+        layout_root.addWidget(self.input_root)
+        layout_root.addWidget(btn_root)
+        layout.addRow("Root Bundle", layout_root)
         button_save=QPushButton("Save")
         button_save.clicked.connect(self.save)
         button_reset=QPushButton("Reset")
