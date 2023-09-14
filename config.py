@@ -7,7 +7,7 @@
 
 import argparse, json, os, sys, shutil
 
-default_config_file=os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "config", "config.json"))
+default_config_file=os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "data", "config.json"))
 
 real_dir=os.path.dirname(os.path.realpath(sys.argv[0]))
 
@@ -23,7 +23,6 @@ else:
     config_file=args.config
 
 default = {
-        "config_directory": "config",
         "data_directory": "data",
         "document_directory": "document",
         "prescriber_directory": "prescriber",
@@ -57,11 +56,11 @@ if(args.prescriber is None):
     if (not config["prescriber"].endswith(".json")): config["prescriber"]=config["prescriber"]+".json"
 else:
     if(not os.path.isabs(args.prescriber)):
-        args.prescriber=os.path.join(config["config_directory"], args.prescriber)
+        args.prescriber=os.path.join(config["prescriber_directory"], args.prescriber)
     if(os.path.isfile(args.prescriber)):
         config["prescriber"]=args.prescriber
     else:
-        config["prescriber"]=os.path.join(config["config_directory"], config["prescriber"])
+        config["prescriber"]=os.path.join(config["prescriber_directory"], config["prescriber"])
         print("File "+args.prescriber+" not found.")
 
 os.makedirs(config["data_directory"], exist_ok=True)

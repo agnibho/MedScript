@@ -1,6 +1,5 @@
 {
-    "config_directory": "config",
-    "data_directory": "data",
+    "data_directory": "~/MedScript",
     "document_directory": "document",
     "prescriber_directory": "prescriber",
     "prescriber": "prescriber",
@@ -9,6 +8,7 @@
     "preset_directory": "preset",
     "preset_newline": true,
     "preset_delimiter": ",",
+    "markdown": false,
     "smime": false,
     "root_bundle": "",
     "certificate": "",
