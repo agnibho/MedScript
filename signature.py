@@ -5,10 +5,14 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-from M2Crypto import BIO, Rand, SMIME, X509
-from config import config
+from config import config, sign_available
 from hashlib import sha256
 from datetime import datetime
+try:
+    from M2Crypto import BIO, Rand, SMIME, X509
+except Exception as e:
+    print(e)
+    sign_available=False
 
 class Signature():
 

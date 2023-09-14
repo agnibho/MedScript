@@ -11,10 +11,8 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButt
 from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
-from M2Crypto.EVP import EVPError
-from M2Crypto.BIO import BIOError
-from M2Crypto.SMIME import SMIME_Error
-from config import config
+
+from config import config, sign_available
 from prescription import Prescription
 from renderer import Renderer
 from filehandler import FileHandler
@@ -22,6 +20,13 @@ from renderbox import RenderBox
 from setting import EditConfiguration, EditPrescriber
 from viewbox import ViewBox
 from preset import Preset
+try:
+    from M2Crypto.EVP import EVPError
+    from M2Crypto.BIO import BIOError
+    from M2Crypto.SMIME import SMIME_Error
+except Exception as e:
+    print(e)
+    sign_available=False
 
 class MainWindow(QMainWindow):
 
@@ -110,26 +115,29 @@ class MainWindow(QMainWindow):
             password, ok=QInputDialog.getText(self, "Enter password", "Private key password", QLineEdit.EchoMode.Password)
             if(ok):
                 try:
-                    self.current_file.sign(password)
-                    self.cmd_save()
-                except FileNotFoundError as e:
-                    print(e)
-                    QMessageBox.information(self, "Save first", "Please save the file before signing.")
-                except TypeError as e:
-                    print(e)
-                    QMessageBox.information(self, "Configure", "Please add valid key and certificate to the config file.")
-                except EVPError as e:
-                    print(e)
-                    QMessageBox.information(self, "Check password", "Failed to load key. Please check if password is correct.")
-                except BIOError as e:
-                    print(e)
-                    QMessageBox.information(self, "Not found", "Certifcate and/or key not found.")
-                except SMIME_Error as e:
-                    print(e)
-                    QMessageBox.information(self, "Failed to load", "Failed to sign. Please check if certificate and key match.")
+                    try:
+                        self.current_file.sign(password)
+                        self.cmd_save()
+                    except FileNotFoundError as e:
+                        print(e)
+                        QMessageBox.information(self, "Save first", "Please save the file before signing.")
+                    except TypeError as e:
+                        print(e)
+                        QMessageBox.information(self, "Configure", "Please add valid key and certificate to the config file.")
+                    except EVPError as e:
+                        print(e)
+                        QMessageBox.information(self, "Check password", "Failed to load key. Please check if password is correct.")
+                    except BIOError as e:
+                        print(e)
+                        QMessageBox.information(self, "Not found", "Certifcate and/or key not found.")
+                    except SMIME_Error as e:
+                        print(e)
+                        QMessageBox.information(self, "Failed to load", "Failed to sign. Please check if certificate and key match.")
+                    except Exception as e:
+                        print(e)
+                        QMessageBox.information(self, "Failed", "Failed to sign.")
                 except Exception as e:
                     print(e)
-                    QMessageBox.information(self, "Failed", "Failed to sign.")
         else:
            QMessageBox.information(self, "Save first", "Please save the file before signing.")
 
@@ -253,7 +261,7 @@ class MainWindow(QMainWindow):
     def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
         try:
             file_msg=self.current_file.file if self.current_file.file else "New file"
-            sign_msg="(signed)" if config["smime"] and self.current_file.is_signed() else ""
+            sign_msg="(signed)" if sign_available and config["smime"] and self.current_file.is_signed() else ""
             self.statusbar.showMessage(file_msg+" "+sign_msg)
             if date is None:
                 d=QDateTime.currentDateTime()
@@ -386,6 +394,8 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        global sign_available
+
         self.setWindowTitle("MedScript")
         self.setGeometry(100, 100, 600, 400)
         self.setWindowIcon(QIcon(os.path.join(config["resource"], "icon_medscript.ico")))
@@ -452,7 +462,7 @@ class MainWindow(QMainWindow):
         menu_prepare=menubar.addMenu("Prepare")
         menu_prepare.addAction(action_render)
         menu_prepare.addAction(action_refresh)
-        if(config["smime"]):
+        if(sign_available and config["smime"]):
             menu_prepare.addAction(action_sign)
             menu_prepare.addAction(action_unsign)
             menu_prepare.addAction(action_verify)
@@ -483,7 +493,6 @@ class MainWindow(QMainWindow):
         self.label_prescriber=QLabel(self)
         toolbar.addWidget(self.label_prescriber)
         self.addToolBar(toolbar)
-
 
         tab_info=QWidget(self)
         layout_info=QFormLayout(tab_info)
