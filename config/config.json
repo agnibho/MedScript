@@ -9,6 +9,7 @@
     "preset_directory": "preset",
     "preset_newline": true,
     "preset_delimiter": ",",
+    "markdown": false,
     "smime": false,
     "root_bundle": "",
     "certificate": "",

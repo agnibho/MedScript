@@ -43,6 +43,7 @@ class EditConfiguration(QMainWindow):
             self.input_prescriber.setText(self.config["prescriber"])
             self.input_newline.setChecked(bool(self.config["preset_newline"]))
             self.input_delimiter.setCurrentText(self.config["preset_delimiter"])
+            self.input_markdown.setChecked(bool(self.config["markdown"]))
             if sign_available:
                 self.input_smime.setChecked(bool(self.config["smime"]))
                 self.input_key.setText(self.config["private_key"])
@@ -59,6 +60,7 @@ class EditConfiguration(QMainWindow):
                 self.config["prescriber"]=self.input_prescriber.text()
                 self.config["preset_newline"]=self.input_newline.isChecked()
                 self.config["preset_delimiter"]=self.input_delimiter.currentText()
+                self.config["markdown"]=self.input_markdown.isChecked()
                 if sign_available:
                     self.config["smime"]=self.input_smime.isChecked()
                     self.config["private_key"]=self.input_key.text()
@@ -77,6 +79,7 @@ class EditConfiguration(QMainWindow):
 
         with open(config_file) as f:
             self.config=json.loads(f.read())
+        self.config=self.config|config
 
         self.setWindowTitle("MedScript")
         self.setGeometry(200, 200, 300, 200)
@@ -102,6 +105,8 @@ class EditConfiguration(QMainWindow):
         self.input_delimiter=QComboBox(self)
         self.input_delimiter.addItems([",", ";"])
         layout.addRow("Preset Delimiter", self.input_delimiter)
+        self.input_markdown=QCheckBox("Enable markdown formatting", self)
+        layout.addRow("Markdown", self.input_markdown)
         if sign_available:
             self.input_smime=QCheckBox("Enable digital signature (experimental)", self)
             layout.addRow("S/MIME", self.input_smime)

@@ -40,6 +40,7 @@ default = {
         "preset_directory": "preset",
         "preset_newline": "True",
         "preset_delimiter": ",",
+        "markdown": "False",
         "smime": "False",
         "root_bundle": "",
         "private_key": "",
