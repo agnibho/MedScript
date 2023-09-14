@@ -483,8 +483,11 @@ class MainWindow(QMainWindow):
         toolbar.addSeparator()
         self.input_template=QComboBox(self)
         templates=os.listdir(config["template_directory"])
-        templates.remove(os.path.basename(config["template"]))
-        templates.insert(0, os.path.basename(config["template"]))
+        try:
+            templates.remove(os.path.basename(config["template"]))
+            templates.insert(0, os.path.basename(config["template"]))
+        except Exception as e:
+            print(e)
         self.input_template.addItems(templates)
         toolbar.addWidget(self.input_template)
         spacer=QWidget(self)

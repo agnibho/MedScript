@@ -47,10 +47,13 @@ default = {
         "certificate": ""
         }
 
-with open(config_file) as conf:
-    read = json.loads(conf.read())
-
-config = default | read
+try:
+    with open(config_file) as conf:
+        read = json.loads(conf.read())
+    config = default | read
+except Exception as e:
+    print(e)
+    config=default
 
 config["filename"]=args.filename
 config["data_directory"]=os.path.abspath(os.path.join(real_dir, os.path.expanduser(config["data_directory"])))
@@ -65,11 +68,11 @@ if(args.prescriber is None):
     if (not config["prescriber"].endswith(".json")): config["prescriber"]=config["prescriber"]+".json"
 else:
     if(not os.path.isabs(args.prescriber)):
-        args.prescriber=os.path.join(config["config_directory"], args.prescriber)
+        args.prescriber=os.path.join(config["prescriber_directory"], args.prescriber)
     if(os.path.isfile(args.prescriber)):
         config["prescriber"]=args.prescriber
     else:
-        config["prescriber"]=os.path.join(config["config_directory"], config["prescriber"])
+        config["prescriber"]=os.path.join(config["prescriber_directory"], config["prescriber"])
         print("File "+args.prescriber+" not found.")
 
 os.makedirs(config["data_directory"], exist_ok=True)

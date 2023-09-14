@@ -77,9 +77,12 @@ class EditConfiguration(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        with open(config_file) as f:
-            self.config=json.loads(f.read())
-        self.config=self.config|config
+        try:
+            with open(config_file) as f:
+                self.config=json.loads(f.read())
+        except Exception as e:
+            print(e)
+            self.config=config
 
         self.setWindowTitle("MedScript")
         self.setGeometry(200, 200, 300, 200)
