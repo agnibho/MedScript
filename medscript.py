@@ -5,11 +5,13 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import sys
+import sys, os
 from PyQt6.QtWidgets import QApplication
 from window import MainWindow
 
 if __name__=="__main__":
     app=QApplication(sys.argv)
+    with open(os.path.join("resource", "style.qss")) as qss:
+        app.setStyleSheet(qss.read())
     window=MainWindow()
     sys.exit(app.exec())

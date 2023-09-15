@@ -5,9 +5,9 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QWidget, QMainWindow, QToolBar, QFileDialog, QComboBox, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QMainWindow, QToolBar, QFileDialog, QComboBox, QPushButton, QSizePolicy
 from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtGui import QAction, QIcon, QPageLayout, QPageSize
+from PyQt6.QtGui import QIcon, QPageLayout, QPageSize
 from PyQt6.QtCore import QUrl, QMarginsF
 from PyQt6.QtPrintSupport import QPrinter, QPrintDialog
 import os
@@ -35,15 +35,15 @@ class RenderBox(QMainWindow):
 
         self.printer=QPrinter(QPrinter.PrinterMode.HighResolution)
 
-        action_pdf=QAction("Save PDF", self)
-        action_pdf.setShortcut("Ctrl+S")
-        action_pdf.triggered.connect(self.cmd_pdf)
-        action_print=QAction("Print Document", self)
-        action_print.setShortcut("Ctrl+P")
-        action_print.triggered.connect(self.cmd_print)
-        action_close=QAction("Close Window", self)
-        action_close.setShortcut("Ctrl+Q")
-        action_close.triggered.connect(self.hide)
+        button_pdf=QPushButton("Save PDF", self)
+        button_pdf.setShortcut("Ctrl+S")
+        button_pdf.clicked.connect(self.cmd_pdf)
+        button_print=QPushButton("Print Document", self)
+        button_print.setShortcut("Ctrl+P")
+        button_print.clicked.connect(self.cmd_print)
+        button_close=QPushButton("Close Window", self)
+        button_close.setShortcut("Ctrl+Q")
+        button_close.clicked.connect(self.hide)
 
         page_size=[]
         for size in QPageSize.PageSizeId:
@@ -53,12 +53,12 @@ class RenderBox(QMainWindow):
 
         toolbar=QToolBar("View Toolbar", floatable=False, movable=False)
         toolbar.addWidget(self.input_size)
-        toolbar.addAction(action_pdf)
+        toolbar.addWidget(button_pdf)
         spacer=QWidget(self)
         spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         toolbar.addWidget(spacer)
-        toolbar.addAction(action_print)
-        toolbar.addAction(action_close)
+        toolbar.addWidget(button_print)
+        toolbar.addWidget(button_close)
         self.addToolBar(toolbar)
 
         self.webview=QWebEngineView()

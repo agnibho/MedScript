@@ -1,0 +1,7 @@
+QLabel, QLineEdit, QTextEdit, QPushButton, QCheckBox, QComboBox {
+font-size: 14px;
+}
+
+.info_head {
+font-weight: bold;
+}
