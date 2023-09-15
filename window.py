@@ -704,5 +704,8 @@ class MainWindow(QMainWindow):
         if(config["filename"]):
             self.cmd_open(config["filename"])
 
+        if(len(self.prescription.prescriber.name.strip())<1):
+            self.cmd_prescriber()
+
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
         self.showMaximized()
