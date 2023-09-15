@@ -56,6 +56,7 @@ class Renderer:
         return data
 
     def render_markdown(self, data):
+        data["extra"]=markdown(data["extra"])
         data["note"]=markdown(data["note"])
         data["report"]=markdown(data["report"])
         data["advice"]=markdown(data["advice"])
