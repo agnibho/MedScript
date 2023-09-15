@@ -6,6 +6,7 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 import os, shutil, tempfile, json, datetime, re
+from markdown import markdown
 from jinja2 import Template
 from config import config
 
@@ -23,6 +24,8 @@ class Renderer:
             with open(template) as template_file:
                 template_data = Template(template_file.read())
                 data=self.process_medication(self.process_diagnosis(json.loads(source_file.read())))
+                if config["markdown"]:
+                    data=self.render_markdown(data)
                 try:
                     data["date"]=datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M:%S")
                 except Exception as e:
@@ -50,4 +53,12 @@ class Renderer:
                 except AttributeError:
                     medication_list.append([line, ""])
         data["medication_list"]=medication_list
+        return data
+
+    def render_markdown(self, data):
+        data["note"]=markdown(data["note"])
+        data["report"]=markdown(data["report"])
+        data["advice"]=markdown(data["advice"])
+        data["investigation"]=markdown(data["investigation"])
+        data["additional"]=markdown(data["additional"])
         return data

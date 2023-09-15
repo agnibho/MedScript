@@ -5,11 +5,18 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import argparse, json, os, sys, shutil
+import argparse, json, os, sys, shutil, imp
 
 default_config_file=os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "data", "config.json"))
 
 real_dir=os.path.dirname(os.path.realpath(sys.argv[0]))
+
+try:
+    imp.find_module("M2Crypto")
+    sign_available=True
+except Exception as e:
+    print(e)
+    sign_available=False
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", nargs="?")
@@ -32,16 +39,20 @@ default = {
         "preset_directory": "preset",
         "preset_newline": "True",
         "preset_delimiter": ",",
+        "markdown": "False",
         "smime": "False",
         "root_bundle": "",
         "private_key": "",
         "certificate": ""
         }
 
-with open(config_file) as conf:
-    read = json.loads(conf.read())
-
-config = default | read
+try:
+    with open(config_file) as conf:
+        read = json.loads(conf.read())
+    config = default | read
+except Exception as e:
+    print(e)
+    config=default
 
 config["filename"]=args.filename
 config["data_directory"]=os.path.abspath(os.path.join(real_dir, os.path.expanduser(config["data_directory"])))

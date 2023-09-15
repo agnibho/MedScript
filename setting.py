@@ -9,9 +9,11 @@ from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QHBoxLayout, QPus
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import pyqtSignal
 import os, json
-from config import config, config_file
+from config import config, config_file, sign_available
 
 class EditConfiguration(QMainWindow):
+
+    global sign_available
 
     def select_directory(self):
         d=QFileDialog.getExistingDirectory(self, "Select Directory", config["data_directory"])
@@ -41,10 +43,12 @@ class EditConfiguration(QMainWindow):
             self.input_prescriber.setText(self.config["prescriber"])
             self.input_newline.setChecked(bool(self.config["preset_newline"]))
             self.input_delimiter.setCurrentText(self.config["preset_delimiter"])
-            self.input_smime.setChecked(bool(self.config["smime"]))
-            self.input_key.setText(self.config["private_key"])
-            self.input_certificate.setText(self.config["certificate"])
-            self.input_root.setText(self.config["root_bundle"])
+            self.input_markdown.setChecked(bool(self.config["markdown"]))
+            if sign_available:
+                self.input_smime.setChecked(bool(self.config["smime"]))
+                self.input_key.setText(self.config["private_key"])
+                self.input_certificate.setText(self.config["certificate"])
+                self.input_root.setText(self.config["root_bundle"])
         except Exception as e:
             QMessageBox.critical(self,"Failed to load", "Failed to load the data into the application.")
             raise(e)
@@ -56,10 +60,12 @@ class EditConfiguration(QMainWindow):
                 self.config["prescriber"]=self.input_prescriber.text()
                 self.config["preset_newline"]=self.input_newline.isChecked()
                 self.config["preset_delimiter"]=self.input_delimiter.currentText()
-                self.config["smime"]=self.input_smime.isChecked()
-                self.config["private_key"]=self.input_key.text()
-                self.config["certificate"]=self.input_certificate.text()
-                self.config["root_bundle"]=self.input_root.text()
+                self.config["markdown"]=self.input_markdown.isChecked()
+                if sign_available:
+                    self.config["smime"]=self.input_smime.isChecked()
+                    self.config["private_key"]=self.input_key.text()
+                    self.config["certificate"]=self.input_certificate.text()
+                    self.config["root_bundle"]=self.input_root.text()
                 with open(config_file, "w") as f:
                     f.write(json.dumps(self.config, indent=4))
                 QMessageBox.information(self,"Saved", "Configuration saved. Please restart MedScript.")
@@ -71,8 +77,12 @@ class EditConfiguration(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        with open(config_file) as f:
-            self.config=json.loads(f.read())
+        try:
+            with open(config_file) as f:
+                self.config=json.loads(f.read())
+        except Exception as e:
+            print(e)
+            self.config=config
 
         self.setWindowTitle("MedScript")
         self.setGeometry(200, 200, 300, 200)
@@ -80,14 +90,14 @@ class EditConfiguration(QMainWindow):
         widget=QWidget(self)
         layout=QFormLayout(widget)
         self.input_directory=QLineEdit(self)
-        btn_directory=QPushButton("...", self)
+        btn_directory=QPushButton("Select Directory", self)
         btn_directory.clicked.connect(self.select_directory)
         layout_directory=QHBoxLayout()
         layout_directory.addWidget(self.input_directory)
         layout_directory.addWidget(btn_directory)
         layout.addRow("Data Directory", layout_directory)
         self.input_prescriber=QLineEdit(self)
-        btn_prescriber=QPushButton("...", self)
+        btn_prescriber=QPushButton("Select File", self)
         btn_prescriber.clicked.connect(self.select_prescriber)
         layout_prescriber=QHBoxLayout()
         layout_prescriber.addWidget(self.input_prescriber)
@@ -98,29 +108,32 @@ class EditConfiguration(QMainWindow):
         self.input_delimiter=QComboBox(self)
         self.input_delimiter.addItems([",", ";"])
         layout.addRow("Preset Delimiter", self.input_delimiter)
-        self.input_smime=QCheckBox("Enable digital signature (experimental)", self)
-        layout.addRow("S/MIME", self.input_smime)
-        self.input_key=QLineEdit(self)
-        btn_key=QPushButton("...", self)
-        btn_key.clicked.connect(self.select_key)
-        layout_key=QHBoxLayout()
-        layout_key.addWidget(self.input_key)
-        layout_key.addWidget(btn_key)
-        layout.addRow("Private Key", layout_key)
-        self.input_certificate=QLineEdit(self)
-        btn_certificate=QPushButton("...", self)
-        btn_certificate.clicked.connect(self.select_certificate)
-        layout_certificate=QHBoxLayout()
-        layout_certificate.addWidget(self.input_certificate)
-        layout_certificate.addWidget(btn_certificate)
-        layout.addRow("X509 Certificate", layout_certificate)
-        self.input_root=QLineEdit(self)
-        btn_root=QPushButton("...", self)
-        btn_root.clicked.connect(self.select_root)
-        layout_root=QHBoxLayout()
-        layout_root.addWidget(self.input_root)
-        layout_root.addWidget(btn_root)
-        layout.addRow("Root Bundle", layout_root)
+        self.input_markdown=QCheckBox("Enable markdown formatting", self)
+        layout.addRow("Markdown", self.input_markdown)
+        if sign_available:
+            self.input_smime=QCheckBox("Enable digital signature (experimental)", self)
+            layout.addRow("S/MIME", self.input_smime)
+            self.input_key=QLineEdit(self)
+            btn_key=QPushButton("Select File", self)
+            btn_key.clicked.connect(self.select_key)
+            layout_key=QHBoxLayout()
+            layout_key.addWidget(self.input_key)
+            layout_key.addWidget(btn_key)
+            layout.addRow("Private Key", layout_key)
+            self.input_certificate=QLineEdit(self)
+            btn_certificate=QPushButton("Select File", self)
+            btn_certificate.clicked.connect(self.select_certificate)
+            layout_certificate=QHBoxLayout()
+            layout_certificate.addWidget(self.input_certificate)
+            layout_certificate.addWidget(btn_certificate)
+            layout.addRow("X509 Certificate", layout_certificate)
+            self.input_root=QLineEdit(self)
+            btn_root=QPushButton("Select File", self)
+            btn_root.clicked.connect(self.select_root)
+            layout_root=QHBoxLayout()
+            layout_root.addWidget(self.input_root)
+            layout_root.addWidget(btn_root)
+            layout.addRow("Root Bundle", layout_root)
         button_save=QPushButton("Save")
         button_save.clicked.connect(self.save)
         button_reset=QPushButton("Reset")

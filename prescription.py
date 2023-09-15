@@ -90,7 +90,10 @@ class Prescription:
 
     def write_to(self, file):
         with open(file, "w") as f:
-            del self.file
+            try:
+                del self.file
+            except Exception as e:
+                print(e)
             f.write(self.get_json())
         self.file=file
 
