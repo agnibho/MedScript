@@ -1,4 +1,4 @@
-QLabel, QLineEdit, QTextEdit, QPushButton, QCheckBox, QComboBox {
+QLabel, QLineEdit, QTextEdit, QDateTimeEdit, QPushButton, QCheckBox, QComboBox {
 font-size: 14px;
 }
 
