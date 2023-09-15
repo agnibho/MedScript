@@ -35,9 +35,11 @@ class RenderBox(QMainWindow):
 
         self.printer=QPrinter(QPrinter.PrinterMode.HighResolution)
 
-        action_pdf=QAction("Create PDF", self)
+        action_pdf=QAction("Save PDF", self)
+        action_pdf.setShortcut("Ctrl+S")
         action_pdf.triggered.connect(self.cmd_pdf)
         action_print=QAction("Print Document", self)
+        action_print.setShortcut("Ctrl+P")
         action_print.triggered.connect(self.cmd_print)
 
         page_size=[]
