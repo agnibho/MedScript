@@ -41,6 +41,9 @@ class RenderBox(QMainWindow):
         action_print=QAction("Print Document", self)
         action_print.setShortcut("Ctrl+P")
         action_print.triggered.connect(self.cmd_print)
+        action_close=QAction("Close Window", self)
+        action_close.setShortcut("Ctrl+Q")
+        action_close.triggered.connect(self.hide)
 
         page_size=[]
         for size in QPageSize.PageSizeId:
@@ -55,6 +58,7 @@ class RenderBox(QMainWindow):
         spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         toolbar.addWidget(spacer)
         toolbar.addAction(action_print)
+        toolbar.addAction(action_close)
         self.addToolBar(toolbar)
 
         self.webview=QWebEngineView()
