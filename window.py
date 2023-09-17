@@ -12,7 +12,7 @@ from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
 
-from config import config, sign_available
+from config import config, real_dir, sign_available
 from prescription import Prescription
 from renderer import Renderer
 from filehandler import FileHandler
@@ -194,7 +194,7 @@ class MainWindow(QMainWindow):
         QMessageBox.about(self,"MedScript", txt)
 
     def cmd_help(self):
-        self.viewbox.md("README")
+        self.viewbox.md(os.path.join(real_dir, "README"))
         self.viewbox.show()
 
     def insert_preset_extra(self):
@@ -510,7 +510,6 @@ class MainWindow(QMainWindow):
         spacer=QWidget(self)
         spacer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         toolbar.addWidget(spacer)
-        self.label_prescriber=QLabel(self)
         self.label_prescriber=QLabel(self)
         toolbar.addWidget(self.label_prescriber)
         self.addToolBar(toolbar)

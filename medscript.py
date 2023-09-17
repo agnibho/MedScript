@@ -8,10 +8,11 @@
 import sys, os
 from PyQt6.QtWidgets import QApplication
 from window import MainWindow
+from config import config
 
 if __name__=="__main__":
     app=QApplication(sys.argv)
-    with open(os.path.join("resource", "style.qss")) as qss:
+    with open(os.path.join(config["resource"], "style.qss")) as qss:
         app.setStyleSheet(qss.read())
     window=MainWindow()
     sys.exit(app.exec())

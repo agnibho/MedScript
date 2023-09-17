@@ -79,7 +79,25 @@ os.makedirs(config["document_directory"], exist_ok=True)
 os.makedirs(config["prescriber_directory"], exist_ok=True)
 os.makedirs(config["preset_directory"], exist_ok=True)
 os.makedirs(config["template_directory"], exist_ok=True)
+if not os.path.exists(os.path.join(config["data_directory"], "config.json")):
+    shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "config.json")), os.path.join(config["data_directory"], "config.json"))
 if not os.path.exists(os.path.join(config["prescriber_directory"], "prescriber.json")):
     shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "prescriber", "prescriber.json")), os.path.join(config["prescriber_directory"], "prescriber.json"))
 if not os.path.exists(os.path.join(config["template_directory"], "default")):
     shutil.copytree(os.path.abspath(os.path.join(real_dir, "data", "template", "default")), os.path.join(config["template_directory"], "default"))
+if not os.path.exists(os.path.join(config["template_directory"], "medcert")):
+    shutil.copytree(os.path.abspath(os.path.join(real_dir, "data", "template", "medcert")), os.path.join(config["template_directory"], "medcert"))
+if not os.path.exists(os.path.join(config["preset_directory"], "certify.csv")):
+    shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "preset", "certify.csv")), os.path.join(config["preset_directory"], "certify.csv"))
+if not os.path.exists(os.path.join(config["preset_directory"], "note.csv")):
+    shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "preset", "note.csv")), os.path.join(config["preset_directory"], "note.csv"))
+if not os.path.exists(os.path.join(config["preset_directory"], "report.csv")):
+    shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "preset", "report.csv")), os.path.join(config["preset_directory"], "report.csv"))
+if not os.path.exists(os.path.join(config["preset_directory"], "investigation.csv")):
+    shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "preset", "investigation.csv")), os.path.join(config["preset_directory"], "investigation.csv"))
+if not os.path.exists(os.path.join(config["preset_directory"], "advice.csv")):
+    shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "preset", "advice.csv")), os.path.join(config["preset_directory"], "advice.csv"))
+if not os.path.exists(os.path.join(config["preset_directory"], "medication.csv")):
+    shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "preset", "medication.csv")), os.path.join(config["preset_directory"], "medication.csv"))
+if not os.path.exists(os.path.join(config["preset_directory"], "additional.csv")):
+    shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "preset", "additional.csv")), os.path.join(config["preset_directory"], "additional.csv"))
