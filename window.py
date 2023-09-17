@@ -181,11 +181,20 @@ class MainWindow(QMainWindow):
             print(e)
 
     def cmd_about(self):
-        self.viewbox.open(os.path.join(config["resource"], "about.html"))
-        self.viewbox.show()
+        year=datetime.datetime.now().year
+        if(year>2023):
+            copy="2023"+"-"+str(year)
+        else:
+            copy="2023"
+        txt="<h1>MedScript</h1>"
+        txt=txt+"<p>Version 0.2</p>"
+        txt=txt+"<p>The Prescription Writing Software</p>"
+        txt=txt+"<p><a href='https://code.agnibho.com/medscript/'>Website</a></p>"
+        txt=txt+"<p>Copyright © "+copy+" Dr. Agnibho Mondal</p>"
+        QMessageBox.about(self,"MedScript", txt)
 
     def cmd_help(self):
-        self.viewbox.open(os.path.join(config["resource"], "help.html"))
+        self.viewbox.md("README")
         self.viewbox.show()
 
     def insert_preset_extra(self):

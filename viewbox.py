@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QIcon
+from markdown import markdown
 
 class ViewBox(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -26,3 +27,8 @@ class ViewBox(QMainWindow):
 
     def open(self, file):
         self.webview.load(QUrl("file:///"+os.path.abspath(file).replace(os.sep, "/")))
+
+    def md(self, file):
+        with open(file) as f:
+            html=markdown(f.read())
+            self.webview.setHtml(html)

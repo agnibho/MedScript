@@ -14,17 +14,33 @@ File
 ----
 
 The program uses a custom file format .mpaz (Medical Prescription Archive -
-Zipped). It is a zip file in a specific format. The file can be shared,
-however, no mechanism of ensuring authenticity of a shared file is currently
-in place.
+Zipped). It is a zip file in a specific format which includes:
+
+1. A meta.json file containing file type and mpaz version.
+2. A prescription.zip file containing the actual prescription.
+3. An attachment folder containing attached files.
+4. A template folder containing the bundled prescription template.
+
+Optionally the mpaz archive may also include an S/MIME signature and
+certificate for authentication.
 
 Install
 -------
 
 MedScript can be used by simply downloading it from the repository and running
-it with the Python interpreter. The necessary python libraries need to
+it with the Python 3 interpreter. The necessary python libraries need to
 be installed. Alternatively the release versions can be
 downloaded and used directly.
+
+The required Python libraries are as follows:
+
+1. PyQt6
+2. PyQt6_sip
+3. python_dateutil
+4. Jinja2
+5. lxml
+6. Markdown
+7. M2Crypto (optional)
 
 Usage
 -----
@@ -109,6 +125,19 @@ be used to switch between available templates.
 Note that the templates are packaged with the .mpaz file which can be used for
 rendering. However, modifying/saving the file overwrites it.
 
+### Markdown
+
+This program supports markdown formatting. Markdown can be used to format the
+prescriptions and certificates. It can be turned on from the
+configuration dialog under the settings menu.
+
+### Medical Certificate
+
+The Certify/Extra area can be used to write a medical prescription. Preset
+system is available for this as well. Certification requires different
+templates designed for it. A template named medcert is included with the
+program.
+
 Prescriber
 ----------
 
@@ -123,6 +152,11 @@ to load in the program, e.g. `<program> --prescriber <prescriber file>`.
 The data of the currently selected prescriber can be edited using the
 "Prescriber" option under the "Prepare" menu.
 
+If multiple prescribers have been configured (e.g. by copying the prescriber
+file and editing them individually), the prescribers can easily by switched by
+using the switch option in the settings menu and selecting the desired
+prescriber file.
+
 Preset
 ------
 
@@ -132,12 +166,13 @@ the respective files. These files are in the .csv format and can be edited
 with any spreadsheet editing software.
 
 The preset files are kept in the preset directory. The files associated with
-clinical note, report, advice, investigation, medication and additional are
-note.csv, report.csv, advice.csv, investigation.csv, medication.csv and
-additional.csv. Each file contains a top row indicating the variables in the
-columns. The data is entered in two columns with each row containing a KEY and
-a TEXT. The TEXT can be entered in to the edit area by selecting the KEY from
-the preset input.
+medical certificate, clinical note, report, advice, investigation, medication
+and additional are certify.csv, note.csv, report.csv, advice.csv,
+investigation.csv, medication.csv and additional.csv. Each file contains a top
+row indicating the variables in the columns. The data is entered in two
+columns with each row containing a KEY and a TEXT. The TEXT can be entered in
+to the edit area by selecting the KEY from the preset input. Blank files with
+only the top row are included with the program.
 
 Configuration
 -------------
@@ -152,6 +187,28 @@ However, a different config file may be provided by using the
 
 It is recommended to use the default config file as base while creating
 another customized config file.
+
+A graphical configuration editor is also included with the program. The
+options are as follows:
+
+1. Data directory: where the user data of the program is stored.
+
+2. Prescriber: the default prescriber which is loaded when the program
+starts.
+
+3. Preset newline: whether a newline / line break to be inserted after a preset
+is inserted.
+
+4. Preset delimiter: CSV files may have different delimiters. By default
+this program uses "," as delimiter, however this can be changed to ";" from
+here.
+
+5. Markdown: The markdown formatting can be enabled from here.
+
+6. S/MIME: This is an experimental feature and is not available on every
+platform. If it is available, it can be turned on from here. The Private
+key, X509 certificate and Root bundle can be selected from the options
+that follows this.
 
 License
 -------
@@ -176,5 +233,7 @@ Contact
 -------
 
 Dr. Agnibho Mondal
+
 mondal@agnibho.com
+
 www.agnibho.com

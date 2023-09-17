@@ -12,7 +12,7 @@ from signature import Signature
 
 class FileHandler():
 
-    meta={"type":"MedScript", "version":"0.1"}
+    meta={"type":"MedScript", "version":"0.2"}
 
     file=""
     directory=""
