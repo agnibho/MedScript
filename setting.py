@@ -174,8 +174,10 @@ class EditPrescriber(QMainWindow):
             QMessageBox.critical(self,"Failed to load", "Failed to load the data into the application.")
             raise(e)
 
-    def save(self):
-        if(QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Save", "This action will overwrite the previous information. Continue?")):
+    def save(self, file=False):
+        if(file is not False or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Save", "This action will overwrite the previous information. Continue?")):
+            if file is None:
+                file=self.file
             try:
                 self.prescriber["name"]=self.input_name.text()
                 self.prescriber["qualification"]=self.input_qualification.text()
@@ -183,14 +185,21 @@ class EditPrescriber(QMainWindow):
                 self.prescriber["address"]=self.input_address.toPlainText()
                 self.prescriber["contact"]=self.input_contact.text()
                 self.prescriber["extra"]=self.input_extra.toPlainText()
-                with open(self.file, "w") as f:
+                with open(file, "w") as f:
                     f.write(json.dumps(self.prescriber, indent=4))
                 QMessageBox.information(self,"Saved", "Information saved.")
                 self.signal_save.emit(self.file)
                 self.hide()
             except Exception as e:
                 QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
-                raise(e)
+                print(e)
+
+    def save_as(self):
+        try:
+            self.save(QFileDialog.getSaveFileName(self, "Save prescriber", config["prescriber_directory"], "JSON (*.json);; All Files (*)")[0])
+        except Exception as e:
+            print(e)
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -214,10 +223,13 @@ class EditPrescriber(QMainWindow):
         layout.addRow("Extra", self.input_extra)
         button_save=QPushButton("Save")
         button_save.clicked.connect(self.save)
+        button_save_as=QPushButton("Save As")
+        button_save_as.clicked.connect(self.save_as)
         button_reset=QPushButton("Reset")
         button_reset.clicked.connect(self.load)
         layout_btn=QHBoxLayout()
         layout_btn.addWidget(button_save)
+        layout_btn.addWidget(button_save_as)
         layout_btn.addWidget(button_reset)
         layout.addRow("", layout_btn)
 
