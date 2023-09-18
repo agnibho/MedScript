@@ -176,7 +176,7 @@ class EditPrescriber(QMainWindow):
 
     def save(self, file=False):
         if(file is not False or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Save", "This action will overwrite the previous information. Continue?")):
-            if file is None:
+            if file is False:
                 file=self.file
             try:
                 self.prescriber["name"]=self.input_name.text()
