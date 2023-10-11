@@ -8,9 +8,7 @@
 from config import config
 from glob import glob
 from zipfile import ZipFile
-import os
-import json
-import csv
+import os, json, csv
 
 class Tabular():
 

@@ -21,6 +21,7 @@ from setting import EditConfiguration, EditPrescriber
 from viewbox import ViewBox
 from preset import Preset
 from tabular import Tabular
+from index import Index
 try:
     from M2Crypto.EVP import EVPError
     from M2Crypto.BIO import BIOError
@@ -60,6 +61,15 @@ class MainWindow(QMainWindow):
             except Exception as e:
                 QMessageBox.warning(self,"Open failed", "Failed to open file.")
                 print(e)
+
+    def cmd_copy(self, data):
+        self.cmd_new()
+        self.prescription.name=data["name"]
+        self.prescription.age=data["age"]
+        self.prescription.sex=data["sex"]
+        self.prescription.address=data["address"]
+        self.prescription.contact=data["contact"]
+        self.load_interface_from_instance()
 
     def cmd_save(self, save_as=False):
         self.update_instance()
@@ -174,7 +184,8 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Export failed", "Failed to export the data.")
 
     def cmd_index(self):
-        pass
+        self.index.refresh()
+        self.index.show()
 
     def cmd_configuration(self):
         self.edit_configuration.show()
@@ -743,6 +754,9 @@ class MainWindow(QMainWindow):
         self.edit_prescriber=EditPrescriber()
         self.edit_prescriber.signal_save.connect(self.cmd_prescriber_reload)
         self.viewbox=ViewBox()
+        self.index=Index()
+        self.index.signal_open.connect(self.cmd_open)
+        self.index.signal_copy.connect(self.cmd_copy)
 
         self.new_doc()
         if(config["filename"]):
