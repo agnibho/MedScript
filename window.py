@@ -20,6 +20,7 @@ from renderbox import RenderBox
 from setting import EditConfiguration, EditPrescriber
 from viewbox import ViewBox
 from preset import Preset
+from tabular import Tabular
 try:
     from M2Crypto.EVP import EVPError
     from M2Crypto.BIO import BIOError
@@ -150,7 +151,7 @@ class MainWindow(QMainWindow):
         try:
             result=self.current_file.verify()
             if result is False:
-               QMessageBox.critical(self, "Verification failed", "Signature is invalid.")
+                QMessageBox.critical(self, "Verification failed", "Signature is invalid.")
             elif result is None:
                 QMessageBox.warning(self, "No Siganture", "No signature was found.")
             else:
@@ -162,6 +163,18 @@ class MainWindow(QMainWindow):
         except Exception as e:
             print(e)
             QMessageBox.warning(self, "Failed", "Failed to verify.")
+
+    def cmd_tabular(self):
+        try:
+            filename=QFileDialog.getSaveFileName(self, "Export CSV File", os.path.join(config["data_directory"], "data.csv"), "CSV (*.csv);; All Files (*)")[0]
+            Tabular.export(filename)
+            QMessageBox.information(self, "Data Exported", "Data exported to."+filename)
+        except Exception as e:
+            print(e)
+            QMessageBox.critical(self, "Export failed", "Failed to export the data.")
+
+    def cmd_index(self):
+        pass
 
     def cmd_configuration(self):
         self.edit_configuration.show()
@@ -463,6 +476,10 @@ class MainWindow(QMainWindow):
         action_prescriber.triggered.connect(self.cmd_prescriber)
         action_switch=QAction("Switch", self)
         action_switch.triggered.connect(self.cmd_switch)
+        action_tabular=QAction("Tabular", self)
+        action_tabular.triggered.connect(self.cmd_tabular)
+        action_index=QAction("Index", self)
+        action_index.triggered.connect(self.cmd_index)
         action_about=QAction("About", self)
         action_about.triggered.connect(self.cmd_about)
         action_help=QAction("Help", self)
@@ -487,6 +504,9 @@ class MainWindow(QMainWindow):
         menu_settings.addAction(action_configuration)
         menu_settings.addAction(action_prescriber)
         menu_settings.addAction(action_switch)
+        menu_data=menubar.addMenu("Data")
+        menu_data.addAction(action_tabular)
+        menu_data.addAction(action_index)
         menu_help=menubar.addMenu("Help")
         menu_help.addAction(action_about)
         menu_help.addAction(action_help)
