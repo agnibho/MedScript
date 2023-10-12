@@ -99,11 +99,11 @@ class Index(QMainWindow):
             with ZipFile(file) as zf:
                 with zf.open("prescription.json") as pf:
                     pres=json.loads(pf.read())
-                    self.index.append([pres["id"], pres["name"], pres["age"], pres["sex"], file])
+                    self.index.append([pres["id"], pres["name"], pres["age"], pres["sex"], pres["date"], file])
 
     def load(self):
         model=QStandardItemModel()
-        model.setHorizontalHeaderLabels(["ID", "Name", "Age", "Sex", "File"])
+        model.setHorizontalHeaderLabels(["ID", "Name", "Age", "Sex", "Date", "File"])
         for item in self.index:
             row=[]
             for i in item:
