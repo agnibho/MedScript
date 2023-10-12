@@ -5,27 +5,26 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-from config import config, sign_available
-from hashlib import sha256
+from config import config
 from datetime import datetime
-try:
-    from M2Crypto import BIO, Rand, SMIME, X509
-except Exception as e:
-    print(e)
-    sign_available=False
+from cryptography.hazmat.primitives.serialization import load_pem_private_key, Encoding
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.backends import default_backend
+from cryptography.x509 import load_pem_x509_certificate
 
 class Signature():
 
     def sign(data, certificate, privkey, password=""):
-        def get_password(*args):
-            return bytes(password, "ascii")
-        hash=sha256(data.encode()).hexdigest()
-        smime=SMIME.SMIME()
-        smime.load_key(privkey, certificate, get_password)
-        p7=smime.sign(BIO.MemoryBuffer(hash.encode()), SMIME.PKCS7_DETACHED)
-        out=BIO.MemoryBuffer()
-        smime.write(out, p7)
-        return(out.read().decode())
+        with open(privkey, "rb") as f:
+            try:
+                priv=load_pem_private_key(f.read(), None, default_backend())
+            except TypeError:
+                priv=load_pem_private_key(f.read(), password.encode(), default_backend())
+        with open(certificate, "rb") as f:
+            cert=load_pem_x509_certificate(f.read())
+        signature=priv.sign(data.encode(), padding.PKCS1v15(), hashes.SHA256())
+        return signature
 
     def verify(data, certificate, signature):
         try:
@@ -35,26 +34,16 @@ class Signature():
             print(e)
             return False
 
-        hash=sha256(data.encode()).hexdigest()
-        smime=SMIME.SMIME()
-
-        x509=X509.load_cert(certificate)
-        sk=X509.X509_Stack()
-        sk.push(x509)
-        smime.set_x509_stack(sk)
-
-        st=X509.X509_Store()
-        st.load_info(certificate)
-        smime.set_x509_store(st)
-
-        with open(signature) as file:
-            buf=BIO.MemoryBuffer(file.read().encode())
-        p7=SMIME.smime_load_pkcs7_bio(buf)[0]
-
+        with open(certificate, "rb") as f:
+            cert=load_pem_x509_certificate(f.read())
+        pub=cert.public_key()
         try:
-            smime.verify(p7, BIO.MemoryBuffer(hash.encode()))
-            return(x509.get_subject().as_text())
-        except SMIME.PKCS7_Error as e:
+            pub.verify(signature, data.encode(), padding.PKCS1v15(), hashes.SHA256())
+            subattr=""
+            for i in cert.subject:
+                subattr+=i.oid._name+":"+i.value+"\n"
+            return subattr
+        except Exception as e:
             print(e)
             return False
 
@@ -65,23 +54,29 @@ class Signature():
             for line in chain_file:
                 cert_data=cert_data+line.strip()+"\n"
                 if "----END CERTIFICATE----" in line:
-                    cert_chain.append(X509.load_cert_string(cert_data))
+                    cert_chain.append(load_pem_x509_certificate(cert_data.encode()))
                     cert_data=""
 
         for i in range(len(cert_chain)):
             cert=cert_chain[i]
-            if(datetime.utcnow().timestamp()>cert.get_not_after().get_datetime().timestamp()):
+            if(datetime.utcnow().timestamp()>cert.not_valid_after.timestamp()):
                 print("Certificate expired")
                 return False
             if(i>0):
                 prev_cert=cert_chain[i-1]
-                prev_public_key=prev_cert.get_pubkey().get_rsa()
-                if(not prev_cert.verify(cert.get_pubkey())):
+                try:
+                    cert.public_key().verify(prev_cert.signature, prev_cert.tbs_certificate_bytes, padding.PKCS1v15(), prev_cert.signature_hash_algorithm)
+                except InvalidSignature:
                     print("Certificate chain signature verification failed")
                     return False
-        with open(config["root_bundle"]) as root:
-            root_bundle=root.read()
-        if(cert_chain[-1].as_pem().decode() not in root_bundle):
-            print("Certificate not in root bundle")
+        try:
+            with open(config["root_bundle"]) as root:
+                root_bundle=root.read()
+            if(cert_chain[-1].public_bytes(encoding=Encoding.PEM).decode() not in root_bundle):
+                print("Certificate not in root bundle")
+                return False
+            return True
+        except Exception as e:
+            print(e)
+            print("Root bundle could not be loaded")
             return False
-        return True

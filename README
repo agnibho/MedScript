@@ -40,7 +40,6 @@ The required Python libraries are as follows:
 4. Jinja2
 5. lxml
 6. Markdown
-7. M2Crypto (optional)
 
 Usage
 -----
@@ -113,6 +112,16 @@ menu by selecting the "Render" option. Note that the files must be saved
 before rendering. The rendered prescription is opened in a separate window. It
 can be saved as PDF or it can be opened in the system browser and printed from
 there.
+
+### Data
+
+The prescription files in the default document folder are incorporated into an
+index which can be used to quickly find a particular prescription. To use this
+feature, select the "Index" option in the "Data" menu.
+
+Data from the The prescription files can be combined into a table and
+exported to a CSV file for analysis from the "Tabular" option in the "Data"
+menu.
 
 ### Template
 
@@ -205,10 +214,9 @@ here.
 
 5. Markdown: The markdown formatting can be enabled from here.
 
-6. S/MIME: This is an experimental feature and is not available on every
-platform. If it is available, it can be turned on from here. The Private
-key, X509 certificate and Root bundle can be selected from the options
-that follows this.
+6. S/MIME: This is an experimental feature and is disabled by default. To use
+it, it has to be enabled first from the settings. The Private key, X509
+certificate and Root bundle can be selected from the options that follow this.
 
 License
 -------

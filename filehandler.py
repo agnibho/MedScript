@@ -65,7 +65,7 @@ class FileHandler():
         with open(os.path.join(self.directory.name, "prescription.json"), "r") as file:
             data=file.read()
         signature=Signature.sign(data, certificate=config["certificate"], privkey=config["private_key"], password=password)
-        with open(os.path.join(self.directory.name, "signature.p7m"), "w") as file:
+        with open(os.path.join(self.directory.name, "signature"), "wb") as file:
             file.write(signature)
         shutil.copyfile(config["certificate"], os.path.join(self.directory.name, "certificate.pem"))
 
@@ -73,11 +73,11 @@ class FileHandler():
         with open(os.path.join(self.directory.name, "prescription.json"), "r") as file:
             data=file.read()
         try:
-            with open(os.path.join(self.directory.name, "certificate.pem")) as file:
+            with open(os.path.join(self.directory.name, "certificate.pem"), "r") as file:
                 certificate=file.read()
-            with open(os.path.join(self.directory.name, "signature.p7m")) as file:
+            with open(os.path.join(self.directory.name, "signature"), "rb") as file:
                 signature=file.read()
-            return Signature.verify(data, certificate=os.path.join(self.directory.name, "certificate.pem"), signature=os.path.join(self.directory.name, "signature.p7m"))
+            return Signature.verify(data, certificate=os.path.join(self.directory.name, "certificate.pem"), signature=signature)
         except FileNotFoundError as e:
             print(e)
 
@@ -90,7 +90,7 @@ class FileHandler():
     def delete_sign(self):
         try:
             os.unlink(os.path.join(self.directory.name, "certificate.pem"))
-            os.unlink(os.path.join(self.directory.name, "signature.p7m"))
+            os.unlink(os.path.join(self.directory.name, "signature"))
         except Exception as e:
             print(e)
 

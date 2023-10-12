@@ -12,7 +12,7 @@ from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
 
-from config import config, real_dir, sign_available
+from config import config, real_dir
 from prescription import Prescription
 from renderer import Renderer
 from filehandler import FileHandler
@@ -22,13 +22,6 @@ from viewbox import ViewBox
 from preset import Preset
 from tabular import Tabular
 from index import Index
-try:
-    from M2Crypto.EVP import EVPError
-    from M2Crypto.BIO import BIOError
-    from M2Crypto.SMIME import SMIME_Error
-except Exception as e:
-    print(e)
-    sign_available=False
 
 class MainWindow(QMainWindow):
 
@@ -123,11 +116,12 @@ class MainWindow(QMainWindow):
     def cmd_sign(self):
         self.refresh()
         if(self.save_state==md5(self.prescription.get_json().encode()).hexdigest()):
-            password, ok=QInputDialog.getText(self, "Enter password", "Private key password", QLineEdit.EchoMode.Password)
+            ok=True #password, ok=QInputDialog.getText(self, "Enter password", "Private key password", QLineEdit.EchoMode.Password)
             if(ok):
                 try:
                     try:
-                        self.current_file.sign(password)
+                        self.current_file.sign()
+                        #self.current_file.sign(password)
                         self.cmd_save()
                     except FileNotFoundError as e:
                         print(e)
@@ -294,7 +288,7 @@ class MainWindow(QMainWindow):
     def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
         try:
             file_msg=self.current_file.file if self.current_file.file else "New file"
-            sign_msg="(signed)" if sign_available and config["smime"] and self.current_file.is_signed() else ""
+            sign_msg="(signed)" if config["smime"] and self.current_file.is_signed() else ""
             self.statusbar.showMessage(file_msg+" "+sign_msg)
             if date is None:
                 d=QDateTime.currentDateTime()
@@ -427,8 +421,6 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        global sign_available
-
         self.setWindowTitle("MedScript")
         self.setGeometry(100, 100, 600, 400)
         self.setWindowIcon(QIcon(os.path.join(config["resource"], "icon_medscript.ico")))
@@ -507,7 +499,7 @@ class MainWindow(QMainWindow):
         menu_prepare=menubar.addMenu("Prepare")
         menu_prepare.addAction(action_render)
         menu_prepare.addAction(action_refresh)
-        if(sign_available and config["smime"]):
+        if(config["smime"]):
             menu_prepare.addAction(action_sign)
             menu_prepare.addAction(action_unsign)
             menu_prepare.addAction(action_verify)
@@ -516,8 +508,8 @@ class MainWindow(QMainWindow):
         menu_settings.addAction(action_prescriber)
         menu_settings.addAction(action_switch)
         menu_data=menubar.addMenu("Data")
-        menu_data.addAction(action_tabular)
         menu_data.addAction(action_index)
+        menu_data.addAction(action_tabular)
         menu_help=menubar.addMenu("Help")
         menu_help.addAction(action_about)
         menu_help.addAction(action_help)

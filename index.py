@@ -10,7 +10,7 @@ from PyQt6.QtGui import QIcon, QStandardItemModel, QStandardItem
 from PyQt6.QtCore import pyqtSignal, QSortFilterProxyModel
 from glob import glob
 from zipfile import ZipFile
-from config import config, config_file, sign_available
+from config import config
 import os, json
 
 class Index(QMainWindow):
