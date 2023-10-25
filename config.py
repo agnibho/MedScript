@@ -11,6 +11,9 @@ default_config_file=os.path.abspath(os.path.join(os.path.dirname(os.path.realpat
 
 real_dir=os.path.dirname(os.path.realpath(sys.argv[0]))
 
+with open(os.path.join(real_dir, "info.json")) as info_file:
+    info=json.loads(info_file.read())
+
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", nargs="?")
 parser.add_argument("-c", "--config")

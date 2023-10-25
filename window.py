@@ -5,14 +5,16 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, sys, datetime, dateutil.parser, shutil
+import os, sys, datetime, dateutil.parser, shutil, json
 from PyQt6.QtCore import Qt, QDateTime, QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QInputDialog, QCompleter, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
+from urllib import request
+from packaging import version
 
-from config import config, real_dir
+from config import config, info, real_dir
 from prescription import Prescription
 from renderer import Renderer
 from filehandler import FileHandler
@@ -198,6 +200,20 @@ class MainWindow(QMainWindow):
         except FileNotFoundError as e:
             print(e)
 
+    def cmd_update(self, silent=False):
+        try:
+            print("Current version "+info["version"])
+            with request.urlopen(info["url"]+"/info.json") as response:
+                latest=json.loads(response.read().decode())
+            print("Latest version "+latest["version"])
+            if(version.parse(info["version"]) < version.parse(latest["version"])):
+                QMessageBox.information(self, "Check update", "New version <strong>"+latest["version"]+"</strong> available.<br>Visit <a href='"+latest["url"]+"'>"+latest["url"]+"</a> to get the latest version.")
+            elif(not silent):
+                QMessageBox.information(self, "Check update", "No update available. You are using version "+info["version"]+".")
+        except Exception as e:
+            QMessageBox.critical(self, "Check update", "Failed to check available update.")
+            print(e)
+
     def cmd_about(self):
         year=datetime.datetime.now().year
         if(year>2023):
@@ -205,11 +221,11 @@ class MainWindow(QMainWindow):
         else:
             copy="2023"
         txt="<h1>MedScript</h1>"
-        txt=txt+"<p>Version 0.2</p>"
+        txt=txt+"<p>Version "+info["version"]+"</p>"
         txt=txt+"<p>The Prescription Writing Software</p>"
-        txt=txt+"<p><a href='https://code.agnibho.com/medscript/'>Website</a></p>"
+        txt=txt+"<p><a href='"+info["url"]+"'>Website</a></p>"
         txt=txt+"<p>Copyright © "+copy+" Dr. Agnibho Mondal</p>"
-        QMessageBox.about(self,"MedScript", txt)
+        QMessageBox.about(self, "MedScript", txt)
 
     def cmd_help(self):
         self.viewbox.md(os.path.join(real_dir, "README"))
@@ -483,6 +499,8 @@ class MainWindow(QMainWindow):
         action_tabular.triggered.connect(self.cmd_tabular)
         action_index=QAction("Index", self)
         action_index.triggered.connect(self.cmd_index)
+        action_update=QAction("Update", self)
+        action_update.triggered.connect(self.cmd_update)
         action_about=QAction("About", self)
         action_about.triggered.connect(self.cmd_about)
         action_help=QAction("Help", self)
@@ -511,6 +529,7 @@ class MainWindow(QMainWindow):
         menu_data.addAction(action_index)
         menu_data.addAction(action_tabular)
         menu_help=menubar.addMenu("Help")
+        menu_help.addAction(action_update)
         menu_help.addAction(action_about)
         menu_help.addAction(action_help)
 
