@@ -9,6 +9,7 @@
     "preset_newline": true,
     "preset_delimiter": ",",
     "markdown": false,
+    "check_update": false,
     "smime": false,
     "root_bundle": "",
     "certificate": "",

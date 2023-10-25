@@ -28,6 +28,7 @@ from index import Index
 class MainWindow(QMainWindow):
 
     signal_view=pyqtSignal(str)
+    signal_update=pyqtSignal(str)
 
     current_file=FileHandler()
     prescription=Prescription()
@@ -200,20 +201,6 @@ class MainWindow(QMainWindow):
         except FileNotFoundError as e:
             print(e)
 
-    def cmd_update(self, silent=False):
-        try:
-            print("Current version "+info["version"])
-            with request.urlopen(info["url"]+"/info.json") as response:
-                latest=json.loads(response.read().decode())
-            print("Latest version "+latest["version"])
-            if(version.parse(info["version"]) < version.parse(latest["version"])):
-                QMessageBox.information(self, "Check update", "New version <strong>"+latest["version"]+"</strong> available.<br>Visit <a href='"+latest["url"]+"'>"+latest["url"]+"</a> to get the latest version.")
-            elif(not silent):
-                QMessageBox.information(self, "Check update", "No update available. You are using version "+info["version"]+".")
-        except Exception as e:
-            QMessageBox.critical(self, "Check update", "Failed to check available update.")
-            print(e)
-
     def cmd_about(self):
         year=datetime.datetime.now().year
         if(year>2023):
@@ -230,6 +217,23 @@ class MainWindow(QMainWindow):
     def cmd_help(self):
         self.viewbox.md(os.path.join(real_dir, "README"))
         self.viewbox.show()
+
+    def cmd_update(self, silent=False):
+        try:
+            print("Current version "+info["version"])
+            with request.urlopen(info["url"]+"/info.json") as response:
+                latest=json.loads(response.read().decode())
+            print("Latest version "+latest["version"])
+            if(version.parse(info["version"]) < version.parse(latest["version"])):
+                self.signal_update.emit("New version <strong>"+latest["version"]+"</strong> available.<br>Visit <a href='"+latest["url"]+"'>"+latest["url"]+"</a> to get the latest version.")
+            elif(not silent):
+                self.signal_update.emit("No update available. You are using version "+info["version"]+".")
+        except Exception as e:
+            self.signal_update.emit("Failed to check available update.")
+            print(e)
+
+    def show_update(self, message):
+        QMessageBox.information(self, "Check update", message)
 
     def insert_preset_extra(self):
         try:
@@ -768,6 +772,7 @@ class MainWindow(QMainWindow):
         self.index=Index()
         self.index.signal_open.connect(self.cmd_open)
         self.index.signal_copy.connect(self.cmd_copy)
+        self.signal_update.connect(self.show_update)
 
         self.new_doc()
         if(config["filename"]):
