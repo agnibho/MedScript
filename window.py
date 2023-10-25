@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, sys, datetime, dateutil.parser, shutil, json
+import os, sys, datetime, dateutil.parser, shutil, json, threading
 from PyQt6.QtCore import Qt, QDateTime, QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QInputDialog, QCompleter, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
@@ -775,6 +775,9 @@ class MainWindow(QMainWindow):
 
         if(len(self.prescription.prescriber.name.strip())<1):
             self.cmd_prescriber()
+
+        if(config["check_update"]):
+            threading.Thread(target=self.cmd_update, args=[True]).start()
 
         self.setWindowIcon(QIcon(os.path.join(config["resource"], "icon_medscript.ico")))
         self.showMaximized()

@@ -42,6 +42,7 @@ class EditConfiguration(QMainWindow):
             self.input_newline.setChecked(bool(self.config["preset_newline"]))
             self.input_delimiter.setCurrentText(self.config["preset_delimiter"])
             self.input_markdown.setChecked(bool(self.config["markdown"]))
+            self.input_update.setChecked(bool(self.config["check_update"]))
             self.input_smime.setChecked(bool(self.config["smime"]))
             self.input_key.setText(self.config["private_key"])
             self.input_certificate.setText(self.config["certificate"])
@@ -58,6 +59,7 @@ class EditConfiguration(QMainWindow):
                 self.config["preset_newline"]=self.input_newline.isChecked()
                 self.config["preset_delimiter"]=self.input_delimiter.currentText()
                 self.config["markdown"]=self.input_markdown.isChecked()
+                self.config["check_update"]=self.input_update.isChecked()
                 self.config["smime"]=self.input_smime.isChecked()
                 self.config["private_key"]=self.input_key.text()
                 self.config["certificate"]=self.input_certificate.text()
@@ -68,14 +70,14 @@ class EditConfiguration(QMainWindow):
                 self.hide()
             except Exception as e:
                 QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
-                raise(e)
+                print(e)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         try:
             with open(config_file) as f:
-                self.config=json.loads(f.read())
+                self.config=json.loads(f.read()) | config
         except Exception as e:
             print(e)
             self.config=config
@@ -106,6 +108,8 @@ class EditConfiguration(QMainWindow):
         layout.addRow("Preset Delimiter", self.input_delimiter)
         self.input_markdown=QCheckBox("Enable markdown formatting", self)
         layout.addRow("Markdown", self.input_markdown)
+        self.input_update=QCheckBox("Check update on startup", self)
+        layout.addRow("Check Update", self.input_update)
         self.input_smime=QCheckBox("Enable digital signature (experimental)", self)
         layout.addRow("S/MIME", self.input_smime)
         self.input_key=QLineEdit(self)

@@ -36,6 +36,7 @@ default = {
         "preset_newline": "True",
         "preset_delimiter": ",",
         "markdown": "False",
+        "check_update": "False",
         "smime": "False",
         "root_bundle": "",
         "private_key": "",
