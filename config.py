@@ -33,11 +33,13 @@ default = {
         "template_directory": "template",
         "template": "default_prescription",
         "preset_directory": "preset",
-        "preset_newline": "True",
+        "plugin_directory": "plugin",
+        "enable_plugin": False,
+        "preset_newline": True,
         "preset_delimiter": ",",
-        "markdown": "False",
-        "check_update": "False",
-        "smime": "False",
+        "markdown": False,
+        "check_update": False,
+        "smime": False,
         "root_bundle": "",
         "private_key": "",
         "certificate": ""
@@ -55,6 +57,7 @@ config["filename"]=args.filename
 config["data_directory"]=os.path.abspath(os.path.join(real_dir, os.path.expanduser(config["data_directory"])))
 config["document_directory"]=os.path.join(config["data_directory"], config["document_directory"])
 config["preset_directory"]=os.path.join(config["data_directory"], config["preset_directory"])
+config["plugin_directory"]=os.path.join(config["data_directory"], config["plugin_directory"])
 config["template_directory"]=os.path.join(config["data_directory"], config["template_directory"])
 config["template"]=os.path.join(config["template_directory"], config["template"])
 config["resource"]=os.path.abspath(os.path.join(real_dir, "resource"))
@@ -75,6 +78,7 @@ os.makedirs(config["data_directory"], exist_ok=True)
 os.makedirs(config["document_directory"], exist_ok=True)
 os.makedirs(config["prescriber_directory"], exist_ok=True)
 os.makedirs(config["preset_directory"], exist_ok=True)
+os.makedirs(config["plugin_directory"], exist_ok=True)
 os.makedirs(config["template_directory"], exist_ok=True)
 if not os.path.exists(os.path.join(config["data_directory"], "config.json")):
     shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "config.json")), os.path.join(config["data_directory"], "config.json"))

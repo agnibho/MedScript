@@ -214,9 +214,30 @@ here.
 
 5. Markdown: The markdown formatting can be enabled from here.
 
-6. S/MIME: This is an experimental feature and is disabled by default. To use
+6. Check update: Whether updates are available can be checked at program start
+up by enabling this option.
+
+7. Plugin: The plugin system can be enabled from here.
+
+8. S/MIME: This is an experimental feature and is disabled by default. To use
 it, it has to be enabled first from the settings. The Private key, X509
 certificate and Root bundle can be selected from the options that follow this.
+
+Plugin
+------
+
+MedScript has a plugin system which can be used to incorporate customized
+plugins written in python. To use the plugins, the plugins must be saved in
+the configured plugin directory and plugin must be enabled in the
+configuration.
+
+The details of the plugin system and the documentation for development is
+available in the project website.
+
+Website
+-------
+
+<https://code.agnibho.com/medscript/>
 
 License
 -------

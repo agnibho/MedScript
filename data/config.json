@@ -10,6 +10,7 @@
     "preset_delimiter": ",",
     "markdown": false,
     "check_update": false,
+    "enable_plugin": false,
     "smime": false,
     "root_bundle": "",
     "certificate": "",

@@ -13,6 +13,7 @@ from pathlib import Path
 from hashlib import md5
 from urllib import request
 from packaging import version
+from functools import partial
 
 from config import config, info, real_dir
 from prescription import Prescription
@@ -24,6 +25,7 @@ from viewbox import ViewBox
 from preset import Preset
 from tabular import Tabular
 from index import Index
+from plugin import Plugin
 
 class MainWindow(QMainWindow):
 
@@ -33,6 +35,7 @@ class MainWindow(QMainWindow):
     current_file=FileHandler()
     prescription=Prescription()
     renderer=Renderer()
+    plugin=Plugin()
     save_state=md5("".encode()).hexdigest()
     unchanged_state=False
 
@@ -50,6 +53,7 @@ class MainWindow(QMainWindow):
                     self.current_file.set_file(QFileDialog.getOpenFileName(self, "Open File", config["document_directory"], "Prescriptions (*.mpaz);; All Files (*)")[0])
                 self.current_file.open()
                 self.prescription.read_from(os.path.join(self.current_file.directory.name,"prescription.json"))
+                self.plugin.open(self.prescription)
                 self.load_interface_from_instance()
                 self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
                 self.load_attachment(self.current_file.list())
@@ -69,6 +73,8 @@ class MainWindow(QMainWindow):
 
     def cmd_save(self, save_as=False):
         self.update_instance()
+        self.plugin.save(self.prescription)
+        self.load_interface_from_instance()
         suggest=self.prescription.id if(self.prescription.id) else self.prescription.name
         suggest=os.path.abspath(os.path.join(config["document_directory"], suggest)+".mpaz")
         if(save_as or not self.unchanged_state or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm change", "Modify the original file?")):
@@ -96,6 +102,8 @@ class MainWindow(QMainWindow):
         self.cmd_save(save_as=True)
 
     def cmd_refresh(self):
+        self.plugin.refresh(self.prescription)
+        self.load_interface_from_instance()
         self.refresh()
 
     def cmd_quit(self):
@@ -394,6 +402,8 @@ class MainWindow(QMainWindow):
         self.input_attachment.clear()
         self.load_interface()
         self.update_instance()
+        self.plugin.new(self.prescription)
+        self.load_interface_from_instance()
         self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
 
     def refresh(self):
@@ -532,6 +542,20 @@ class MainWindow(QMainWindow):
         menu_data=menubar.addMenu("Data")
         menu_data.addAction(action_index)
         menu_data.addAction(action_tabular)
+
+        if(config["enable_plugin"]):
+            action_plugin=[]
+            try:
+                for i in self.plugin.commands():
+                    action_plugin.append(QAction(i[1], self))
+                    action_plugin[-1].triggered.connect(partial(self.plugin.run, i[0], self.prescription))
+                    action_plugin[-1].triggered.connect(self.load_interface_from_instance)
+            except Exception as e:
+                print(e)
+            menu_plugin=menubar.addMenu("Plugin")
+            for i in action_plugin:
+                menu_plugin.addAction(i)
+
         menu_help=menubar.addMenu("Help")
         menu_help.addAction(action_update)
         menu_help.addAction(action_about)
