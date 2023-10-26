@@ -40,49 +40,55 @@ class Plugin():
     def commands(self):
         cmds=[]
         for i in self.plugins:
-            cmds.append([i, self.get_name(i)])
+            if(hasattr(i, "run") and callable(i.run)):
+                cmds.append([i, self.get_name(i)])
         return(cmds)
 
     def new(self, prescription):
         for i in self.plugins:
             try:
-                msg=i.new(prescription)
-                if(msg):
-                    QMessageBox.information(None, "Information", msg)
+                if(hasattr(i, "new") and callable(i.new)):
+                    msg=i.new(prescription)
+                    if(msg):
+                        QMessageBox.information(None, "Information", msg)
             except Exception as e:
                 print(e)
 
     def open(self, prescription):
         for i in self.plugins:
             try:
-                msg=i.open(prescription)
-                if(msg):
-                    QMessageBox.information(None, "Information", msg)
+                if(hasattr(i, "open") and callable(i.open)):
+                    msg=i.open(prescription)
+                    if(msg):
+                        QMessageBox.information(None, "Information", msg)
             except Exception as e:
                 print(e)
 
     def save(self, prescription):
         for i in self.plugins:
             try:
-                msg=i.save(prescription)
-                if(msg):
-                    QMessageBox.information(None, "Information", msg)
+                if(hasattr(i, "save") and callable(i.save)):
+                    msg=i.save(prescription)
+                    if(msg):
+                        QMessageBox.information(None, "Information", msg)
             except Exception as e:
                 print(e)
 
     def refresh(self, prescription):
         for i in self.plugins:
             try:
-                msg=i.refresh(prescription)
-                if(msg):
-                    QMessageBox.information(None, "Information", msg)
+                if(hasattr(i, "refresh") and callable(i.refresh)):
+                    msg=i.refresh(prescription)
+                    if(msg):
+                        QMessageBox.information(None, "Information", msg)
             except Exception as e:
                 print(e)
 
     def run(self, module, prescription):
         try:
-            msg=module.run(prescription)
-            if(msg):
-                QMessageBox.information(None, "Information", msg)
+            if(hasattr(module, "run") and callable(module.run)):
+                msg=module.run(prescription)
+                if(msg):
+                    QMessageBox.information(None, "Information", msg)
         except Exception as e:
             print(e)
