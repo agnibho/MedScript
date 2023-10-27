@@ -104,6 +104,7 @@ class MainWindow(QMainWindow):
         self.cmd_save(save_as=True)
 
     def cmd_refresh(self):
+        self.update_instance()
         self.plugin.refresh(self.prescription)
         self.load_interface_from_instance()
         self.refresh()
@@ -550,6 +551,7 @@ class MainWindow(QMainWindow):
             try:
                 for i in self.plugin.commands():
                     action_plugin.append(QAction(i[1], self))
+                    action_plugin[-1].triggered.connect(self.update_instance)
                     action_plugin[-1].triggered.connect(partial(self.plugin.run, i[0], self.prescription))
                     action_plugin[-1].triggered.connect(self.load_interface_from_instance)
             except Exception as e:
