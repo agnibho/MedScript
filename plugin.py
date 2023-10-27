@@ -23,10 +23,11 @@ class Plugin():
         plugin_list=glob(os.path.join(config["plugin_directory"], "*"))
         for i in plugin_list:
             try:
-                spec=importlib.util.spec_from_file_location(os.path.basename(i), os.path.join(i, "main.py"))
-                mod=importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(mod)
-                self.plugins.append(mod)
+                if(os.path.isdir(i)):
+                    spec=importlib.util.spec_from_file_location(os.path.basename(i), os.path.join(i, "main.py"))
+                    mod=importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(mod)
+                    self.plugins.append(mod)
             except Exception as e:
                 print(i, ":", e)
 
