@@ -34,3 +34,7 @@ class Preset():
             print(self.file, e)
         except IndexError as e:
             print(self.file, e)
+        except StopIteration as e:
+            print(self.file, e, ": Check if file is empty")
+        except Exception as e:
+            print(self.file, e)

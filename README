@@ -174,13 +174,25 @@ need to type them. To use this feature the text must be entered beforehand to
 the respective files. These files are in the .csv format and can be edited
 with any spreadsheet editing software.
 
+There is a preset editor included with this software as well. This editor can
+be accessed by going to the setting menu and selecting the preset option.
+
+The preset editor contains a drop down input at the top which can be used to
+select the respective file to edit. There is also a save button at the top
+which can be used to save the changes to the selected file.
+
+The data is presented in an editable table which can be used to edit the data
+in the selected file. While editing, the KEY/VALUE format is to be used as
+shown in the top row. The add row button at the bottom can be used to add a
+new row for entry of new data.
+
 The preset files are kept in the preset directory. The files associated with
 medical certificate, clinical note, report, advice, investigation, medication
 and additional are certify.csv, note.csv, report.csv, advice.csv,
 investigation.csv, medication.csv and additional.csv. Each file contains a top
 row indicating the variables in the columns. The data is entered in two
 columns with each row containing a KEY and a TEXT. The TEXT can be entered in
-to the edit area by selecting the KEY from the preset input. Blank files with
+the edit area by selecting the KEY from the preset input. Blank files with
 only the top row are included with the program.
 
 Configuration
