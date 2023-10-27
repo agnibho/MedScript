@@ -81,6 +81,8 @@ class MainWindow(QMainWindow):
             try:
                 if not os.path.exists(self.current_file.file):
                     filename=QFileDialog.getSaveFileName(self, "Save File", suggest, "Prescriptions (*.mpaz);; All Files (*)")[0]
+                    if(not filename.endswith(".mpaz")):
+                       filename=filename+".mpaz"
                     self.current_file.set_file(filename)
                 for i in range(self.input_attachment.count()):
                     self.current_file.copy(self.input_attachment.item(i).text())
