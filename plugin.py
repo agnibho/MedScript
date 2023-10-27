@@ -17,7 +17,6 @@ class Plugin():
 
     def __init__(self):
         if(config["enable_plugin"]):
-        #if(not config["enable_plugin"]):
             self.load()
 
     def load(self):
