@@ -92,6 +92,8 @@ class Prescription:
         with open(file, "w") as f:
             try:
                 del self.file
+            except AttributeError as e:
+                pass
             except Exception as e:
                 print(e)
             f.write(self.get_json())
