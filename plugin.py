@@ -6,7 +6,7 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 import os, importlib
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox, QInputDialog
 from glob import glob
 from config import config
 
@@ -48,6 +48,8 @@ class Plugin():
         for i in self.plugins:
             try:
                 if(hasattr(i, "new") and callable(i.new)):
+                    if(hasattr(i, "input") and callable(i.input)):
+                        i.input(self.input())
                     msg=i.new(prescription)
                     if(msg):
                         QMessageBox.information(None, "Information", msg)
@@ -58,6 +60,8 @@ class Plugin():
         for i in self.plugins:
             try:
                 if(hasattr(i, "open") and callable(i.open)):
+                    if(hasattr(i, "input") and callable(i.input)):
+                        i.input(self.input())
                     msg=i.open(prescription)
                     if(msg):
                         QMessageBox.information(None, "Information", msg)
@@ -68,6 +72,8 @@ class Plugin():
         for i in self.plugins:
             try:
                 if(hasattr(i, "save") and callable(i.save)):
+                    if(hasattr(i, "input") and callable(i.input)):
+                        i.input(self.input())
                     msg=i.save(prescription)
                     if(msg):
                         QMessageBox.information(None, "Information", msg)
@@ -78,6 +84,8 @@ class Plugin():
         for i in self.plugins:
             try:
                 if(hasattr(i, "refresh") and callable(i.refresh)):
+                    if(hasattr(i, "input") and callable(i.input)):
+                        i.input(self.input())
                     msg=i.refresh(prescription)
                     if(msg):
                         QMessageBox.information(None, "Information", msg)
@@ -87,8 +95,20 @@ class Plugin():
     def run(self, module, prescription):
         try:
             if(hasattr(module, "run") and callable(module.run)):
+                if(hasattr(module, "input") and callable(module.input)):
+                    module.input(self.input())
                 msg=module.run(prescription)
                 if(msg):
                     QMessageBox.information(None, "Information", msg)
+        except Exception as e:
+            print(e)
+
+    def input(self):
+        try:
+            text, ok=QInputDialog.getText(None, "User input", "Enter text:")
+            if text and ok:
+                return text
+            else:
+                return ""
         except Exception as e:
             print(e)

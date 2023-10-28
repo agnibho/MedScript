@@ -13,7 +13,7 @@ in future updates.
 File
 ----
 
-The program uses a custom file format .mpaz (Medical Prescription Archive -
+The program uses a custom file format mpaz (Medical Prescription Archive -
 Zipped). It is a zip file in a specific format which includes:
 
 1. A meta.json file containing file type and mpaz version.
@@ -23,6 +23,44 @@ Zipped). It is a zip file in a specific format which includes:
 
 Optionally the mpaz archive may also include an S/MIME signature and
 certificate for authentication.
+
+The structure of the mpaz file is as follows:
+
+    <filename>.mpaz (zipped file)
+    |-- meta.json (e.g. {"type": "MedScript", "version": "<mpaz version>"})
+    |-- prescription.json (Prescription object in JSON format)
+    |-- template (included template for rendering)
+    |   |-- index.html (Jinja2 template)
+    |   |-- <other template files e.g. CSS>
+    |-- attachment (directory containing attachments)
+    |   |-- <attached files>
+    |-- signature (optional: S/MIME signature)
+    |-- certificate.pem (optional: full certificate chain including end-user, intermediates and root certificate)
+
+Directory
+---------
+
+MedScript uses a directory structure to store user files. It is highly
+configurable. An example directory structure is given below:
+
+    <medscript data directory> (configurable)
+    |-- document (for storing prescription files)
+    |   |-- <document files>
+    |-- plugin (for installing plugins)
+    |   |-- <installed plugins>
+    |-- prescriber (for storing prescriber information)
+    |   |-- <prescriber files in JSON format>
+    |-- preset (for storing preset files)
+    |   |-- additional.csv
+    |   |-- advice.csv
+    |   |-- certify.csv
+    |   |-- investigation.csv
+    |   |-- medication.csv
+    |   |-- note.csv
+    |   |-- report.csv
+    |-- template
+    |   |-- <installed templates>
+    |-- config.json (the configuration file)
 
 Install
 -------
@@ -40,6 +78,8 @@ The required Python libraries are as follows:
 4. Jinja2
 5. lxml
 6. Markdown
+7. cryptography
+8. packaging
 
 Usage
 -----
@@ -73,15 +113,15 @@ note by clicking the insert button.
 preset option.
 
 4. Advice tab: It contains the primary advices given to the patient. It is
-usually printed at the top of the advice section of the prescription.It also
+usually printed at the top of the advice section of the prescription. It also
 has the preset option.
 
 5. Investigation tab: It contains the investigations suggested to the
 patient. It also has the preset option.
 
 6. Medication tab: It contains the medications advised to the patient. It has
-the preset option. It can contain both the generic and brand name of a
-medicine. To insert a alternative name (generic/brand) write it on the same
+the preset option. It can contain both the generic and brand names of a
+medicine. To insert an alternative name (generic/brand) write it on the same
 line and surround it with square brackets i.e []. It also has the preset
 option.
 
@@ -100,7 +140,7 @@ file created or edited in the program.
 
 ### Opening a prescription
 
-The prescriptions are saved in .mpaz files and can be shared easily. To open a
+The prescriptions are saved in mpaz files and can be shared easily. To open a
 prescription file, the "Open" option from the file menu can be used.
 Alternatively the file name can be supplied to the program as command line
 argument when starting from the command line.
@@ -110,8 +150,7 @@ argument when starting from the command line.
 The prescriptions can be rendered and subsequently printed from the "Prepare"
 menu by selecting the "Render" option. Note that the files must be saved
 before rendering. The rendered prescription is opened in a separate window. It
-can be saved as PDF or it can be opened in the system browser and printed from
-there.
+can be saved as PDF or printed directly.
 
 ### Data
 
@@ -119,26 +158,29 @@ The prescription files in the default document folder are incorporated into an
 index which can be used to quickly find a particular prescription. To use this
 feature, select the "Index" option in the "Data" menu.
 
-Data from the The prescription files can be combined into a table and
+Data from the the prescription files can be combined into a table and
 exported to a CSV file for analysis from the "Tabular" option in the "Data"
 menu.
 
 ### Template
 
-The program uses jinja2 template for rendering the prescription. A default
+The program uses Jinja2 template for rendering the prescription. A default
 template is provided with the program. However, other templates (see default
 template for reference) can be created and placed in the template folder to be
 used for rendering the prescriptions. The drop down option in the toolbar can
 be used to switch between available templates.
 
-Note that the templates are packaged with the .mpaz file which can be used for
+Note that the templates are packaged with the mpaz file which can be used for
 rendering. However, modifying/saving the file overwrites it.
+
+It is easy to develop templates for the program. How to develop templates is
+mentioned below.
 
 ### Markdown
 
 This program supports markdown formatting. Markdown can be used to format the
 prescriptions and certificates. It can be turned on from the
-configuration dialog under the settings menu.
+"Configuration" dialog under the "Settings" menu.
 
 ### Medical Certificate
 
@@ -163,7 +205,7 @@ The data of the currently selected prescriber can be edited using the
 
 If multiple prescribers have been configured (e.g. by copying the prescriber
 file and editing them individually), the prescribers can easily by switched by
-using the switch option in the settings menu and selecting the desired
+using the "Switch" option in the "Settings" menu and selecting the desired
 prescriber file.
 
 Preset
@@ -171,19 +213,19 @@ Preset
 
 The program uses a preset system to insert repeatedly used text without the
 need to type them. To use this feature the text must be entered beforehand to
-the respective files. These files are in the .csv format and can be edited
+the respective files. These files are in the CSV format and can be edited
 with any spreadsheet editing software.
 
 There is a preset editor included with this software as well. This editor can
-be accessed by going to the setting menu and selecting the preset option.
+be accessed by going to the "Settings" menu and selecting the "Preset" option.
 
 The preset editor contains a drop down input at the top which can be used to
-select the respective file to edit. There is also a save button at the top
+select the respective file to edit. There is also a "Save" button at the top
 which can be used to save the changes to the selected file.
 
 The data is presented in an editable table which can be used to edit the data
 in the selected file. While editing, the KEY/VALUE format is to be used as
-shown in the top row. The add row button at the bottom can be used to add a
+shown in the top row. The "Add Row" button at the bottom can be used to add a
 new row for entry of new data.
 
 The preset files are kept in the preset directory. The files associated with
@@ -209,8 +251,9 @@ However, a different config file may be provided by using the
 It is recommended to use the default config file as base while creating
 another customized config file.
 
-A graphical configuration editor is also included with the program. The
-options are as follows:
+A graphical configuration editor is also included with the program. It can be
+accessed by going to the "Settings" menu and selecting the "Configuration"
+option. The configurable options are as follows:
 
 1. Data directory: where the user data of the program is stored.
 
@@ -235,6 +278,38 @@ up by enabling this option.
 it, it has to be enabled first from the settings. The Private key, X509
 certificate and Root bundle can be selected from the options that follow this.
 
+Prescription Object
+-------------------
+
+The program uses a Prescription object to store the prescription data. The
+structure of the Prescription object is as follows:
+
+    prescription (Prescription object)
+    |-- date (string: date-time in the %Y-%m-%d %H:%M:%S format)
+    |-- id (string: the id of the prescription)
+    |-- name (string: the name of the patient)
+    |-- age (string: the age of the patient, may contain unit)
+    |-- sex (string: sex of the patient)
+    |-- address (string: address of the patient)
+    |-- contact (string: contact number / email of the patient)
+    |-- extra (string: extra data related to the prescription, may also be used for writing certificates)
+    |-- mode (string: the mode of consultation e.g. tele-consultation)
+    |-- daw (boolean: dispense as written)
+    |-- diagnosis (string: diagnosis of the patient's condition)
+    |-- note (string: clinical note e.g. history, physical examination)
+    |-- report (string: available reports)
+    |-- advice (string: advice given to the patient, not the medications)
+    |-- investigation (string: investigations suggested for the patient)
+    |-- medication (string: the list of medications prescribed)
+    |-- additional (string: any additional advice/instructions)
+    |-- prescriber (Prescriber object)
+    |   |-- name (string: the name of the prescriber)
+    |   |-- qualification (string: the qualification of the prescriber)
+    |   |-- registration (string: the registration number of the prescriber)
+    |   |-- address (string: the address of the prescriber)
+    |   |-- contact (string: contact number / email of the prescriber)
+    |   |-- extra (string: any extra data about the prescriber)
+
 Plugin
 ------
 
@@ -243,8 +318,87 @@ plugins written in python. To use the plugins, the plugins must be saved in
 the configured plugin directory and plugin must be enabled in the
 configuration.
 
-The details of the plugin system and the documentation for development is
-available in the project website.
+Enabling arbitrary plugin is dangerous and may cause catastrophic damage. Only
+install plugins from trusted sources and review the code.
+
+Plugin Development
+------------------
+
+Developing MedScript plugin is very simple. All you need is to create a python
+file and implement a few functions.
+
+The plugin is kept in its own directory. The name of the directory is the name
+of the plugin. A plugin directory must contain a file called main.py which
+contains the functions needed by MedScript plugin system. The directory tree
+is as follows:
+
+    <medscript data directory (e.g. ~/MedScript)>
+    |-- plugin
+    |   |-- <plugin directory (e.g. the name of the plugin)
+    |   |   |-- main.py
+    |   |   |-- <other files needed by the plugin>
+
+The main.py file may implement the following functions which will be called by
+the program as needed:
+
+    def new(prescription)
+        Called when creating a new document. It is also called during program startup.
+    def open(prescription)
+        Called when opening a document.
+    def save(prescription)
+        Called when saving a document.
+    def refresh(prescription)
+        Called when the refresh option is selected.
+    def run(prescription)
+        Called when the option associated with the plugin is selected from the plugin menu.
+
+The `prescription` parameter passed to the functions is a Prescription object.
+The structure of this object is mentioned above. The `prescription` object can
+be modified directly by the plugins.
+
+Please note that an option associated with the plugin is added to the "Plugin"
+menu if the plugin implements a `run` function. By default the name of the
+option is the name of the plugin. However, this can be overridden by setting a
+global variable called `name` with the desired name.
+
+Each function mentioned above may return a string which will be displayed to
+the user by the program.
+
+The plugin may implement one or more functions mentioned above, it is not
+necessary to implement all.
+
+An example plugin, that modifies the name of the patient, may be as follows:
+
+    name="Change Name"
+    text=""
+
+    def run(prescription):
+        global text
+        prescription.name=text
+        return("Name change")
+
+    def input(data):
+        global text
+        text=data.strip()
+
+Template Development
+--------------------
+
+Templates are used to render the prescriptions to HTML. A template contains a
+directory with the name of the template. This directory contains a file called
+index.html and any other additional files needed.
+
+    <medscript data directory (e.g. ~/MedScript)>
+    |-- template
+    |   |-- <template directory e.g. the name of the template>
+    |   |   |-- index.html (the Jinja2 template)
+    |   |   |-- <additional files e.g. CSS>
+
+The index.html file is the Jinja2 template. The attributes of the Prescription
+object is available to the template. For example the name of the patient can
+be accessed by `{{name}}` while the name of the prescriber can be accessed by
+`{{prescriber.name}}`.
+
 
 Website
 -------
