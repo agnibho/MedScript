@@ -364,6 +364,16 @@ global variable called `name` with the desired name.
 Each function mentioned above may return a string which will be displayed to
 the user by the program.
 
+Plugins may get input from the user by implementing one or more of the
+following functions:
+
+    def input(string text)
+        Get text input from the user.
+    def fileopen(string path)
+        Get file to open. Only called before "run" function.
+    def filesave(string path)
+        Get file to save. Only called before "run" function.
+
 The plugin may implement one or more functions mentioned above, it is not
 necessary to implement all.
 

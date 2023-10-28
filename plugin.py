@@ -6,7 +6,7 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 import os, importlib
-from PyQt6.QtWidgets import QMessageBox, QInputDialog
+from PyQt6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
 from glob import glob
 from config import config
 
@@ -97,6 +97,10 @@ class Plugin():
             if(hasattr(module, "run") and callable(module.run)):
                 if(hasattr(module, "input") and callable(module.input)):
                     module.input(self.input())
+                if(hasattr(module, "fileopen") and callable(module.fileopen)):
+                    module.fileopen(QFileDialog.getOpenFileName()[0])
+                if(hasattr(module, "filesave") and callable(module.filesave)):
+                    module.filesave(QFileDialog.getSaveFileName()[0])
                 msg=module.run(prescription)
                 if(msg):
                     QMessageBox.information(None, "Information", msg)
