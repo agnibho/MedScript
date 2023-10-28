@@ -374,12 +374,17 @@ following functions:
     def filesave(string path)
         Get file to save. Only called before "run" function.
 
+Plugin may run in the background by defining a global variable `background`
+with the value `True`. This may be useful for long running tasks without
+freezing the program. This is only available for the "run" function.
+
 The plugin may implement one or more functions mentioned above, it is not
 necessary to implement all.
 
 An example plugin, that modifies the name of the patient, may be as follows:
 
     name="Change Name"
+    background=False
     text=""
 
     def run(prescription):

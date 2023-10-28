@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, importlib
+import os, importlib, threading
 from PyQt6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
 from glob import glob
 from config import config
@@ -36,6 +36,11 @@ class Plugin():
                 return(mod.name)
             except Exception as e:
                 return(mod.__name__)
+
+    def background(self, function, prescription):
+        msg=function(prescription)
+        if(msg):
+            QMessageBox.information(None, "Information", msg)
 
     def commands(self):
         cmds=[]
@@ -101,9 +106,13 @@ class Plugin():
                     module.fileopen(QFileDialog.getOpenFileName()[0])
                 if(hasattr(module, "filesave") and callable(module.filesave)):
                     module.filesave(QFileDialog.getSaveFileName()[0])
-                msg=module.run(prescription)
-                if(msg):
-                    QMessageBox.information(None, "Information", msg)
+                if(module.background):
+                    QMessageBox.information(None, "Information", "Module "+module.__name__+" will run in background.")
+                    threading.Thread(target=self.background, args=[module.run, prescription]).start()
+                else:
+                    msg=module.run(prescription)
+                    if(msg):
+                        QMessageBox.information(None, "Information", msg)
         except Exception as e:
             print(e)
 
