@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, importlib, threading
+import os, importlib, threading, copy
 from PyQt6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
 from glob import glob
 from config import config
@@ -38,7 +38,8 @@ class Plugin():
                 return(mod.__name__)
 
     def background(self, function, prescription):
-        msg=function(prescription)
+        prescription_copy=copy.deepcopy(prescription)
+        msg=function(prescription_copy)
         if(msg):
             QMessageBox.information(None, "Information", msg)
 
