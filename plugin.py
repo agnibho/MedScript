@@ -5,8 +5,9 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, importlib, threading, copy
+import os, importlib, copy
 from PyQt6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
+from PyQt6.QtCore import QThread, pyqtSignal
 from glob import glob
 from config import config
 
@@ -14,6 +15,7 @@ class Plugin():
 
     plugins=[]
     names=[]
+    workers=[]
 
     def __init__(self):
         if(config["enable_plugin"]):
@@ -37,12 +39,6 @@ class Plugin():
             except Exception as e:
                 return(mod.__name__)
 
-    def background(self, function, prescription):
-        prescription_copy=copy.deepcopy(prescription)
-        msg=function(prescription_copy)
-        if(msg):
-            QMessageBox.information(None, "Information", msg)
-
     def commands(self):
         cmds=[]
         for i in self.plugins:
@@ -56,9 +52,9 @@ class Plugin():
                 if(hasattr(i, "new") and callable(i.new)):
                     if(hasattr(i, "input") and callable(i.input)):
                         i.input(self.input())
-                    msg=i.new(prescription)
-                    if(msg):
-                        QMessageBox.information(None, "Information", msg)
+                    message=i.new(prescription)
+                    if(message):
+                        self.showMessage(message)
             except Exception as e:
                 print(e)
 
@@ -68,9 +64,9 @@ class Plugin():
                 if(hasattr(i, "open") and callable(i.open)):
                     if(hasattr(i, "input") and callable(i.input)):
                         i.input(self.input())
-                    msg=i.open(prescription)
-                    if(msg):
-                        QMessageBox.information(None, "Information", msg)
+                    message=i.open(prescription)
+                    if(message):
+                        self.showMessage(message)
             except Exception as e:
                 print(e)
 
@@ -80,9 +76,9 @@ class Plugin():
                 if(hasattr(i, "save") and callable(i.save)):
                     if(hasattr(i, "input") and callable(i.input)):
                         i.input(self.input())
-                    msg=i.save(prescription)
-                    if(msg):
-                        QMessageBox.information(None, "Information", msg)
+                    message=i.save(prescription)
+                    if(message):
+                        self.showMessage(message)
             except Exception as e:
                 print(e)
 
@@ -92,9 +88,9 @@ class Plugin():
                 if(hasattr(i, "refresh") and callable(i.refresh)):
                     if(hasattr(i, "input") and callable(i.input)):
                         i.input(self.input())
-                    msg=i.refresh(prescription)
-                    if(msg):
-                        QMessageBox.information(None, "Information", msg)
+                    message=i.refresh(prescription)
+                    if(message):
+                        self.showMessage(message)
             except Exception as e:
                 print(e)
 
@@ -107,13 +103,15 @@ class Plugin():
                     module.fileopen(QFileDialog.getOpenFileName()[0])
                 if(hasattr(module, "filesave") and callable(module.filesave)):
                     module.filesave(QFileDialog.getSaveFileName()[0])
-                if(hasattr(module, "filesave") and module.background):
-                    QMessageBox.information(None, "Information", "Module "+module.__name__+" will run in background.")
-                    threading.Thread(target=self.background, args=[module.run, prescription]).start()
+                if(hasattr(module, "background") and module.background):
+                    self.showMessage("Module "+module.__name__+" will run in background.")
+                    self.workers.append(Worker(module.run, prescription))
+                    self.workers[-1].pluginComplete.connect(self.showMessage)
+                    self.workers[-1].start()
                 else:
-                    msg=module.run(prescription)
-                    if(msg):
-                        QMessageBox.information(None, "Information", msg)
+                    message=module.run(prescription)
+                    if(message):
+                        self.showMessage(message)
         except Exception as e:
             print(e)
 
@@ -126,3 +124,22 @@ class Plugin():
                 return ""
         except Exception as e:
             print(e)
+
+    def showMessage(self, message):
+        QMessageBox.information(None, "Information", message)
+
+class Worker(QThread):
+
+    pluginComplete=pyqtSignal(str)
+    function=None
+    prescription=None
+
+    def __init__(self, function, prescription):
+        super().__init__()
+        self.function=function
+        self.prescription=prescription
+
+    def run(self):
+        prescription_copy=copy.deepcopy(self.prescription)
+        message=self.function(prescription_copy)
+        self.pluginComplete.emit(message)
