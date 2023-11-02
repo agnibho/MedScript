@@ -43,6 +43,7 @@ class MainWindow(QMainWindow):
     def cmd_new(self):
         if(self.confirm_close()):
             self.new_doc()
+        self.load_interface_from_instance()
 
     def cmd_open(self, file=None):
         if(self.confirm_close()):
@@ -56,6 +57,7 @@ class MainWindow(QMainWindow):
                 self.prescription.read_from(os.path.join(self.current_file.directory.name,"prescription.json"))
                 self.plugin.open(self.prescription)
                 self.load_interface_from_instance()
+                
                 self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
                 self.load_attachment(self.current_file.list())
                 self.unchanged_state=True
@@ -75,6 +77,11 @@ class MainWindow(QMainWindow):
     def cmd_save(self, save_as=False):
         self.update_instance()
         self.plugin.save(self.prescription)
+        if(self.input_template.currentText()!="<unchanged>"):
+            change_template=True
+            template=self.input_template.currentText()
+        else:
+            change_template=False
         self.load_interface_from_instance()
         suggest=self.prescription.id if(self.prescription.id) else self.prescription.name
         suggest=os.path.abspath(os.path.join(config["document_directory"], suggest)+".mpaz")
@@ -88,8 +95,9 @@ class MainWindow(QMainWindow):
                 for i in range(self.input_attachment.count()):
                     self.current_file.copy(self.input_attachment.item(i).text())
                 self.prescription.write_to(os.path.join(self.current_file.directory.name, "prescription.json"))
-                config["template"]=os.path.join(config["template_directory"], self.input_template.currentText())
-                self.current_file.save()
+                if change_template:
+                    config["template"]=os.path.join(config["template_directory"], template)
+                self.current_file.save(change_template=change_template)
                 self.unchanged_state=False
                 self.load_interface_from_instance()
                 self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
@@ -279,6 +287,7 @@ class MainWindow(QMainWindow):
             self.input_report_preset.setCurrentIndex(-1)
             if config["preset_newline"]:
                 self.input_report.insertPlainText("\n")
+
     def insert_preset_advice(self):
         try:
             self.input_advice.insertPlainText(self.preset_advice.data[self.input_advice_preset.currentText()])
@@ -288,7 +297,6 @@ class MainWindow(QMainWindow):
             self.input_advice_preset.setCurrentIndex(-1)
             if config["preset_newline"]:
                 self.input_advice.insertPlainText("\n")
-
 
     def insert_preset_investigation(self):
         try:
@@ -357,6 +365,12 @@ class MainWindow(QMainWindow):
             print(e)
 
     def load_interface_from_instance(self):
+        if(self.current_file.has_template()):
+            if(self.input_template.findText("<unchanged>")==-1):
+                self.input_template.addItem("<unchanged>")
+            self.input_template.setCurrentText("<unchanged>")
+        else:
+            self.input_template.removeItem(self.input_template.findText("<unchanged>"))
         self.load_interface(
                 file=self.prescription.file,
                 date=self.prescription.date,
@@ -579,6 +593,8 @@ class MainWindow(QMainWindow):
         toolbar.addAction(action_refresh2)
         toolbar.addAction(action_render2)
         toolbar.addSeparator()
+        label_template=QLabel("Template:")
+        toolbar.addWidget(label_template)
         self.input_template=QComboBox(self)
         templates=os.listdir(config["template_directory"])
         try:

@@ -42,14 +42,20 @@ class FileHandler():
             items.append(f)
         return(items)
 
-    def save(self, file=None):
+    def save(self, file=None, change_template=True):
         if file is not None:
             self.file=file
         with open(os.path.join(self.directory.name, "meta.json"), "w") as f:
             f.write(json.dumps(self.meta))
         template=os.path.join(self.directory.name, "template")
         os.makedirs(template, exist_ok=True)
-        shutil.copytree(config["template"], template, dirs_exist_ok=True)
+        if(change_template):
+            shutil.copytree(config["template"], template, dirs_exist_ok=True)
+        else:
+            try:
+                os.remove(os.path.join(template, "output.html"))
+            except:
+                pass
 
         with ZipFile(self.file, "w", strict_timestamps=False) as target:
             for f in glob.glob(os.path.join(self.directory.name, "**" ,"*"), recursive=True):
@@ -93,6 +99,9 @@ class FileHandler():
             os.unlink(os.path.join(self.directory.name, "signature"))
         except Exception as e:
             print(e)
+
+    def has_template(self):
+        return(os.path.exists(os.path.join(self.directory.name, "template", "index.html")))
 
     def is_signed(self):
         return(os.path.exists(os.path.join(self.directory.name, "certificate.pem")) and (os.path.exists(os.path.join(self.directory.name, "signature.p7m"))))
