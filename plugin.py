@@ -107,7 +107,7 @@ class Plugin():
                     module.fileopen(QFileDialog.getOpenFileName()[0])
                 if(hasattr(module, "filesave") and callable(module.filesave)):
                     module.filesave(QFileDialog.getSaveFileName()[0])
-                if(module.background):
+                if(hasattr(module, "filesave") and module.background):
                     QMessageBox.information(None, "Information", "Module "+module.__name__+" will run in background.")
                     threading.Thread(target=self.background, args=[module.run, prescription]).start()
                 else:
