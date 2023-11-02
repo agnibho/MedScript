@@ -43,7 +43,6 @@ class MainWindow(QMainWindow):
     def cmd_new(self):
         if(self.confirm_close()):
             self.new_doc()
-        self.load_interface_from_instance()
 
     def cmd_open(self, file=None):
         if(self.confirm_close()):
@@ -57,7 +56,7 @@ class MainWindow(QMainWindow):
                 self.prescription.read_from(os.path.join(self.current_file.directory.name,"prescription.json"))
                 self.plugin.open(self.prescription)
                 self.load_interface_from_instance()
-                
+
                 self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
                 self.load_attachment(self.current_file.list())
                 self.unchanged_state=True
@@ -596,6 +595,7 @@ class MainWindow(QMainWindow):
         label_template=QLabel("Template:")
         toolbar.addWidget(label_template)
         self.input_template=QComboBox(self)
+        self.input_template.setMinimumWidth(200)
         templates=os.listdir(config["template_directory"])
         try:
             templates.remove(os.path.basename(config["template"]))
