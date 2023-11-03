@@ -106,8 +106,10 @@ class Plugin():
                 if(hasattr(module, "background") and module.background):
                     self.showMessage("Module "+module.__name__+" will run in background.")
                     self.workers.append(Worker(module.run, prescription))
-                    self.workers[-1].pluginComplete.connect(self.showMessage)
-                    self.workers[-1].start()
+                    index=len(self.workers)-1
+                    self.workers[index].setIndex(index)
+                    self.workers[index].pluginComplete.connect(self.showMessage)
+                    self.workers[index].start()
                 else:
                     message=module.run(prescription)
                     if(message):
@@ -125,21 +127,27 @@ class Plugin():
         except Exception as e:
             print(e)
 
-    def showMessage(self, message):
+    def showMessage(self, message, index=None):
         QMessageBox.information(None, "Information", message)
+        if index is not None:
+            self.workers[index]=None
 
 class Worker(QThread):
 
-    pluginComplete=pyqtSignal(str)
+    pluginComplete=pyqtSignal(str, int)
     function=None
     prescription=None
+    index=None
 
     def __init__(self, function, prescription):
         super().__init__()
         self.function=function
         self.prescription=prescription
 
+    def setIndex(self, index):
+        self.index=index
+
     def run(self):
         prescription_copy=copy.deepcopy(self.prescription)
         message=self.function(prescription_copy)
-        self.pluginComplete.emit(message)
+        self.pluginComplete.emit(message, self.index)
