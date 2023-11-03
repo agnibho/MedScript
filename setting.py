@@ -7,7 +7,7 @@
 
 from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QCheckBox, QStatusBar, QMessageBox, QFileDialog
 from PyQt6.QtGui import QIcon
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import Qt, pyqtSignal
 import os, json
 from config import config, config_file
 
@@ -151,6 +151,7 @@ class EditConfiguration(QMainWindow):
 
         self.setCentralWidget(widget)
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
 
         self.load()
 
@@ -241,5 +242,6 @@ class EditPrescriber(QMainWindow):
 
         self.setCentralWidget(widget)
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
+        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
 
         self.load()
