@@ -26,7 +26,7 @@ class EditPreset(QMainWindow):
         self.table=QTableView()
         layout2=QHBoxLayout()
         self.input_file=QComboBox()
-        self.input_file.addItems(["note", "report", "advice", "investigation", "medication", "additional", "certify"])
+        self.input_file.addItems(["note", "report", "advice", "investigation", "medication", "additional", "certificate"])
         self.input_file.currentIndexChanged.connect(self.cmd_load)
         button_save=QPushButton("Save")
         button_save.clicked.connect(self.cmd_save)

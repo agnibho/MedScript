@@ -39,14 +39,14 @@ class Prescription:
 
     file=""
 
-    def __init__(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", prescriber=None):
-        self.set_data(date, name, dob, age, sex, address, contact, extra, mode, daw, diagnosis, note, report, advice, investigation, medication, additional)
+    def __init__(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", prescriber=None):
+        self.set_data(date, name, dob, age, sex, address, contact, extra, mode, daw, diagnosis, note, report, advice, investigation, medication, additional, certificate)
         if prescriber is None:
             self.prescriber = Prescriber()
         else:
             self.prescriber = prescriber
 
-    def set_data(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
+    def set_data(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate=""):
         self.date = date
         self.id = id
         self.name = name
@@ -69,6 +69,7 @@ class Prescription:
         self.investigation = investigation
         self.medication = medication
         self.additional = additional
+        self.certificate = certificate
 
     def set_data_from_json(self, data):
         self.prescriber.set_data_from_json(data.get("prescriber"))
@@ -90,6 +91,7 @@ class Prescription:
         self.investigation = data.get("investigation")
         self.medication = data.get("medication")
         self.additional = data.get("additional")
+        self.certificate = data.get("certificate")
 
     def get_json(self):
         return(json.dumps(self, default=lambda o: o.__dict__, indent=4))

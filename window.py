@@ -257,16 +257,6 @@ class MainWindow(QMainWindow):
     def show_update(self, message):
         QMessageBox.information(self, "Check update", message)
 
-    def insert_preset_extra(self):
-        try:
-            self.input_extra.insertPlainText(self.preset_extra.data[self.input_extra_preset.currentText()])
-        except KeyError:
-            self.input_extra.insertPlainText(self.input_extra_preset.currentText())
-        finally:
-            self.input_extra_preset.setCurrentIndex(-1)
-            if config["preset_newline"]:
-                self.input_extra.insertPlainText("\n")
-
     def insert_preset_note(self):
         try:
             self.input_note.insertPlainText(self.preset_note.data[self.input_note_preset.currentText()])
@@ -327,7 +317,17 @@ class MainWindow(QMainWindow):
             if config["preset_newline"]:
                 self.input_additional.insertPlainText("\n")
 
-    def load_interface(self, file="", date=None, id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
+    def insert_preset_certificate(self):
+        try:
+            self.input_certificate.insertPlainText(self.preset_certificate.data[self.input_certificate_preset.currentText()])
+        except KeyError:
+            self.input_certificate.insertPlainText(self.input_certificate_preset.currentText())
+        finally:
+            self.input_certificate_preset.setCurrentIndex(-1)
+            if config["preset_newline"]:
+                self.input_certificate.insertPlainText("\n")
+
+    def load_interface(self, file="", date=None, id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate=""):
         try:
             file_msg=self.current_file.file if self.current_file.file else "New file"
             sign_msg="(signed)" if config["smime"] and self.current_file.is_signed() else ""
@@ -368,6 +368,7 @@ class MainWindow(QMainWindow):
             self.input_investigation.setText(investigation)
             self.input_medication.setText(medication)
             self.input_additional.setText(additional)
+            self.input_certificate.setText(certificate)
             self.label_prescriber.setText(self.prescription.prescriber.name)
         except Exception as e:
             QMessageBox.warning(self,"Failed to load", "Failed to load the data into the application.")
@@ -398,7 +399,8 @@ class MainWindow(QMainWindow):
                 advice=self.prescription.advice,
                 investigation=self.prescription.investigation,
                 medication=self.prescription.medication,
-                additional=self.prescription.additional
+                additional=self.prescription.additional,
+                certificate=self.prescription.certificate
                 )
 
     def update_instance(self):
@@ -421,7 +423,8 @@ class MainWindow(QMainWindow):
                     advice=self.input_advice.toPlainText(),
                     investigation=self.input_investigation.toPlainText(),
                     medication=self.input_medication.toPlainText(),
-                    additional=self.input_additional.toPlainText()
+                    additional=self.input_additional.toPlainText(),
+                    certificate=self.input_certificate.toPlainText()
                     )
         except Exception as e:
             QMessageBox.critical(self,"Failed", "Critical failure happned. Please check console for more info.")
@@ -504,13 +507,13 @@ class MainWindow(QMainWindow):
         icon_render=QIcon(os.path.join(config["resource"], "icon_render.svg"))
         icon_refresh=QIcon(os.path.join(config["resource"], "icon_refresh.svg"))
 
-        self.preset_extra=Preset(os.path.join(config["preset_directory"], "certify.csv"))
         self.preset_note=Preset(os.path.join(config["preset_directory"], "note.csv"))
         self.preset_report=Preset(os.path.join(config["preset_directory"], "report.csv"))
         self.preset_advice=Preset(os.path.join(config["preset_directory"], "advice.csv"))
         self.preset_investigation=Preset(os.path.join(config["preset_directory"], "investigation.csv"))
         self.preset_medication=Preset(os.path.join(config["preset_directory"], "medication.csv"), text_as_key=True)
         self.preset_additional=Preset(os.path.join(config["preset_directory"], "additional.csv"))
+        self.preset_certificate=Preset(os.path.join(config["preset_directory"], "certificate.csv"))
 
         action_new=QAction("New", self)
         action_new.setShortcut("Ctrl+N")
@@ -678,19 +681,8 @@ class MainWindow(QMainWindow):
         self.input_diagnosis=QLineEdit(self)
         layout_info.addRow("Diagnosis", self.input_diagnosis)
         self.input_extra=QTextEdit(self)
-        self.input_extra_preset=QComboBox(self)
-        self.input_extra_preset.addItems(self.preset_extra.data.keys())
-        self.input_extra_preset.setCurrentIndex(-1)
-        self.input_extra_preset.setEditable(True)
-        self.input_extra_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        self.input_extra_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
-        self.input_extra_preset.setPlaceholderText("Select a preset")
         input_extra_preset_btn=QPushButton("Insert")
-        input_extra_preset_btn.clicked.connect(self.insert_preset_extra)
-        layout_info2.addWidget(self.input_extra_preset, 5)
-        layout_info2.addWidget(input_extra_preset_btn, 1)
-        layout_info.addRow("Certify\nPreset", layout_info2)
-        layout_info.addRow("Certify /\nExtra", self.input_extra)
+        layout_info.addRow("Extra", self.input_extra)
         self.input_mode=QComboBox(self)
         self.input_mode.addItems(["In-Person", "Tele-Consultation", "Other"])
         self.input_mode.setEditable(True)
@@ -824,6 +816,27 @@ class MainWindow(QMainWindow):
         layout_additional.addLayout(layout_additional2)
         layout_additional.addWidget(self.input_additional)
 
+        tab_certificate=QWidget(self)
+        layout_certificate=QVBoxLayout(tab_certificate)
+        layout_certificate2=QHBoxLayout()
+        label_certificate=QLabel("Certificate")
+        label_certificate.setProperty("class", "info_head")
+        self.input_certificate_preset=QComboBox(self)
+        self.input_certificate_preset.addItems(self.preset_certificate.data.keys())
+        self.input_certificate_preset.setCurrentIndex(-1)
+        self.input_certificate_preset.setEditable(True)
+        self.input_certificate_preset.completer().setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        self.input_certificate_preset.completer().setFilterMode(Qt.MatchFlag.MatchContains)
+        self.input_certificate_preset.setPlaceholderText("Select a preset")
+        input_certificate_preset_btn=QPushButton("Insert")
+        input_certificate_preset_btn.clicked.connect(self.insert_preset_certificate)
+        layout_certificate2.addWidget(self.input_certificate_preset, 5)
+        layout_certificate2.addWidget(input_certificate_preset_btn, 1)
+        self.input_certificate=QTextEdit(self)
+        layout_certificate.addWidget(label_certificate)
+        layout_certificate.addLayout(layout_certificate2)
+        layout_certificate.addWidget(self.input_certificate)
+
         tab_attachment=QWidget(self)
         layout_attachment=QVBoxLayout(tab_attachment)
         layout_attachment2=QHBoxLayout()
@@ -851,6 +864,7 @@ class MainWindow(QMainWindow):
         tab.addTab(tab_investigation, "Investigation")
         tab.addTab(tab_medication, "Medication")
         tab.addTab(tab_additional, "Additional")
+        tab.addTab(tab_certificate, "Certificate")
         tab.addTab(tab_attachment, "Attachment")
 
         self.setCentralWidget(tab)
