@@ -39,18 +39,23 @@ class Prescription:
 
     file=""
 
-    def __init__(self, date="", id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", prescriber=None):
-        self.set_data(date, name, age, sex, address, contact, extra, mode, daw, diagnosis, note, report, advice, investigation, medication, additional)
+    def __init__(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", prescriber=None):
+        self.set_data(date, name, dob, age, sex, address, contact, extra, mode, daw, diagnosis, note, report, advice, investigation, medication, additional)
         if prescriber is None:
             self.prescriber = Prescriber()
         else:
             self.prescriber = prescriber
 
-    def set_data(self, date="", id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
+    def set_data(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
         self.date = date
         self.id = id
         self.name = name
-        self.age = age
+        if(age):
+            self.dob = ""
+            self.age = age
+        else:
+            self.dob = dob
+            self.age = ""
         self.sex = sex
         self.address = address
         self.contact = contact
@@ -70,6 +75,7 @@ class Prescription:
         self.date = data.get("date")
         self.id = data.get("id")
         self.name = data.get("name")
+        self.dob = data.get("dob")
         self.age = data.get("age")
         self.sex = data.get("sex")
         self.address = data.get("address")

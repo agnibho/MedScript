@@ -6,8 +6,8 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 import os, sys, datetime, dateutil.parser, shutil, json, threading
-from PyQt6.QtCore import Qt, QDateTime, QSize, pyqtSignal
-from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QListWidget, QComboBox, QCheckBox, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QInputDialog, QCompleter, QSizePolicy
+from PyQt6.QtCore import Qt, QDateTime, QDate, QSize, pyqtSignal
+from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QDateEdit, QCalendarWidget, QListWidget, QComboBox, QCheckBox, QRadioButton, QButtonGroup, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QInputDialog, QCompleter, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
 from pathlib import Path
 from hashlib import md5
@@ -327,7 +327,7 @@ class MainWindow(QMainWindow):
             if config["preset_newline"]:
                 self.input_additional.insertPlainText("\n")
 
-    def load_interface(self, file="", date=None, id="", name="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
+    def load_interface(self, file="", date=None, id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional=""):
         try:
             file_msg=self.current_file.file if self.current_file.file else "New file"
             sign_msg="(signed)" if config["smime"] and self.current_file.is_signed() else ""
@@ -344,7 +344,17 @@ class MainWindow(QMainWindow):
             self.input_date.setDateTime(d)
             self.input_id.setText(id)
             self.input_name.setText(name)
+            try:
+                pdate=dateutil.parser.parse(dob)
+                d=QDate.fromString(pdate.strftime("%Y-%m-%d"), "yyyy-MM-dd")
+                self.input_dob.setDate(d)
+            except Exception as e:
+                pass
             self.input_age.setText(age)
+            if(age):
+                self.btnAge.click()
+            else:
+                self.btnDob.click()
             self.input_sex.setCurrentText(sex)
             self.input_address.setText(address)
             self.input_contact.setText(contact)
@@ -397,6 +407,7 @@ class MainWindow(QMainWindow):
                     date=self.input_date.dateTime().toString("yyyy-MM-dd hh:mm:ss"),
                     id=self.input_id.text(),
                     name=self.input_name.text(),
+                    dob=self.input_dob.text(),
                     age=self.input_age.text(),
                     sex=self.input_sex.currentText(),
                     address=self.input_address.text(),
@@ -456,6 +467,19 @@ class MainWindow(QMainWindow):
     def load_attachment(self, attachments):
         for attach in attachments:
             self.input_attachment.addItem(attach)
+
+    def toggleDobAge(self, active):
+        if active=="age":
+            self.input_dob.setDate(QDate(0,0,0))
+            self.input_dob.setDisplayFormat("yy")
+            self.input_dob.setEnabled(False)
+            self.input_age.setEnabled(True)
+        elif active=="dob":
+            self.input_dob.setDisplayFormat("MMMM dd, yyyy")
+            self.input_dob.setEnabled(True)
+            self.input_age.setText("")
+            self.input_age.setEnabled(False)
+
 
     def confirm_close(self):
         self.refresh()
@@ -616,14 +640,34 @@ class MainWindow(QMainWindow):
         layout_info2=QHBoxLayout()
         self.input_date=QDateTimeEdit(self)
         self.input_date.setDisplayFormat("MMMM dd, yyyy hh:mm a")
+        self.input_date.setCalendarPopup(True)
+        self.input_date.setCalendarWidget(QCalendarWidget())
         layout_info.addRow("Date", self.input_date)
         self.input_id=QLineEdit(self)
         layout_info.addRow("ID", self.input_id)
         self.input_name=QLineEdit(self)
         layout_info.addRow("Name", self.input_name)
+
+        self.input_dob=QDateEdit(self)
+        self.input_dob.setCalendarPopup(True)
+        self.input_dob.setCalendarWidget(QCalendarWidget())
+        self.input_dob.setEnabled(False)
+        layout_dobAge=QHBoxLayout()
+        dobAge=QButtonGroup()
+        self.btnDob=QRadioButton("Date of Birth")
+        self.btnAge=QRadioButton("Age")
+        dobAge.addButton(self.btnDob)
+        dobAge.addButton(self.btnAge)
+        layout_dobAge.addWidget(self.btnDob)
+        layout_dobAge.addWidget(self.btnAge)
+        self.btnDob.clicked.connect(lambda: self.toggleDobAge("dob"))
+        self.btnAge.clicked.connect(lambda: self.toggleDobAge("age"))
+        layout_info.addRow("", layout_dobAge)
+        layout_info.addRow("Date of Birth", self.input_dob)
         self.input_age=QLineEdit(self)
         layout_info.addRow("Age", self.input_age)
         self.input_sex=QComboBox(self)
+
         self.input_sex.addItems(["Male", "Female", "Other"])
         self.input_sex.setEditable(True)
         layout_info.addRow("Sex", self.input_sex)
