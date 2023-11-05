@@ -204,10 +204,10 @@ class MainWindow(QMainWindow):
         self.index.show()
 
     def cmd_configuration(self):
-        self.edit_configuration.show()
+        self.edit_configuration.exec()
 
     def cmd_prescriber(self):
-        self.edit_prescriber.show()
+        self.edit_prescriber.exec()
 
     def cmd_prescriber_reload(self, file=None):
         self.prescription.reload_prescriber(file=None)

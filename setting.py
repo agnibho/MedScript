@@ -5,13 +5,13 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QCheckBox, QStatusBar, QMessageBox, QFileDialog
+from PyQt6.QtWidgets import QDialog, QFormLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QCheckBox, QStatusBar, QMessageBox, QFileDialog
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt, pyqtSignal
 import os, json
 from config import config, config_file
 
-class EditConfiguration(QMainWindow):
+class EditConfiguration(QDialog):
 
     def select_directory(self):
         d=QFileDialog.getExistingDirectory(self, "Select Directory", config["data_directory"])
@@ -36,7 +36,6 @@ class EditConfiguration(QMainWindow):
 
     def load(self):
         try:
-            self.statusbar.showMessage(config_file)
             self.input_directory.setText(self.config["data_directory"])
             self.input_prescriber.setText(self.config["prescriber"])
             self.input_newline.setChecked(bool(self.config["preset_newline"]))
@@ -84,11 +83,9 @@ class EditConfiguration(QMainWindow):
             print(e)
             self.config=config
 
-        self.setWindowTitle("MedScript")
-        self.setGeometry(200, 200, 300, 200)
+        self.setWindowTitle("Configuration")
 
-        widget=QWidget(self)
-        layout=QFormLayout(widget)
+        layout=QFormLayout(self)
         self.input_directory=QLineEdit(self)
         btn_directory=QPushButton("Select Directory", self)
         btn_directory.clicked.connect(self.select_directory)
@@ -146,16 +143,11 @@ class EditConfiguration(QMainWindow):
         layout_btn.addWidget(button_reset)
         layout.addRow("", layout_btn)
 
-        self.statusbar=QStatusBar()
-        self.setStatusBar(self.statusbar)
-
-        self.setCentralWidget(widget)
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
-        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
 
         self.load()
 
-class EditPrescriber(QMainWindow):
+class EditPrescriber(QDialog):
 
     signal_save=pyqtSignal(str)
 
@@ -165,7 +157,6 @@ class EditPrescriber(QMainWindow):
     def load(self):
         try:
             self.file=config["prescriber"]
-            self.statusbar.showMessage(self.file)
             with open(self.file) as data:
                 self.prescriber=json.loads(data.read())
             self.input_name.setText(self.prescriber["name"])
@@ -208,11 +199,9 @@ class EditPrescriber(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle("MedScript")
-        self.setGeometry(200, 200, 300, 200)
+        self.setWindowTitle("Prescriber")
 
-        widget=QWidget(self)
-        layout=QFormLayout(widget)
+        layout=QFormLayout(self)
         self.input_name=QLineEdit(self)
         layout.addRow("Name", self.input_name)
         self.input_qualification=QLineEdit(self)
@@ -237,11 +226,6 @@ class EditPrescriber(QMainWindow):
         layout_btn.addWidget(button_reset)
         layout.addRow("", layout_btn)
 
-        self.statusbar=QStatusBar()
-        self.setStatusBar(self.statusbar)
-
-        self.setCentralWidget(widget)
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
-        self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint)
 
         self.load()
