@@ -15,21 +15,26 @@ class Prescriber:
         else:
             self.read_from(file)
 
-    def set_data(self, name="", qualification="", registration="", address="", contact="", extra=""):
+    def set_data(self, name="", qualification="", registration="", address="", contact="", extra="", properties=None):
         self.name = name
         self.qualification = qualification
         self.registration = registration
         self.address = address
         self.contact = contact
         self.extra = extra
+        self.properties = properties
 
     def set_data_from_json(self, data):
-        self.name = data["name"]
-        self.qualification = data["qualification"]
-        self.registration = data["registration"]
-        self.address = data["address"]
-        self.contact = data["contact"]
-        self.extra = data["extra"]
+        try:
+            self.name = data["name"]
+            self.qualification = data["qualification"]
+            self.registration = data["registration"]
+            self.address = data["address"]
+            self.contact = data["contact"]
+            self.extra = data["extra"]
+            self.properties = data["properties"]
+        except Exception as e:
+            print(e)
 
     def read_from(self, file):
         with open(file, "r") as f:
@@ -39,14 +44,14 @@ class Prescription:
 
     file=""
 
-    def __init__(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, prescriber=None):
-        self.set_data(date, name, dob, age, sex, address, contact, extra, mode, daw, diagnosis, note, report, advice, investigation, medication, additional, certificate, custom)
+    def __init__(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties=None, prescriber=None):
+        self.set_data(date, name, dob, age, sex, address, contact, extra, mode, daw, diagnosis, note, report, advice, investigation, medication, additional, certificate, custom, properties)
         if prescriber is None:
             self.prescriber = Prescriber()
         else:
             self.prescriber = prescriber
 
-    def set_data(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None):
+    def set_data(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties=None):
         self.date = date
         self.id = id
         self.name = name
@@ -71,29 +76,34 @@ class Prescription:
         self.additional = additional
         self.certificate = certificate
         self.custom = custom
+        self.properties = properties
 
     def set_data_from_json(self, data):
-        self.prescriber.set_data_from_json(data.get("prescriber"))
-        self.date = data.get("date")
-        self.id = data.get("id")
-        self.name = data.get("name")
-        self.dob = data.get("dob")
-        self.age = data.get("age")
-        self.sex = data.get("sex")
-        self.address = data.get("address")
-        self.contact = data.get("contact")
-        self.extra = data.get("extra")
-        self.mode = data.get("mode")
-        self.daw = data.get("daw")
-        self.diagnosis = data.get("diagnosis")
-        self.note = data.get("note")
-        self.report = data.get("report")
-        self.advice = data.get("advice")
-        self.investigation = data.get("investigation")
-        self.medication = data.get("medication")
-        self.additional = data.get("additional")
-        self.certificate = data.get("certificate")
-        self.custom = data.get("custom")
+        try:
+            self.prescriber.set_data_from_json(data.get("prescriber"))
+            self.date = data.get("date")
+            self.id = data.get("id")
+            self.name = data.get("name")
+            self.dob = data.get("dob")
+            self.age = data.get("age")
+            self.sex = data.get("sex")
+            self.address = data.get("address")
+            self.contact = data.get("contact")
+            self.extra = data.get("extra")
+            self.mode = data.get("mode")
+            self.daw = data.get("daw")
+            self.diagnosis = data.get("diagnosis")
+            self.note = data.get("note")
+            self.report = data.get("report")
+            self.advice = data.get("advice")
+            self.investigation = data.get("investigation")
+            self.medication = data.get("medication")
+            self.additional = data.get("additional")
+            self.certificate = data.get("certificate")
+            self.custom = data.get("custom")
+            self.properties = data.get("properties")
+        except Exception as e:
+            print(e)
 
     def get_json(self):
         return(json.dumps(self, default=lambda o: o.__dict__, indent=4))
