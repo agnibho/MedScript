@@ -26,6 +26,7 @@ from viewbox import ViewBox
 from preset import Preset
 from tabular import Tabular
 from index import Index
+from customform import CustomForm
 from plugin import Plugin
 
 class MainWindow(QMainWindow):
@@ -327,7 +328,7 @@ class MainWindow(QMainWindow):
             if config["preset_newline"]:
                 self.input_certificate.insertPlainText("\n")
 
-    def load_interface(self, file="", date=None, id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate=""):
+    def load_interface(self, file="", date=None, id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None):
         try:
             file_msg=self.current_file.file if self.current_file.file else "New file"
             sign_msg="(signed)" if config["smime"] and self.current_file.is_signed() else ""
@@ -369,6 +370,7 @@ class MainWindow(QMainWindow):
             self.input_medication.setText(medication)
             self.input_additional.setText(additional)
             self.input_certificate.setText(certificate)
+            self.input_custom.setData(custom)
             self.label_prescriber.setText(self.prescription.prescriber.name)
         except Exception as e:
             QMessageBox.warning(self,"Failed to load", "Failed to load the data into the application.")
@@ -400,7 +402,8 @@ class MainWindow(QMainWindow):
                 investigation=self.prescription.investigation,
                 medication=self.prescription.medication,
                 additional=self.prescription.additional,
-                certificate=self.prescription.certificate
+                certificate=self.prescription.certificate,
+                custom=self.prescription.custom
                 )
 
     def update_instance(self):
@@ -424,7 +427,8 @@ class MainWindow(QMainWindow):
                     investigation=self.input_investigation.toPlainText(),
                     medication=self.input_medication.toPlainText(),
                     additional=self.input_additional.toPlainText(),
-                    certificate=self.input_certificate.toPlainText()
+                    certificate=self.input_certificate.toPlainText(),
+                    custom=self.input_custom.getData()
                     )
         except Exception as e:
             QMessageBox.critical(self,"Failed", "Critical failure happned. Please check console for more info.")
@@ -856,6 +860,11 @@ class MainWindow(QMainWindow):
         layout_attachment2.addWidget(button_remove)
         layout_attachment2.addWidget(button_save)
 
+        tab_custom=QWidget(self)
+        layout_custom=QVBoxLayout(tab_custom)
+        self.input_custom=CustomForm()
+        layout_custom.addWidget(self.input_custom)
+
         tab=QTabWidget(self)
         tab.addTab(tab_info, "Patient")
         tab.addTab(tab_note, "Clinical")
@@ -865,6 +874,8 @@ class MainWindow(QMainWindow):
         tab.addTab(tab_medication, "Medication")
         tab.addTab(tab_additional, "Additional")
         tab.addTab(tab_certificate, "Certificate")
+        if(config["enable_form"]):
+            tab.addTab(tab_custom, "Custom")
         tab.addTab(tab_attachment, "Attachment")
 
         self.setCentralWidget(tab)
