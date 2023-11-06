@@ -388,6 +388,7 @@ class MainWindow(QMainWindow):
                 date=self.prescription.date,
                 id=self.prescription.id,
                 name=self.prescription.name,
+                dob=self.prescription.dob,
                 age=self.prescription.age,
                 sex=self.prescription.sex,
                 address=self.prescription.address,

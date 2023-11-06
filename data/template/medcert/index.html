@@ -34,8 +34,12 @@
                   </tr>
                   <tr>
                     <td><p><strong>Name:</strong> {{name}}</p></td>
-                    <td><p><strong>Age:</strong> {{age}}</p></td>
                     <td><p><strong>Sex:</strong> {{sex}}</p></td>
+                    {% if age %}
+                    <td><p><strong>Age:</strong> {{age}}</p></td>
+                    {% else %}
+                    <td><p><strong>Date of Birth:</strong> {{dob}}</p></td>
+                    {% endif %}
                   </tr>
                   <tr>
                     <td colspan="3"><small>{% if address %}Address: {{address}}{% endif %} {% if contact %}Contact: {{contact}}{% endif %}</small></td>
@@ -46,7 +50,7 @@
                     <td>{% if diagnosis %}<strong>Provisional Diagnosis: {{diagnosis}}</strong>{% endif %}</td>
                   </tr>
                   <tr>
-                    <td><p class="formatted jtxt">{{extra}}</p></td>
+                    <td><p class="formatted jtxt">{{certificate}}</p></td>
                   </tr>
                 </table>
               </td>
