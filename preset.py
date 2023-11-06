@@ -5,36 +5,38 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import csv
+import os, csv
+from glob import glob
 from config import config
 
 class Preset():
 
-    file=""
+    target=""
     data={}
 
-    def __init__(self, file, skip_first=True, text_as_key=False):
-        self.file=file;
+    def __init__(self, target, skip_first=True, text_as_key=False):
+        self.target=target
         self.data={}
         self.load(skip_first, text_as_key);
 
     def load(self, skip_first=True, text_as_key=False):
         try:
             buf={}
-            with open(self.file, "r") as f:
-                reader=csv.reader(f, delimiter=config["preset_delimiter"])
-                if skip_first:
-                    next(reader)
-                for row in reader:
-                    self.data[row[0]]=row[1]
-                    if text_as_key:
-                        buf[row[1].strip()]=row[1]
+            for file in glob(os.path.join(config["preset_directory"], self.target+"*"+".csv")):
+                with open(file, "r") as f:
+                    reader=csv.reader(f, delimiter=config["preset_delimiter"])
+                    if skip_first:
+                        next(reader)
+                    for row in reader:
+                        self.data[row[0]]=row[1]
+                        if text_as_key:
+                            buf[row[1].strip()]=row[1]
             self.data = buf | self.data
         except FileNotFoundError as e:
-            print(self.file, e)
+            print(e)
         except IndexError as e:
-            print(self.file, e)
+            print(e)
         except StopIteration as e:
-            print(self.file, e, ": Check if file is empty")
+            print(e)
         except Exception as e:
-            print(self.file, e)
+            print(e)
