@@ -5,10 +5,12 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QDialog, QFormLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QCheckBox, QStatusBar, QMessageBox, QFileDialog
+from PyQt6.QtWidgets import QDialog, QFormLayout, QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QLineEdit, QTextEdit, QComboBox, QCheckBox, QMessageBox, QFileDialog, QListWidget
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt, pyqtSignal
+from glob import glob
 import os, json
+from prescription import Prescriber
 from config import config, config_file
 
 class EditConfiguration(QDialog):
@@ -70,7 +72,7 @@ class EditConfiguration(QDialog):
                 with open(config_file, "w") as f:
                     f.write(json.dumps(self.config, indent=4))
                 QMessageBox.information(self,"Saved", "Configuration saved. Please restart MedScript.")
-                self.hide()
+                self.close()
             except Exception as e:
                 QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
                 print(e)
@@ -158,9 +160,12 @@ class EditPrescriber(QDialog):
     file=""
     prescriber=""
 
-    def load(self):
+    def load(self, file=None):
         try:
-            self.file=config["prescriber"]
+            if(file):
+                self.file=file
+            else:
+                self.file=config["prescriber"]
             with open(self.file) as data:
                 self.prescriber=json.loads(data.read())
             self.input_name.setText(self.prescriber["name"])
@@ -171,7 +176,7 @@ class EditPrescriber(QDialog):
             self.input_extra.setText(self.prescriber["extra"])
         except Exception as e:
             QMessageBox.critical(self,"Failed to load", "Failed to load the data into the application.")
-            raise(e)
+            print(e)
 
     def save(self, file=False):
         if(file is not False or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Save", "This action will overwrite the previous information. Continue?")):
@@ -188,17 +193,10 @@ class EditPrescriber(QDialog):
                     f.write(json.dumps(self.prescriber, indent=4))
                 QMessageBox.information(self,"Saved", "Information saved.")
                 self.signal_save.emit(self.file)
-                self.hide()
+                self.close()
             except Exception as e:
                 QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
                 print(e)
-
-    def save_as(self):
-        try:
-            self.save(QFileDialog.getSaveFileName(self, "Save prescriber", config["prescriber_directory"], "JSON (*.json);; All Files (*)")[0])
-        except Exception as e:
-            print(e)
-
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -220,15 +218,86 @@ class EditPrescriber(QDialog):
         layout.addRow("Extra", self.input_extra)
         button_save=QPushButton("Save")
         button_save.clicked.connect(self.save)
-        button_save_as=QPushButton("Save As")
-        button_save_as.clicked.connect(self.save_as)
-        button_reset=QPushButton("Reset")
-        button_reset.clicked.connect(self.load)
-        layout_btn=QHBoxLayout()
-        layout_btn.addWidget(button_save)
-        layout_btn.addWidget(button_save_as)
-        layout_btn.addWidget(button_reset)
-        layout.addRow("", layout_btn)
+        layout.addRow("", button_save)
+
+        self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
+
+        self.load()
+
+class SelectPrescriber(QDialog):
+
+    signal_select=pyqtSignal(str)
+    signal_edit=pyqtSignal(str)
+
+    listAll={"obj": [], "name": [], "file": []}
+
+    def load(self):
+        self.listAll={"obj": [], "name": [], "file": []}
+        self.showAll.clear()
+        for i in glob(os.path.join(config["prescriber_directory"], "*.json")):
+            self.listAll["obj"].append(Prescriber(i))
+            try:
+                self.listAll["name"].append(self.listAll["obj"][-1].name)
+            except AttributeError:
+                del self.listAll["obj"][-1]
+            self.listAll["file"].append(i)
+        for i in self.listAll["name"]:
+            self.showAll.addItem(i)
+
+    def select(self):
+        txt=self.showAll.currentItem().text()
+        idx=self.listAll["name"].index(txt)
+        self.signal_select.emit(self.listAll["file"][idx])
+        self.close()
+
+    def new(self):
+        num=1
+        file=os.path.join(config["prescriber_directory"], "prescriber"+str(num)+".json")
+        while(os.path.exists(file)):
+            num=num+1
+            file=os.path.join(config["prescriber_directory"], "prescriber"+str(num)+".json")
+        self.signal_edit.emit(file)
+        self.close()
+
+    def edit(self):
+        txt=self.showAll.currentItem().text()
+        idx=self.listAll["name"].index(txt)
+        self.signal_edit.emit(self.listAll["file"][idx])
+        self.close()
+
+    def delete(self):
+        txt=self.showAll.currentItem().text()
+        idx=self.listAll["name"].index(txt)
+        file=self.listAll["file"][idx]
+        if(file==config["prescriber"]):
+            QMessageBox.warning(self,"Unable to Delete", "Default prescriber file cannot be deleted.")
+        else:
+            if(QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Delete", "Are you sure you want to delete the prescriber? This action cannot be undone.")):
+                os.unlink(self.listAll["file"][idx])
+                self.showAll.takeItem(self.showAll.currentRow())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.setWindowTitle("Prescriber")
+
+        layout=QVBoxLayout(self)
+        self.showAll=QListWidget()
+        layout.addWidget(self.showAll)
+        layout2=QHBoxLayout()
+        btn_select=QPushButton("Select")
+        btn_select.clicked.connect(self.select)
+        layout2.addWidget(btn_select)
+        btn_new=QPushButton("New")
+        btn_new.clicked.connect(self.new)
+        layout2.addWidget(btn_new)
+        btn_edit=QPushButton("Edit")
+        btn_edit.clicked.connect(self.edit)
+        layout2.addWidget(btn_edit)
+        btn_del=QPushButton("Delete")
+        btn_del.clicked.connect(self.delete)
+        layout2.addWidget(btn_del)
+        layout.addLayout(layout2)
 
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
 

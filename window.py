@@ -16,11 +16,11 @@ from packaging import version
 from functools import partial
 
 from config import config, info, real_dir
-from prescription import Prescription
+from prescription import Prescription, Prescriber
 from renderer import Renderer
 from filehandler import FileHandler
 from renderbox import RenderBox
-from setting import EditConfiguration, EditPrescriber
+from setting import EditConfiguration, EditPrescriber, SelectPrescriber
 from editpreset import EditPreset
 from viewbox import ViewBox
 from preset import Preset
@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
 
     current_file=FileHandler()
     prescription=Prescription()
+    prescriber=Prescriber()
     renderer=Renderer()
     plugin=Plugin()
     save_state=md5("".encode()).hexdigest()
@@ -207,17 +208,14 @@ class MainWindow(QMainWindow):
     def cmd_configuration(self):
         self.edit_configuration.exec()
 
-    def cmd_prescriber(self):
+    def cmd_prescriber(self, file=None):
+        self.edit_prescriber.load(file)
         self.edit_prescriber.exec()
-
-    def cmd_prescriber_reload(self, file=None):
-        self.prescription.reload_prescriber(file=None)
-        self.refresh()
 
     def cmd_switch(self):
         try:
-            self.prescription.reload_prescriber(QFileDialog.getOpenFileName(self, "Open File", config["prescriber_directory"], "JSON (*.json);; All Files (*)")[0])
-            self.refresh()
+            self.select_prescriber.load()
+            self.select_prescriber.exec()
         except FileNotFoundError as e:
             print(e)
 
@@ -371,7 +369,7 @@ class MainWindow(QMainWindow):
             self.input_additional.setText(additional)
             self.input_certificate.setText(certificate)
             self.input_custom.setData(custom)
-            self.label_prescriber.setText(self.prescription.prescriber.name)
+            self.label_prescriber.setText(self.prescriber.name)
         except Exception as e:
             QMessageBox.warning(self,"Failed to load", "Failed to load the data into the application.")
             print(e)
@@ -444,6 +442,11 @@ class MainWindow(QMainWindow):
         self.plugin.new(self.prescription)
         self.load_interface_from_instance()
         self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
+
+    def change_prescriber(self, file):
+        self.prescription.reload_prescriber(file)
+        self.prescriber.read_from(file)
+        self.refresh()
 
     def refresh(self):
         self.update_instance()
@@ -888,7 +891,10 @@ class MainWindow(QMainWindow):
         self.signal_view.connect(self.renderbox.update)
         self.edit_configuration=EditConfiguration()
         self.edit_prescriber=EditPrescriber()
-        self.edit_prescriber.signal_save.connect(self.cmd_prescriber_reload)
+        self.edit_prescriber.signal_save.connect(self.change_prescriber)
+        self.select_prescriber=SelectPrescriber()
+        self.select_prescriber.signal_edit.connect(self.cmd_prescriber)
+        self.select_prescriber.signal_select.connect(self.change_prescriber)
         self.viewbox=ViewBox()
         self.index=Index()
         self.edit_preset=EditPreset()

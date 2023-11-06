@@ -37,8 +37,17 @@ class Prescriber:
             print(e)
 
     def read_from(self, file):
-        with open(file, "r") as f:
-            self.set_data_from_json(json.loads(f.read()))
+        try:
+            with open(file, "r") as f:
+                self.set_data_from_json(json.loads(f.read()))
+        except Exception as e:
+            self.name = ""
+            self.qualification = ""
+            self.registration = ""
+            self.address = ""
+            self.contact = ""
+            self.extra = ""
+            self.properties = ""
 
 class Prescription:
 
