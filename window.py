@@ -28,6 +28,7 @@ from tabular import Tabular
 from index import Index
 from customform import CustomForm
 from plugin import Plugin
+from installer import Installer
 
 class MainWindow(QMainWindow):
 
@@ -221,6 +222,9 @@ class MainWindow(QMainWindow):
 
     def cmd_preset(self):
         self.edit_preset.show()
+
+    def cmd_installer(self):
+        self.installer.show()
 
     def cmd_about(self):
         year=datetime.datetime.now().year
@@ -566,6 +570,8 @@ class MainWindow(QMainWindow):
         action_switch.triggered.connect(self.cmd_switch)
         action_preset=QAction("Preset", self)
         action_preset.triggered.connect(self.cmd_preset)
+        action_installer=QAction("Installer", self)
+        action_installer.triggered.connect(self.cmd_installer)
         action_tabular=QAction("Tabular", self)
         action_tabular.triggered.connect(self.cmd_tabular)
         action_index=QAction("Index", self)
@@ -597,6 +603,7 @@ class MainWindow(QMainWindow):
         menu_settings.addAction(action_prescriber)
         menu_settings.addAction(action_switch)
         menu_settings.addAction(action_preset)
+        menu_settings.addAction(action_installer)
         menu_data=menubar.addMenu("Data")
         menu_data.addAction(action_index)
         menu_data.addAction(action_tabular)
@@ -898,6 +905,7 @@ class MainWindow(QMainWindow):
         self.viewbox=ViewBox()
         self.index=Index()
         self.edit_preset=EditPreset()
+        self.installer=Installer()
         self.index.signal_open.connect(self.cmd_open)
         self.index.signal_copy.connect(self.cmd_copy)
         self.signal_update.connect(self.show_update)
