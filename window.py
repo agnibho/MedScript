@@ -887,6 +887,8 @@ class MainWindow(QMainWindow):
         tab.addTab(tab_certificate, "Certificate")
         if(config["enable_form"]):
             tab.addTab(tab_custom, "Custom")
+        else:
+            tab_custom.hide()
         tab.addTab(tab_attachment, "Attachment")
 
         self.setCentralWidget(tab)
