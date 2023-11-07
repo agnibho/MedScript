@@ -32,7 +32,10 @@ class Prescriber:
             self.address = data["address"]
             self.contact = data["contact"]
             self.extra = data["extra"]
-            self.properties = data["properties"]
+            if("properties" in data):
+                self.properties = data["properties"]
+            else:
+                self.properties = None
         except Exception as e:
             logging.warning(e)
 
@@ -110,7 +113,10 @@ class Prescription:
             self.additional = data.get("additional")
             self.certificate = data.get("certificate")
             self.custom = data.get("custom")
-            self.properties = data.get("properties")
+            if("properties" in data):
+                self.properties = data["properties"]
+            else:
+                self.properties = None
         except Exception as e:
             logging.warning(e)
 
