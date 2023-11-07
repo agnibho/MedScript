@@ -11,7 +11,7 @@ from PyQt6.QtCore import pyqtSignal, QSortFilterProxyModel
 from glob import glob
 from zipfile import ZipFile
 from config import config
-import os, json
+import logging, os, json
 
 class Index(QMainWindow):
 
@@ -75,7 +75,7 @@ class Index(QMainWindow):
             self.signal_open.emit(self.getSelectedFile())
             self.hide()
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def cmd_copy(self):
         try:
@@ -85,7 +85,7 @@ class Index(QMainWindow):
             self.signal_copy.emit(pres)
             self.hide()
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
 
     def getSelectedFile(self):

@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, importlib, copy
+import logging, os, importlib, copy
 from PyQt6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
 from PyQt6.QtCore import QThread, pyqtSignal
 from glob import glob
@@ -31,7 +31,7 @@ class Plugin():
                     spec.loader.exec_module(mod)
                     self.plugins.append(mod)
             except Exception as e:
-                print(i, ":", e)
+                logging.warning(i, ":", e)
 
     def get_name(self, mod):
             try:
@@ -56,7 +56,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
             except Exception as e:
-                print(e)
+                logging.warning(e)
 
     def open(self, prescription):
         for i in self.plugins:
@@ -68,7 +68,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
             except Exception as e:
-                print(e)
+                logging.warning(e)
 
     def save(self, prescription):
         for i in self.plugins:
@@ -80,7 +80,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
             except Exception as e:
-                print(e)
+                logging.warning(e)
 
     def refresh(self, prescription):
         for i in self.plugins:
@@ -92,7 +92,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
             except Exception as e:
-                print(e)
+                logging.warning(e)
 
     def run(self, module, prescription):
         try:
@@ -115,7 +115,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def input(self):
         try:
@@ -125,7 +125,7 @@ class Plugin():
             else:
                 return ""
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def showMessage(self, message, index=None):
         QMessageBox.information(None, "Information", message)

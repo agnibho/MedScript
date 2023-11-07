@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import argparse, json, os, sys, shutil
+import logging, argparse, json, os, sys, shutil
 
 default_config_file=os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "data", "config.json"))
 
@@ -37,6 +37,7 @@ default = {
         "enable_form": False,
         "plugin_directory": "plugin",
         "enable_plugin": False,
+        "log_directory": "log",
         "preset_newline": True,
         "preset_delimiter": ",",
         "markdown": False,
@@ -52,7 +53,7 @@ try:
         read = json.loads(conf.read())
     config = default | read
 except Exception as e:
-    print(e)
+    logging.warning(e)
     config=default
 
 config["filename"]=args.filename
@@ -63,6 +64,7 @@ config["form_directory"]=os.path.join(config["data_directory"], config["form_dir
 config["plugin_directory"]=os.path.join(config["data_directory"], config["plugin_directory"])
 config["template_directory"]=os.path.join(config["data_directory"], config["template_directory"])
 config["template"]=os.path.join(config["template_directory"], config["template"])
+config["log_directory"]=os.path.join(config["data_directory"], config["log_directory"])
 config["resource"]=os.path.abspath(os.path.join(real_dir, "resource"))
 if(args.prescriber is None):
     config["prescriber_directory"]=os.path.join(config["data_directory"], config["prescriber_directory"])
@@ -75,7 +77,7 @@ else:
         config["prescriber"]=args.prescriber
     else:
         config["prescriber"]=os.path.join(config["prescriber_directory"], config["prescriber"])
-        print("File "+args.prescriber+" not found.")
+        logging.warning("File "+args.prescriber+" not found.")
 
 os.makedirs(config["data_directory"], exist_ok=True)
 os.makedirs(config["document_directory"], exist_ok=True)
@@ -84,6 +86,7 @@ os.makedirs(config["preset_directory"], exist_ok=True)
 os.makedirs(config["form_directory"], exist_ok=True)
 os.makedirs(config["plugin_directory"], exist_ok=True)
 os.makedirs(config["template_directory"], exist_ok=True)
+os.makedirs(config["log_directory"], exist_ok=True)
 if not os.path.exists(os.path.join(config["data_directory"], "config.json")):
     shutil.copyfile(os.path.abspath(os.path.join(real_dir, "data", "config.json")), os.path.join(config["data_directory"], "config.json"))
 if not os.path.exists(os.path.join(config["prescriber_directory"], "prescriber.json")):

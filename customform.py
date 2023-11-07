@@ -8,7 +8,7 @@
 from PyQt6.QtWidgets import QWidget, QFormLayout, QLineEdit, QTextEdit, QCheckBox, QDateTimeEdit, QCalendarWidget
 from PyQt6.QtCore import QDateTime
 from glob import glob
-import os, json, sys, dateutil.parser
+import logging, os, json, sys, dateutil.parser
 from config import config
 
 class CustomForm(QWidget):
@@ -23,7 +23,7 @@ class CustomForm(QWidget):
                 try:
                     self.forms.append(json.loads(f.read()))
                 except Exception as e:
-                    print(e)
+                    logging.warning(e)
         for i in self.forms:
             try:
                 for j in i["form"]:
@@ -55,7 +55,7 @@ class CustomForm(QWidget):
                 elif(isinstance(self.inputs[index][1], QDateTimeEdit)):
                     self.custom[index][list(item)[0]]=self.inputs[index][1].text()
         except Exception as e:
-            print(e)
+            logging.warning(e)
         return(self.custom)
 
     def setData(self, custom=False):
@@ -74,7 +74,7 @@ class CustomForm(QWidget):
                     d=QDateTime.fromString(pdate.strftime("%Y-%m-%d %H:%M:%S"), "yyyy-MM-dd hh:mm:ss")
                     self.inputs[index][1].setDateTime(d)
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
 
     def __init__(self, *args, **kwargs):

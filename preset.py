@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, csv
+import logging, os, csv
 from glob import glob
 from config import config
 
@@ -33,10 +33,10 @@ class Preset():
                             buf[row[1].strip()]=row[1]
             self.data = buf | self.data
         except FileNotFoundError as e:
-            print(e)
+            logging.warning(e)
         except IndexError as e:
-            print(e)
+            logging.warning(e)
         except StopIteration as e:
-            print(e)
+            logging.warning(e)
         except Exception as e:
-            print(e)
+            logging.warning(e)

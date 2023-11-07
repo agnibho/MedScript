@@ -10,7 +10,7 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QIcon, QPageLayout, QPageSize
 from PyQt6.QtCore import QUrl, QMarginsF
 from PyQt6.QtPrintSupport import QPrinter, QPrintDialog
-import os
+import logging, os
 from config import config
 
 class RenderBox(QMainWindow):
@@ -73,4 +73,4 @@ class RenderBox(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self,"Display failed", "Failed to display file.")
             self.hide()
-            print(e)
+            logging.warning(e)

@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, shutil, glob, tempfile, json
+import logging, os, shutil, glob, tempfile, json
 from zipfile import ZipFile
 from config import config
 from signature import Signature
@@ -33,7 +33,7 @@ class FileHandler():
         try:
             shutil.copyfile(file, os.path.join(dirname, os.path.basename(file)))
         except shutil.SameFileError as e:
-            print(e)
+            logging.warning(e)
 
     def list(self, category="attachment"):
         items=[]
@@ -85,20 +85,20 @@ class FileHandler():
                 signature=file.read()
             return Signature.verify(data, certificate=os.path.join(self.directory.name, "certificate.pem"), signature=signature)
         except FileNotFoundError as e:
-            print(e)
+            logging.warning(e)
 
     def delete_attachment(self, item):
         try:
             os.unlink(os.path.join(self.directory.name, "attachment", os.path.basename(item)))
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def delete_sign(self):
         try:
             os.unlink(os.path.join(self.directory.name, "certificate.pem"))
             os.unlink(os.path.join(self.directory.name, "signature"))
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def has_template(self):
         return(os.path.exists(os.path.join(self.directory.name, "template", "index.html")))

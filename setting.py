@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import QDialog, QFormLayout, QHBoxLayout, QVBoxLayout, QPus
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt, pyqtSignal
 from glob import glob
-import os, json
+import logging, os, json
 from prescription import Prescriber
 from config import config, config_file
 
@@ -75,7 +75,7 @@ class EditConfiguration(QDialog):
                 self.close()
             except Exception as e:
                 QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
-                print(e)
+                logging.warning(e)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -84,7 +84,7 @@ class EditConfiguration(QDialog):
             with open(config_file) as f:
                 self.config=json.loads(f.read()) | config
         except Exception as e:
-            print(e)
+            logging.warning(e)
             self.config=config
 
         self.setWindowTitle("Configuration")
@@ -176,7 +176,7 @@ class EditPrescriber(QDialog):
             self.input_extra.setText(self.prescriber["extra"])
         except Exception as e:
             QMessageBox.critical(self,"Failed to load", "Failed to load the data into the application.")
-            print(e)
+            logging.error(e)
 
     def save(self, file=False):
         if(file is not False or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Save", "This action will overwrite the previous information. Continue?")):
@@ -196,7 +196,7 @@ class EditPrescriber(QDialog):
                 self.close()
             except Exception as e:
                 QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
-                print(e)
+                logging.error(e)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

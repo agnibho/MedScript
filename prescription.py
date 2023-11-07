@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import json
+import logging, json
 from config import config
 
 class Prescriber:
@@ -34,7 +34,7 @@ class Prescriber:
             self.extra = data["extra"]
             self.properties = data["properties"]
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def read_from(self, file):
         try:
@@ -112,7 +112,7 @@ class Prescription:
             self.custom = data.get("custom")
             self.properties = data.get("properties")
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def get_json(self):
         return(json.dumps(self, default=lambda o: o.__dict__, indent=4))
@@ -124,7 +124,7 @@ class Prescription:
             except AttributeError as e:
                 pass
             except Exception as e:
-                print(e)
+                logging.warning(e)
             f.write(self.get_json())
         self.file=file
 

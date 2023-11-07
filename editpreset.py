@@ -8,7 +8,7 @@
 from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QTextEdit, QTableView, QMessageBox
 from PyQt6.QtGui import QIcon, QStandardItemModel, QStandardItem
 from config import config
-import os, csv
+import logging, os, csv
 
 class EditPreset(QMainWindow):
 
@@ -61,7 +61,7 @@ class EditPreset(QMainWindow):
             self.load(file)
             QMessageBox.information(self,"File saved", "Changes saved. Please restart the program.")
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def cmd_row(self):
         tablerow=[]
@@ -99,7 +99,7 @@ class EditPreset(QMainWindow):
             self.table.resizeRowsToContents()
             textedit=QTextEdit()
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def confirm(self):
         return QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm action", "Unsaved changes may be lost. Continue?")

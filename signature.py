@@ -5,6 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
+import logging
 from config import config
 from datetime import datetime
 from cryptography.hazmat.primitives.serialization import load_pem_private_key, Encoding
@@ -31,7 +32,7 @@ class Signature():
             if(not Signature.verify_chain(certificate)):
                 return False
         except Exception as e:
-            print(e)
+            logging.warning(e)
             return False
 
         with open(certificate, "rb") as f:
@@ -44,7 +45,7 @@ class Signature():
                 subattr+=i.oid._name+":"+i.value+"\n"
             return subattr
         except Exception as e:
-            print(e)
+            logging.warning(e)
             return False
 
     def verify_chain(cert_chain_path):
@@ -60,23 +61,23 @@ class Signature():
         for i in range(len(cert_chain)):
             cert=cert_chain[i]
             if(datetime.utcnow().timestamp()>cert.not_valid_after.timestamp()):
-                print("Certificate expired")
+                logging.warning("Certificate expired")
                 return False
             if(i>0):
                 prev_cert=cert_chain[i-1]
                 try:
                     cert.public_key().verify(prev_cert.signature, prev_cert.tbs_certificate_bytes, padding.PKCS1v15(), prev_cert.signature_hash_algorithm)
                 except InvalidSignature:
-                    print("Certificate chain signature verification failed")
+                    logging.warning("Certificate chain signature verification failed")
                     return False
         try:
             with open(config["root_bundle"]) as root:
                 root_bundle=root.read()
             if(cert_chain[-1].public_bytes(encoding=Encoding.PEM).decode() not in root_bundle):
-                print("Certificate not in root bundle")
+                logging.warning("Certificate not in root bundle")
                 return False
             return True
         except Exception as e:
-            print(e)
-            print("Root bundle could not be loaded")
+            logging.warning(e)
+            logging.warning("Root bundle could not be loaded")
             return False

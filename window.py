@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, sys, datetime, dateutil.parser, shutil, json, threading
+import logging, os, sys, datetime, dateutil.parser, shutil, json, threading
 from PyQt6.QtCore import Qt, QDateTime, QDate, QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QDateEdit, QCalendarWidget, QListWidget, QComboBox, QCheckBox, QRadioButton, QButtonGroup, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QInputDialog, QCompleter, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
                 self.unchanged_state=True
             except Exception as e:
                 QMessageBox.warning(self,"Open failed", "Failed to open file.")
-                print(e)
+                logging.warning(e)
 
     def cmd_copy(self, data):
         self.cmd_new()
@@ -104,7 +104,7 @@ class MainWindow(QMainWindow):
                 self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
             except Exception as e:
                 QMessageBox.warning(self,"Save failed", "Failed to save file.")
-                print(e)
+                logging.warning(e)
 
     def cmd_save_as(self):
         suggest=self.prescription.id if(self.prescription.id) else self.prescription.name
@@ -131,7 +131,7 @@ class MainWindow(QMainWindow):
                 self.signal_view.emit(target)
                 self.renderbox.showMaximized()
             except FileNotFoundError as e:
-                print(e)
+                logging.warning(e)
                 QMessageBox.information(self, "Save first", "Please save the file before rendering.")
 
         else:
@@ -148,25 +148,25 @@ class MainWindow(QMainWindow):
                         #self.current_file.sign(password)
                         self.cmd_save()
                     except FileNotFoundError as e:
-                        print(e)
+                        logging.warning(e)
                         QMessageBox.information(self, "Save first", "Please save the file before signing.")
                     except TypeError as e:
-                        print(e)
+                        logging.warning(e)
                         QMessageBox.information(self, "Configure", "Please add valid key and certificate to the config file.")
                     except EVPError as e:
-                        print(e)
+                        logging.warning(e)
                         QMessageBox.information(self, "Check password", "Failed to load key. Please check if password is correct.")
                     except BIOError as e:
-                        print(e)
+                        logging.warning(e)
                         QMessageBox.information(self, "Not found", "Certifcate and/or key not found.")
                     except SMIME_Error as e:
-                        print(e)
+                        logging.warning(e)
                         QMessageBox.information(self, "Failed to load", "Failed to sign. Please check if certificate and key match.")
                     except Exception as e:
-                        print(e)
+                        logging.warning(e)
                         QMessageBox.information(self, "Failed", "Failed to sign.")
                 except Exception as e:
-                    print(e)
+                    logging.warning(e)
         else:
            QMessageBox.information(self, "Save first", "Please save the file before signing.")
 
@@ -183,13 +183,13 @@ class MainWindow(QMainWindow):
             elif result is None:
                 QMessageBox.warning(self, "No Siganture", "No signature was found.")
             else:
-                print(result)
+                logging.info(result)
                 QMessageBox.information(self, "Valid signature", "Valid signature found with the following information:\n"+result)
         except FileNotFoundError as e:
-            print(e)
+            logging.warning(e)
             QMessageBox.warning(self, "No Siganture", "No signature was found.")
         except Exception as e:
-            print(e)
+            logging.warning(e)
             QMessageBox.warning(self, "Failed", "Failed to verify.")
 
     def cmd_tabular(self):
@@ -198,7 +198,7 @@ class MainWindow(QMainWindow):
             Tabular.export(filename)
             QMessageBox.information(self, "Data Exported", "Data exported to."+filename)
         except Exception as e:
-            print(e)
+            logging.warning(e)
             QMessageBox.critical(self, "Export failed", "Failed to export the data.")
 
     def cmd_index(self):
@@ -217,7 +217,7 @@ class MainWindow(QMainWindow):
             self.select_prescriber.load()
             self.select_prescriber.exec()
         except FileNotFoundError as e:
-            print(e)
+            logging.warning(e)
 
     def cmd_preset(self):
         self.edit_preset.show()
@@ -241,17 +241,17 @@ class MainWindow(QMainWindow):
 
     def cmd_update(self, silent=False):
         try:
-            print("Current version "+info["version"])
+            logging.info("Current version "+info["version"])
             with request.urlopen(info["url"]+"/info.json") as response:
                 latest=json.loads(response.read().decode())
-            print("Latest version "+latest["version"])
+            logging.info("Latest version "+latest["version"])
             if(version.parse(info["version"]) < version.parse(latest["version"])):
                 self.signal_update.emit("New version <strong>"+latest["version"]+"</strong> available.<br>Visit <a href='"+latest["url"]+"'>"+latest["url"]+"</a> to get the latest version.")
             elif(not silent):
                 self.signal_update.emit("No update available. You are using version "+info["version"]+".")
         except Exception as e:
             self.signal_update.emit("Failed to check available update.")
-            print(e)
+            logging.warning(e)
 
     def show_update(self, message):
         QMessageBox.information(self, "Check update", message)
@@ -339,7 +339,7 @@ class MainWindow(QMainWindow):
                     d=QDateTime.fromString(pdate.strftime("%Y-%m-%d %H:%M:%S"), "yyyy-MM-dd hh:mm:ss")
                 except Exception as e:
                     QMessageBox.warning(self,"Failed to load", str(e))
-                    print(e)
+                    logging.warning(e)
             self.input_date.setDateTime(d)
             self.input_id.setText(id)
             self.input_name.setText(name)
@@ -372,7 +372,7 @@ class MainWindow(QMainWindow):
             self.label_prescriber.setText(self.prescriber.name)
         except Exception as e:
             QMessageBox.warning(self,"Failed to load", "Failed to load the data into the application.")
-            print(e)
+            logging.warning(e)
 
     def load_interface_from_instance(self):
         if(self.current_file.has_template()):
@@ -431,7 +431,7 @@ class MainWindow(QMainWindow):
                     )
         except Exception as e:
             QMessageBox.critical(self,"Failed", "Critical failure happned. Please check console for more info.")
-            print(e)
+            logging.error(e)
 
     def new_doc(self):
         self.current_file.reset()
@@ -459,7 +459,7 @@ class MainWindow(QMainWindow):
                 self.input_attachment.addItem(new)
         except Exception as e:
             QMessageBox.warning(self,"Attach failed", "Failed to attach file.")
-            print(e)
+            logging.warning(e)
 
     def remove_attachment(self):
         index=self.input_attachment.currentRow()
@@ -473,7 +473,7 @@ class MainWindow(QMainWindow):
         try:
             shutil.copyfile(self.input_attachment.currentItem().text(), QFileDialog.getSaveFileName(self, "Save Attachment", os.path.join(config["document_directory"], os.path.basename(self.input_attachment.currentItem().text())))[0])
         except Exception as e:
-            print(e)
+            logging.warning(e)
 
     def load_attachment(self, attachments):
         for attach in attachments:
@@ -610,7 +610,7 @@ class MainWindow(QMainWindow):
                     action_plugin[-1].triggered.connect(partial(self.plugin.run, i[0], self.prescription))
                     action_plugin[-1].triggered.connect(self.load_interface_from_instance)
             except Exception as e:
-                print(e)
+                logging.warning(e)
             menu_plugin=menubar.addMenu("Plugin")
             for i in action_plugin:
                 menu_plugin.addAction(i)
@@ -636,7 +636,7 @@ class MainWindow(QMainWindow):
             templates.remove(os.path.basename(config["template"]))
             templates.insert(0, os.path.basename(config["template"]))
         except Exception as e:
-            print(e)
+            logging.warning(e)
         self.input_template.addItems(templates)
         toolbar.addWidget(self.input_template)
         spacer=QWidget(self)

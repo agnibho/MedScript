@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import os, shutil, tempfile, json, datetime, re
+import logging, os, shutil, tempfile, json, datetime, re
 from markdown import markdown
 from jinja2 import Template
 from config import config
@@ -29,7 +29,7 @@ class Renderer:
                 try:
                     data["date"]=datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M:%S")
                 except Exception as e:
-                    print(e)
+                    logging.warning(e)
                 output=template_data.render(data)
                 target_file.write(output)
         return(target)
