@@ -7,8 +7,6 @@ medical practitioners for writing prescriptions.
 The purpose of the program is to enable medical practitioners to prepare
 computerized prescriptions. The program has been designed after the commonly
 used prescription format among the medical practitioners in India.
-Inclusion of prescription style of other regions will hopefully be implemented
-in future updates.
 
 File
 ----
@@ -46,6 +44,10 @@ configurable. An example directory structure is given below:
     <medscript data directory> (configurable)
     |-- document (for storing prescription files)
     |   |-- <document files>
+    |-- form (for custom input form files)
+    |   |-- <custom forms in JSON format)
+    |-- log (for storing log files)
+    |   |-- <log files written by the program>
     |-- plugin (for installing plugins)
     |   |-- <installed plugins>
     |-- prescriber (for storing prescriber information)
@@ -95,7 +97,7 @@ most commonly used functions for quick access.
 ### Creating a prescription
 
 A new prescription can be created right from the starting window.
-Alternatively the "New" menu option can be used to create a new
+Alternatively the "New File" menu option can be used to create a new
 prescription.
 
 There are eight tabs in the tab bar containing important parts of a
@@ -104,6 +106,8 @@ prescription.
 1. Patient tab: It contains the demographical data of the patient, diagnosis
 and a few extra parameters of the prescription. The diagnosis can be entered
 here. To enter multiple diagnosis semicolon (;) may be used to separate them.
+Please note that date of birth and age cannot be used simultaneously. There
+are radio buttons to select which field to use in the prescription.
 
 2. Clinical tab: It contains the clinical note regarding the patient. The
 presets can be selected from the preset box at the top and inserted into the
@@ -128,38 +132,60 @@ option.
 7. Additional tab: It contains additional advice given to the patient. It is
 commonly printed at the bottom of the prescription.
 
-8. Attachment tab: Files e.g. PDF, images may be attached to the prescription
+8. Certificate tab: It can be used to write a medical certificate. Rendering a
+medical certificate requires use of a different template. The "medcert"
+template included with MedScript can be used for this purpose.
+
+9. Attachment tab: Files e.g. PDF, images may be attached to the prescription
 file from the attachment tab. These attachments can be viewed later when
 opening the prescription file with the program. However, this attachments are
 not printed with the prescription.
 
+### Viewing the prescription
+
+The prescription can be quickly viewed by using the "Quick Display" option
+under the "Prepare" menu. Viewing the prescriptions this way only shows the
+prescription data without considering the formatting. To display the
+prescription in a printable format, use the rendering option instead.
+
 ### Saving a prescription
 
-The "Save" or the "Save As" option from the "File" menu can be used to save a
-file created or edited in the program.
+The "Save File" or the "Save As" option from the "File" menu can be used to
+save a file created or edited in the program.
+
+While saving the template can be selected from the "Template" combo box in the
+toolbar. The template will be saved in the mpaz file. When opening an existing
+file the "Template" combo box has the option to change the template or to keep
+it unchanged.
 
 ### Opening a prescription
 
 The prescriptions are saved in mpaz files and can be shared easily. To open a
-prescription file, the "Open" option from the file menu can be used.
+prescription file, the "Open File" option from the file menu can be used.
 Alternatively the file name can be supplied to the program as command line
 argument when starting from the command line.
+
 
 ### Rendering a prescription
 
 The prescriptions can be rendered and subsequently printed from the "Prepare"
-menu by selecting the "Render" option. Note that the files must be saved
-before rendering. The rendered prescription is opened in a separate window. It
-can be saved as PDF or printed directly.
+menu by selecting the "Render Prescription" option. Note that the files must
+be saved before rendering. The rendered prescription is opened in a separate
+window. It can be saved as PDF or printed directly.
 
 ### Data
 
 The prescription files in the default document folder are incorporated into an
 index which can be used to quickly find a particular prescription. To use this
-feature, select the "Index" option in the "Data" menu.
+feature, select the "Show Index" option in the "Data" menu.
 
-Data from the the prescription files can be combined into a table and
-exported to a CSV file for analysis from the "Tabular" option in the "Data"
+The index can be filtered by using patient id, prescription id or patient's
+name. The entries can be viewed directly, opened in the program for
+editing/rendering or copied into a new prescription. This can be useful while
+consulting follow up patients.
+
+Data from the prescription files can be combined into a table and
+exported to a CSV file for analysis from the "Export CSV" option in the "Data"
 menu.
 
 ### Template
@@ -180,14 +206,7 @@ mentioned below.
 
 This program supports markdown formatting. Markdown can be used to format the
 prescriptions and certificates. It can be turned on from the
-"Configuration" dialog under the "Settings" menu.
-
-### Medical Certificate
-
-The Certify/Extra area can be used to write a medical prescription. Preset
-system is available for this as well. Certification requires different
-templates designed for it. A template named medcert is included with the
-program.
+"Edit Configuration" dialog under the "Settings" menu.
 
 Prescriber
 ----------
@@ -195,18 +214,16 @@ Prescriber
 The program is primarily targeted towards individual practitioners. However,
 it can be easily adapted for multiple practitioners.
 
-The data of the practitioner is stored in json files in the prescriber
+The "Current Prescriber" option under the "Settings" menu can be used to
+view/edit the current prescriber. The "Select Prescriber" option can be used
+to open the prescriber selector dialog. All the prescribers are listed here. A
+prescriber can be selected from here. Prescribers can also be edited, deleted
+or new prescribers can be created from this dialog.
+
+The data of the practitioner is stored in JSON files in the prescriber
 directory. The default file to be loaded is configured in the config file. A
 command line option can be used to specify which alternative prescriber file
 to load in the program, e.g. `<program> --prescriber <prescriber file>`.
-
-The data of the currently selected prescriber can be edited using the
-"Prescriber" option under the "Prepare" menu.
-
-If multiple prescribers have been configured (e.g. by copying the prescriber
-file and editing them individually), the prescribers can easily by switched by
-using the "Switch" option in the "Settings" menu and selecting the desired
-prescriber file.
 
 Preset
 ------
@@ -217,7 +234,8 @@ the respective files. These files are in the CSV format and can be edited
 with any spreadsheet editing software.
 
 There is a preset editor included with this software as well. This editor can
-be accessed by going to the "Settings" menu and selecting the "Preset" option.
+be accessed by going to the "Settings" menu and selecting the "Edit Presets"
+option.
 
 The preset editor contains a drop down input at the top which can be used to
 select the respective file to edit. There is also a "Save" button at the top
@@ -230,7 +248,7 @@ new row for entry of new data.
 
 The preset files are kept in the preset directory. The files associated with
 medical certificate, clinical note, report, advice, investigation, medication
-and additional are certify.csv, note.csv, report.csv, advice.csv,
+and additional are certificate.csv, note.csv, report.csv, advice.csv,
 investigation.csv, medication.csv and additional.csv. Each file contains a top
 row indicating the variables in the columns. The data is entered in two
 columns with each row containing a KEY and a TEXT. The TEXT can be entered in
@@ -252,7 +270,7 @@ It is recommended to use the default config file as base while creating
 another customized config file.
 
 A graphical configuration editor is also included with the program. It can be
-accessed by going to the "Settings" menu and selecting the "Configuration"
+accessed by going to the "Settings" menu and selecting the "Edit Configuration"
 option. The configurable options are as follows:
 
 1. Data directory: where the user data of the program is stored.
@@ -267,14 +285,19 @@ is inserted.
 this program uses "," as delimiter, however this can be changed to ";" from
 here.
 
-5. Markdown: The markdown formatting can be enabled from here.
+5. Age/DOB: Checking this box makes new documents use age instead of date of
+birth by default.
 
-6. Check update: Whether updates are available can be checked at program start
+6. Markdown: The markdown formatting can be enabled from here.
+
+7. Check update: Whether updates are available can be checked at program start
 up by enabling this option.
 
-7. Plugin: The plugin system can be enabled from here.
+8. Form: The custom input form system can be enabled from here.
 
-8. S/MIME: This is an experimental feature and is disabled by default. To use
+9. Plugin: The plugin system can be enabled from here.
+
+10. S/MIME: This is an experimental feature and is disabled by default. To use
 it, it has to be enabled first from the settings. The Private key, X509
 certificate and Root bundle can be selected from the options that follow this.
 
@@ -287,12 +310,14 @@ structure of the Prescription object is as follows:
     prescription (Prescription object)
     |-- date (string: date-time in the %Y-%m-%d %H:%M:%S format)
     |-- id (string: the id of the prescription)
+    |-- pid (string: the patient's id)
     |-- name (string: the name of the patient)
+    |-- dob (string: the date of birth)
     |-- age (string: the age of the patient, may contain unit)
     |-- sex (string: sex of the patient)
     |-- address (string: address of the patient)
     |-- contact (string: contact number / email of the patient)
-    |-- extra (string: extra data related to the prescription, may also be used for writing certificates)
+    |-- extra (string: extra data related to the prescription)
     |-- mode (string: the mode of consultation e.g. tele-consultation)
     |-- daw (boolean: dispense as written)
     |-- diagnosis (string: diagnosis of the patient's condition)
@@ -302,6 +327,9 @@ structure of the Prescription object is as follows:
     |-- investigation (string: investigations suggested for the patient)
     |-- medication (string: the list of medications prescribed)
     |-- additional (string: any additional advice/instructions)
+    |-- certificate (string: content of a medical certificate)
+    |-- custom (list: contents of custom input forms)
+    |-- properties (object: unused, included for future/plugin use)
     |-- prescriber (Prescriber object)
     |   |-- name (string: the name of the prescriber)
     |   |-- qualification (string: the qualification of the prescriber)
@@ -309,6 +337,7 @@ structure of the Prescription object is as follows:
     |   |-- address (string: the address of the prescriber)
     |   |-- contact (string: contact number / email of the prescriber)
     |   |-- extra (string: any extra data about the prescriber)
+    |   |-- properties (object: unused, included for future/plugin use)
 
 Plugin
 ------
@@ -348,7 +377,7 @@ the program as needed:
     def save(prescription)
         Called when saving a document.
     def refresh(prescription)
-        Called when the refresh option is selected.
+        Called when the refresh interface option is selected.
     def run(prescription)
         Called when the option associated with the plugin is selected from the plugin menu.
 
@@ -414,6 +443,80 @@ The index.html file is the Jinja2 template. The attributes of the Prescription
 object is available to the template. For example the name of the patient can
 be accessed by `{{name}}` while the name of the prescriber can be accessed by
 `{{prescriber.name}}`.
+
+Custom Input Forms
+------------------
+
+Custom input forms can be used to create customized input fields which can be
+accessed from the "Custom" tab. For this, the custom input form files must be
+stored in the configured form directory and the form option must be enabled in
+the configuration.
+
+A custom form file is a JSON file with contains the following:
+
+1. **title**: the title of the form.
+2. **form**: a list containing the inputs. Each input has the following:
+    1. **name**: name of the input field, can be accessed from
+templates/plugins.
+    2. **type**: valid input types are line (single line), text (multiple line),
+date (date time), check (checkbox).
+    3. **description**: this is shown to the user and should briefly describe
+the input.
+
+An example form is provided below:
+
+    {
+        "title": "Example Form",
+        "form": [
+            {
+                "name": "example",
+                "type": "line",
+                "description": "Example Input"
+            }
+        ]
+    }
+
+Package Installer
+-----------------
+
+MedScript has a package installer for convenient installation and
+uninstallation of presets, templates, custom forms and plugins. It can be
+accessed from the "Package Installer" option under the "Settings" menu.
+
+The installed components are listed there. The installed components can be
+uninstalled by selecting it and clicking the "Uninstall" button. New packages
+can be installed by clicking the "Install" button and selecting the package
+file. MedScript will ask for user's confirmation before installing each
+component of the package.
+
+Package Development
+-------------------
+
+MedScript installable packages are zip files containing preset, template,
+form and plugin in respective folders. More than one of each component is
+allowed in each package. The package structure is as follows:
+
+    <package as a zip file>
+    |-- preset
+    |   |-- <preset files in CSV format>
+    |-- template
+    |   |-- <template directories each containing index.html and other files>
+    |-- form
+    |   |-- <custom input forms in JSON format>
+    |-- plugin
+    |   |-- <plugin directories each containing main.py and other files>
+
+The following names are not allowed as component names:
+
+1. note
+2. report
+3. advice
+4. investigation
+5. medication
+6. additional
+7. certificate
+8. default
+9. medcert
 
 
 Website
