@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QWidget, QMainWindow, QToolBar, QFileDialog, QComboBox, QPushButton, QSizePolicy
+from PyQt6.QtWidgets import QWidget, QMainWindow, QDialog, QToolBar, QFileDialog, QComboBox, QPushButton, QLabel, QVBoxLayout, QTextBrowser, QSizePolicy
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QIcon, QPageLayout, QPageSize
 from PyQt6.QtCore import QUrl, QMarginsF
@@ -74,3 +74,33 @@ class RenderBox(QMainWindow):
             QMessageBox.warning(self,"Display failed", "Failed to display file.")
             self.hide()
             logging.warning(e)
+
+
+class UnrenderBox(QDialog):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.setWindowTitle("MedScript")
+        self.setMinimumSize(600, 400)
+        self.setSizeGripEnabled(True)
+
+        layout=QVBoxLayout(self)
+        heading=QLabel("<strong>Prescription</strong>")
+        self.display=QTextBrowser()
+        layout.addWidget(heading)
+        layout.addWidget(self.display)
+
+        self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
+
+    def show(self, prescription):
+        text=""
+        for attr, value in prescription.prescriber.__dict__.items():
+            if(attr not in ["properties"] and len(value)>0):
+                text=text+"<strong>"+value.upper()+"</strong><br>"
+        text=text+"<hr>"
+        for attr, value in prescription.__dict__.items():
+            if(attr not in ["prescriber", "custom", "properties", "file"] and len(str(value))>0):
+                text=text+"<strong>"+attr.upper()+"</strong><br>"
+                text=text+str(value)+"<br>"
+        self.display.setText(text)

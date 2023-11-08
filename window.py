@@ -19,7 +19,7 @@ from config import config, info, real_dir
 from prescription import Prescription, Prescriber
 from renderer import Renderer
 from filehandler import FileHandler
-from renderbox import RenderBox
+from renderbox import RenderBox, UnrenderBox
 from setting import EditConfiguration, EditPrescriber, SelectPrescriber
 from editpreset import EditPreset
 from viewbox import ViewBox
@@ -123,6 +123,10 @@ class MainWindow(QMainWindow):
     def cmd_quit(self):
         if(self.confirm_close()):
             sys.exit()
+
+    def cmd_unrender(self):
+        self.unrenderbox.show(self.prescription)
+        self.unrenderbox.exec()
 
     def cmd_render(self):
         self.refresh()
@@ -523,6 +527,7 @@ class MainWindow(QMainWindow):
         icon_save=QIcon(os.path.join(config["resource"], "icon_save.svg"))
         icon_render=QIcon(os.path.join(config["resource"], "icon_render.svg"))
         icon_refresh=QIcon(os.path.join(config["resource"], "icon_refresh.svg"))
+        icon_view=QIcon(os.path.join(config["resource"], "icon_view.svg"))
 
         self.preset_note=Preset("note")
         self.preset_report=Preset("report")
@@ -561,6 +566,11 @@ class MainWindow(QMainWindow):
         action_render2=QAction(icon_render, "Render", self)
         action_render.triggered.connect(self.cmd_render)
         action_render2.triggered.connect(self.cmd_render)
+        action_unrender=QAction("Plain Display", self)
+        action_unrender.setShortcut("Ctrl+D")
+        action_unrender2=QAction(icon_view, "View", self)
+        action_unrender.triggered.connect(self.cmd_unrender)
+        action_unrender2.triggered.connect(self.cmd_unrender)
         action_sign=QAction("Sign Prescription", self)
         action_sign.triggered.connect(self.cmd_sign)
         action_unsign=QAction("Delete Signature", self)
@@ -597,6 +607,7 @@ class MainWindow(QMainWindow):
         menu_file.addAction(action_save_as)
         menu_file.addAction(action_quit)
         menu_prepare=menubar.addMenu("Prepare")
+        menu_prepare.addAction(action_unrender)
         menu_prepare.addAction(action_render)
         menu_prepare.addAction(action_refresh)
         if(config["smime"]):
@@ -637,6 +648,7 @@ class MainWindow(QMainWindow):
         toolbar.addAction(action_open2)
         toolbar.addAction(action_save2)
         toolbar.addAction(action_refresh2)
+        toolbar.addAction(action_unrender2)
         toolbar.addAction(action_render2)
         toolbar.addSeparator()
         label_template=QLabel("Template:")
@@ -904,6 +916,7 @@ class MainWindow(QMainWindow):
         self.setStatusBar(self.statusbar)
 
         self.renderbox=RenderBox()
+        self.unrenderbox=UnrenderBox()
         self.signal_view.connect(self.renderbox.update)
         self.edit_configuration=EditConfiguration()
         self.edit_prescriber=EditPrescriber()
