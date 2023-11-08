@@ -7,7 +7,7 @@
 
 from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTableView, QAbstractItemView
 from PyQt6.QtGui import QIcon, QStandardItemModel, QStandardItem
-from PyQt6.QtCore import pyqtSignal, QSortFilterProxyModel
+from PyQt6.QtCore import Qt, pyqtSignal, QSortFilterProxyModel
 from glob import glob
 from zipfile import ZipFile
 from config import config
@@ -34,10 +34,13 @@ class Index(QMainWindow):
         self.table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         layout2=QFormLayout()
+        self.input_pid=QLineEdit()
+        self.input_pid.returnPressed.connect(self.cmd_filter_pid)
         self.input_id=QLineEdit()
         self.input_id.returnPressed.connect(self.cmd_filter_id)
         self.input_name=QLineEdit()
         self.input_name.returnPressed.connect(self.cmd_filter_name)
+        layout2.addRow("Filter by PID:", self.input_pid)
         layout2.addRow("Filter by ID:", self.input_id)
         layout2.addRow("Filter by Name:", self.input_name)
         layout3=QHBoxLayout()
@@ -60,14 +63,22 @@ class Index(QMainWindow):
         self.build()
         self.load()
 
-    def cmd_filter_id(self):
+    def cmd_filter_pid(self):
+        self.input_id.setText("")
         self.input_name.setText("")
         self.proxymodel.setFilterKeyColumn(0)
+        self.proxymodel.setFilterFixedString(self.input_pid.text())
+
+    def cmd_filter_id(self):
+        self.input_pid.setText("")
+        self.input_name.setText("")
+        self.proxymodel.setFilterKeyColumn(1)
         self.proxymodel.setFilterFixedString(self.input_id.text())
 
     def cmd_filter_name(self):
+        self.input_pid.setText("")
         self.input_id.setText("")
-        self.proxymodel.setFilterKeyColumn(1)
+        self.proxymodel.setFilterKeyColumn(2)
         self.proxymodel.setFilterFixedString(self.input_name.text())
 
     def cmd_open(self):
@@ -96,19 +107,26 @@ class Index(QMainWindow):
     def build(self):
         files=glob(os.path.join(config["document_directory"], "**", "*.mpaz"), recursive=True)
         for file in files:
-            with ZipFile(file) as zf:
-                with zf.open("prescription.json") as pf:
-                    pres=json.loads(pf.read())
-                    self.index.append([pres["id"], pres["name"], pres["age"], pres["sex"], pres["date"], file])
+            try:
+                with ZipFile(file) as zf:
+                    try:
+                        with zf.open("prescription.json") as pf:
+                            pres=json.loads(pf.read())
+                            self.index.append([pres["pid"], pres["id"], pres["name"], pres["dob"], pres["age"], pres["sex"], pres["date"], pres["diagnosis"], file])
+                    except Exception as e:
+                        logging.warning(e)
+            except Exception as e:
+                logging.warning(e)
 
     def load(self):
         model=QStandardItemModel()
-        model.setHorizontalHeaderLabels(["ID", "Name", "Age", "Sex", "Date", "File"])
+        model.setHorizontalHeaderLabels(["Patient ID", "Prescription ID", "Name", "Date of Birth", "Age", "Sex", "Date", "Diagnosis", "File"])
         for item in self.index:
             row=[]
             for i in item:
                 row.append(QStandardItem(i))
             model.appendRow(row)
         self.proxymodel.setSourceModel(model)
+        self.proxymodel.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.table.setModel(self.proxymodel)
         self.table.resizeColumnsToContents()
