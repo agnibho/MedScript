@@ -59,7 +59,7 @@ class MainWindow(QMainWindow):
                 self.prescription.read_from(os.path.join(self.current_file.directory.name,"prescription.json"))
                 self.plugin.open(self.prescription)
                 self.load_interface_from_instance()
-
+                self.update_instance()
                 self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
                 self.load_attachment(self.current_file.list())
                 self.unchanged_state=True
@@ -502,7 +502,7 @@ class MainWindow(QMainWindow):
             self.input_age.setEnabled(False)
 
     def confirm_close(self):
-        self.refresh()
+        self.update_instance()
         flag=(self.save_state==md5(self.prescription.get_json().encode()).hexdigest() or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm action", "Unsaved changes may be lost. Continue?"))
         return flag
 
