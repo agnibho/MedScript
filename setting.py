@@ -287,6 +287,7 @@ class SelectPrescriber(QDialog):
 
         layout=QVBoxLayout(self)
         self.showAll=QListWidget()
+        self.showAll.doubleClicked.connect(self.select)
         layout.addWidget(self.showAll)
         layout2=QHBoxLayout()
         btn_select=QPushButton("Select")
