@@ -6,13 +6,18 @@
     "template_directory": "template",
     "template": "default",
     "preset_directory": "preset",
+    "form_directory": "form",
+    "enable_form": false,
+    "age_default": true,
+    "plugin_directory": "plugin",
+    "enable_plugin": false,
+    "log_directory": "log",
     "preset_newline": true,
     "preset_delimiter": ",",
     "markdown": false,
     "check_update": false,
-    "enable_plugin": false,
     "smime": false,
     "root_bundle": "",
-    "certificate": "",
-    "private_key": ""
+    "private_key": "",
+    "certificate": ""
 }
