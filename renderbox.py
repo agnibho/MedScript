@@ -94,12 +94,19 @@ class UnrenderBox(QDialog):
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
 
     def show(self, prescription):
+        if(type(prescription) is not dict):
+            prescription=prescription.__dict__
+            prescription["prescriber"]=prescription["prescriber"].__dict__
+        self.load(prescription)
+        return(self)
+
+    def load(self, prescription):
         text=""
-        for attr, value in prescription.prescriber.__dict__.items():
+        for attr, value in prescription["prescriber"].items():
             if(attr not in ["properties"] and len(value)>0):
                 text=text+"<strong>"+value.upper()+"</strong><br>"
         text=text+"<hr>"
-        for attr, value in prescription.__dict__.items():
+        for attr, value in prescription.items():
             if(attr not in ["prescriber", "custom", "properties", "file"] and len(str(value))>0):
                 text=text+"<strong>"+attr.upper()+"</strong><br>"
                 text=text+str(value)+"<br>"

@@ -69,12 +69,11 @@ class MainWindow(QMainWindow):
 
     def cmd_copy(self, data):
         self.cmd_new()
-        self.prescription.name=data["name"]
-        self.prescription.age=data["age"]
-        self.prescription.sex=data["sex"]
-        self.prescription.address=data["address"]
-        self.prescription.contact=data["contact"]
+        self.prescription.set_data_from_json(data)
+        self.prescription.id=""
+        self.prescription.date=None
         self.load_interface_from_instance()
+        self.refresh()
 
     def cmd_save(self, save_as=False):
         self.update_instance()
@@ -115,9 +114,6 @@ class MainWindow(QMainWindow):
         self.cmd_save(save_as=True)
 
     def cmd_refresh(self):
-        self.update_instance()
-        self.plugin.refresh(self.prescription)
-        self.load_interface_from_instance()
         self.refresh()
 
     def cmd_quit(self):
@@ -125,8 +121,7 @@ class MainWindow(QMainWindow):
             sys.exit()
 
     def cmd_unrender(self):
-        self.unrenderbox.show(self.prescription)
-        self.unrenderbox.exec()
+        self.unrenderbox.show(self.prescription).exec()
 
     def cmd_render(self):
         self.refresh()
@@ -464,6 +459,7 @@ class MainWindow(QMainWindow):
 
     def refresh(self):
         self.update_instance()
+        self.plugin.refresh(self.prescription)
         self.load_interface_from_instance()
 
     def add_attachment(self):
@@ -591,6 +587,7 @@ class MainWindow(QMainWindow):
         action_tabular.triggered.connect(self.cmd_tabular)
         action_index=QAction("Show Index", self)
         action_index.triggered.connect(self.cmd_index)
+        action_index.setShortcut("Ctrl+I")
         action_update=QAction("Check Update", self)
         action_update.triggered.connect(self.cmd_update)
         action_about=QAction("About MedScript", self)

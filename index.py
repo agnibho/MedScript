@@ -11,6 +11,7 @@ from PyQt6.QtCore import Qt, pyqtSignal, QSortFilterProxyModel
 from glob import glob
 from zipfile import ZipFile
 from config import config
+from renderbox import UnrenderBox
 import logging, os, json
 
 class Index(QMainWindow):
@@ -33,6 +34,7 @@ class Index(QMainWindow):
         self.table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.table.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.doubleClicked.connect(self.cmd_view)
         layout2=QFormLayout()
         self.input_pid=QLineEdit()
         self.input_pid.returnPressed.connect(self.cmd_filter_pid)
@@ -44,15 +46,20 @@ class Index(QMainWindow):
         layout2.addRow("Filter by ID:", self.input_id)
         layout2.addRow("Filter by Name:", self.input_name)
         layout3=QHBoxLayout()
+        button_view=QPushButton("View Prescription")
+        button_view.clicked.connect(self.cmd_view)
         button_open=QPushButton("Open Original")
         button_open.clicked.connect(self.cmd_open)
-        button_copy=QPushButton("New Prescription")
+        button_copy=QPushButton("Create Copy")
         button_copy.clicked.connect(self.cmd_copy)
+        layout3.addWidget(button_view)
         layout3.addWidget(button_open)
         layout3.addWidget(button_copy)
         layout.addLayout(layout2)
         layout.addLayout(layout3)
         layout.addWidget(self.table)
+
+        self.unrenderbox=UnrenderBox()
 
         self.setCentralWidget(widget)
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
@@ -80,6 +87,15 @@ class Index(QMainWindow):
         self.input_id.setText("")
         self.proxymodel.setFilterKeyColumn(2)
         self.proxymodel.setFilterFixedString(self.input_name.text())
+
+    def cmd_view(self):
+        try:
+            with ZipFile(self.getSelectedFile()) as zf:
+                with zf.open("prescription.json") as pf:
+                    prescription=json.loads(pf.read())
+            self.unrenderbox.show(prescription).exec()
+        except Exception as e:
+            logging.warning(e)
 
     def cmd_open(self):
         try:
