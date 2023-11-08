@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
         self.unrenderbox.show(self.prescription).exec()
 
     def cmd_render(self):
-        self.refresh()
+        self.update_instance()
         if(self.save_state==md5(self.prescription.get_json().encode()).hexdigest()):
             try:
                 target=self.renderer.render(self.current_file.directory.name)
@@ -138,7 +138,7 @@ class MainWindow(QMainWindow):
            QMessageBox.information(self, "Save first", "Please save the file before rendering.")
 
     def cmd_sign(self):
-        self.refresh()
+        self.update_instance()
         if(self.save_state==md5(self.prescription.get_json().encode()).hexdigest()):
             ok=True #password, ok=QInputDialog.getText(self, "Enter password", "Private key password", QLineEdit.EchoMode.Password)
             if(ok):
@@ -519,6 +519,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(100, 100, 600, 400)
         self.setWindowIcon(QIcon(os.path.join(config["resource"], "icon_medscript.ico")))
 
+        icon_index=QIcon(os.path.join(config["resource"], "icon_index.svg"))
         icon_open=QIcon(os.path.join(config["resource"], "icon_open.svg"))
         icon_save=QIcon(os.path.join(config["resource"], "icon_save.svg"))
         icon_render=QIcon(os.path.join(config["resource"], "icon_render.svg"))
@@ -588,6 +589,8 @@ class MainWindow(QMainWindow):
         action_index=QAction("Show Index", self)
         action_index.triggered.connect(self.cmd_index)
         action_index.setShortcut("Ctrl+I")
+        action_index2=QAction(icon_index, "Index", self)
+        action_index2.triggered.connect(self.cmd_index)
         action_update=QAction("Check Update", self)
         action_update.triggered.connect(self.cmd_update)
         action_about=QAction("About MedScript", self)
@@ -642,6 +645,7 @@ class MainWindow(QMainWindow):
 
         toolbar=QToolBar("Main Toolbar", floatable=False, movable=False)
         toolbar.setIconSize(QSize(16, 16))
+        toolbar.addAction(action_index2)
         toolbar.addAction(action_open2)
         toolbar.addAction(action_save2)
         toolbar.addAction(action_refresh2)
