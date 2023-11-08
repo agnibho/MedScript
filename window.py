@@ -330,7 +330,7 @@ class MainWindow(QMainWindow):
             if config["preset_newline"]:
                 self.input_certificate.insertPlainText("\n")
 
-    def load_interface(self, file="", date=None, id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None):
+    def load_interface(self, file="", date=None, id="", pid="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None):
         try:
             file_msg=self.current_file.file if self.current_file.file else "New file"
             sign_msg="(signed)" if config["smime"] and self.current_file.is_signed() else ""
@@ -346,6 +346,7 @@ class MainWindow(QMainWindow):
                     logging.warning(e)
             self.input_date.setDateTime(d)
             self.input_id.setText(id)
+            self.input_pid.setText(pid)
             self.input_name.setText(name)
             try:
                 pdate=dateutil.parser.parse(dob)
@@ -389,6 +390,7 @@ class MainWindow(QMainWindow):
                 file=self.prescription.file,
                 date=self.prescription.date,
                 id=self.prescription.id,
+                pid=self.prescription.pid,
                 name=self.prescription.name,
                 dob=self.prescription.dob,
                 age=self.prescription.age,
@@ -414,6 +416,7 @@ class MainWindow(QMainWindow):
             self.prescription.set_data(
                     date=self.input_date.dateTime().toString("yyyy-MM-dd hh:mm:ss"),
                     id=self.input_id.text(),
+                    pid=self.input_pid.text(),
                     name=self.input_name.text(),
                     dob=self.input_dob.text(),
                     age=self.input_age.text(),
@@ -494,7 +497,6 @@ class MainWindow(QMainWindow):
             self.input_dob.setEnabled(True)
             self.input_age.setText("")
             self.input_age.setEnabled(False)
-
 
     def confirm_close(self):
         self.refresh()
@@ -662,7 +664,9 @@ class MainWindow(QMainWindow):
         self.input_date.setCalendarWidget(QCalendarWidget())
         layout_info.addRow("Date", self.input_date)
         self.input_id=QLineEdit(self)
-        layout_info.addRow("ID", self.input_id)
+        layout_info.addRow("Prescription ID", self.input_id)
+        self.input_pid=QLineEdit(self)
+        layout_info.addRow("Patient ID", self.input_pid)
         self.input_name=QLineEdit(self)
         layout_info.addRow("Name", self.input_name)
 

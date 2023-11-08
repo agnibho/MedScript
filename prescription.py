@@ -56,16 +56,17 @@ class Prescription:
 
     file=""
 
-    def __init__(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties=None, prescriber=None):
+    def __init__(self, date="", id="", pid="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties=None, prescriber=None):
         self.set_data(date, name, dob, age, sex, address, contact, extra, mode, daw, diagnosis, note, report, advice, investigation, medication, additional, certificate, custom, properties)
         if prescriber is None:
             self.prescriber = Prescriber()
         else:
             self.prescriber = prescriber
 
-    def set_data(self, date="", id="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties=None):
+    def set_data(self, date="", id="", pid="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties=None):
         self.date = date
         self.id = id
+        self.pid = pid
         self.name = name
         if(age):
             self.dob = ""
@@ -95,6 +96,7 @@ class Prescription:
             self.prescriber.set_data_from_json(data.get("prescriber"))
             self.date = data.get("date")
             self.id = data.get("id")
+            self.id = data.get("pid")
             self.name = data.get("name")
             self.dob = data.get("dob")
             self.age = data.get("age")
