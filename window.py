@@ -448,6 +448,9 @@ class MainWindow(QMainWindow):
         self.update_instance()
         self.plugin.new(self.prescription)
         self.load_interface_from_instance()
+        if(config["age_default"]):
+            self.btnAge.click()
+            self.update_instance()
         self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
 
     def change_prescriber(self, file):

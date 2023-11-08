@@ -34,6 +34,7 @@ default = {
         "template": "default_prescription",
         "preset_directory": "preset",
         "form_directory": "form",
+        "age_default": True,
         "enable_form": False,
         "plugin_directory": "plugin",
         "enable_plugin": False,

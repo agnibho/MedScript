@@ -42,6 +42,7 @@ class EditConfiguration(QDialog):
             self.input_prescriber.setText(self.config["prescriber"])
             self.input_newline.setChecked(bool(self.config["preset_newline"]))
             self.input_delimiter.setCurrentText(self.config["preset_delimiter"])
+            self.input_agedob.setChecked(bool(self.config["age_default"]))
             self.input_markdown.setChecked(bool(self.config["markdown"]))
             self.input_update.setChecked(bool(self.config["check_update"]))
             self.input_form.setChecked(bool(self.config["enable_form"]))
@@ -52,7 +53,7 @@ class EditConfiguration(QDialog):
             self.input_root.setText(self.config["root_bundle"])
         except Exception as e:
             QMessageBox.critical(self,"Failed to load", "Failed to load the data into the application.")
-            raise(e)
+            logging.warning(e)
 
     def save(self):
         if(QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Save", "This action will overwrite the previous configuration. Continue?")):
@@ -61,6 +62,7 @@ class EditConfiguration(QDialog):
                 self.config["prescriber"]=self.input_prescriber.text()
                 self.config["preset_newline"]=self.input_newline.isChecked()
                 self.config["preset_delimiter"]=self.input_delimiter.currentText()
+                self.config["age_default"]=self.input_agedob.isChecked()
                 self.config["markdown"]=self.input_markdown.isChecked()
                 self.config["check_update"]=self.input_update.isChecked()
                 self.config["enable_form"]=self.input_form.isChecked()
@@ -109,6 +111,8 @@ class EditConfiguration(QDialog):
         self.input_delimiter=QComboBox(self)
         self.input_delimiter.addItems([",", ";"])
         layout.addRow("Preset Delimiter", self.input_delimiter)
+        self.input_agedob=QCheckBox("Age default in new prescriptions", self)
+        layout.addRow("Age/DOB", self.input_agedob)
         self.input_markdown=QCheckBox("Enable markdown formatting", self)
         layout.addRow("Markdown", self.input_markdown)
         self.input_update=QCheckBox("Check update on startup", self)
