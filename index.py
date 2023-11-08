@@ -122,6 +122,7 @@ class Index(QMainWindow):
 
     def build(self):
         files=glob(os.path.join(config["document_directory"], "**", "*.mpaz"), recursive=True)
+        self.index=[]
         for file in files:
             try:
                 with ZipFile(file) as zf:
