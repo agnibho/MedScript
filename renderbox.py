@@ -10,7 +10,7 @@ from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QIcon, QPageLayout, QPageSize
 from PyQt6.QtCore import QUrl, QMarginsF
 from PyQt6.QtPrintSupport import QPrinter, QPrintDialog
-import logging, os
+import logging, os, copy
 from config import config
 
 class RenderBox(QMainWindow):
@@ -95,9 +95,15 @@ class UnrenderBox(QDialog):
 
     def show(self, prescription):
         if(type(prescription) is not dict):
-            prescription=prescription.__dict__
-            prescription["prescriber"]=prescription["prescriber"].__dict__
-        self.load(prescription)
+            try:
+                data=copy.deepcopy(prescription).__dict__
+                if(type(data["prescriber"]) is not dict):
+                   data["prescriber"]=data["prescriber"].__dict__
+            except Exception as e:
+                logging.critical(e)
+        else:
+            data=copy.deepcopy(prescription)
+        self.load(data)
         return(self)
 
     def load(self, prescription):

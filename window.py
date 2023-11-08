@@ -121,6 +121,7 @@ class MainWindow(QMainWindow):
             sys.exit()
 
     def cmd_unrender(self):
+        self.update_instance()
         self.unrenderbox.show(self.prescription).exec()
 
     def cmd_render(self):
