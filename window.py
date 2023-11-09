@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import logging, os, sys, datetime, dateutil.parser, shutil, json, threading
+import logging, os, sys, datetime, dateutil.parser, shutil, json, copy, threading
 from PyQt6.QtCore import Qt, QDateTime, QDate, QSize, pyqtSignal
 from PyQt6.QtWidgets import QWidget, QMainWindow, QMessageBox, QLabel, QPushButton, QLineEdit, QTextEdit, QDateTimeEdit, QDateEdit, QCalendarWidget, QListWidget, QComboBox, QCheckBox, QRadioButton, QButtonGroup, QVBoxLayout, QHBoxLayout, QFormLayout, QToolBar, QTabWidget, QStatusBar, QFileDialog, QInputDialog, QCompleter, QSizePolicy
 from PyQt6.QtGui import QAction, QIcon
@@ -97,6 +97,9 @@ class MainWindow(QMainWindow):
                     self.current_file.set_file(filename)
                 for i in range(self.input_attachment.count()):
                     self.current_file.copy(self.input_attachment.item(i).text())
+                if(self.prescription.prescriber.get_json()!=self.prescriber.get_json()):
+                    if(QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Change Prescriber", "Original Prescriber: "+self.prescription.prescriber.name+"\nCurrent Prescriber: "+self.prescriber.name+"\nReplace original with current?")):
+                        self.prescription.prescriber=copy.deepcopy(self.prescriber)
                 self.prescription.write_to(os.path.join(self.current_file.directory.name, "prescription.json"))
                 if change_template:
                     config["template"]=os.path.join(config["template_directory"], template)

@@ -24,6 +24,9 @@ class Prescriber:
         self.extra = extra
         self.properties = properties
 
+    def get_json(self):
+        return(json.dumps(self, default=lambda o: o.__dict__, indent=4))
+
     def set_data_from_json(self, data):
         try:
             self.name = data["name"]
