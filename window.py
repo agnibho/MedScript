@@ -205,7 +205,6 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Export failed", "Failed to export the data.")
 
     def cmd_index(self):
-        self.index.refresh()
         self.index.show()
 
     def cmd_configuration(self):

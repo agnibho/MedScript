@@ -7,9 +7,11 @@
 
 from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTableView, QAbstractItemView
 from PyQt6.QtGui import QIcon, QStandardItemModel, QStandardItem
-from PyQt6.QtCore import Qt, pyqtSignal, QSortFilterProxyModel
+from PyQt6.QtCore import Qt, pyqtSignal, QSortFilterProxyModel, QThread
 from glob import glob
 from zipfile import ZipFile
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 from config import config
 from renderbox import UnrenderBox
 import logging, os, json
@@ -18,7 +20,7 @@ class Index(QMainWindow):
 
     signal_open=pyqtSignal(str)
     signal_copy=pyqtSignal(dict)
-    index=[]
+    index={}
     proxymodel=QSortFilterProxyModel()
 
     def __init__(self, *args, **kwargs):
@@ -52,21 +54,39 @@ class Index(QMainWindow):
         button_open.clicked.connect(self.cmd_open)
         button_copy=QPushButton("Create Copy")
         button_copy.clicked.connect(self.cmd_copy)
+        button_rebuild=QPushButton("Rebuild Index")
+        button_rebuild.clicked.connect(self.cmd_rebuild)
         layout3.addWidget(button_view)
         layout3.addWidget(button_open)
         layout3.addWidget(button_copy)
+        layout3.addWidget(button_rebuild)
         layout.addLayout(layout2)
         layout.addLayout(layout3)
         layout.addWidget(self.table)
 
         self.unrenderbox=UnrenderBox()
 
+        worker=Worker()
+        worker.signal_update.connect(self.update)
+        worker.start()
+
         self.setCentralWidget(widget)
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
 
-        self.refresh()
+        self.build()
+        self.load()
 
-    def refresh(self):
+    def update(self, event_type, src_path):
+        if(src_path.endswith(".mpaz")):
+            if(event_type=="created"):
+                self.add(src_path)
+            elif(event_type=="modified"):
+                self.change(src_path)
+            elif(event_type=="deleted"):
+                self.delete(src_path)
+            self.load()
+
+    def cmd_rebuild(self):
         self.build()
         self.load()
 
@@ -103,7 +123,7 @@ class Index(QMainWindow):
         try:
             file=self.getSelectedFile()
             if(file):
-                self.signal_open.emit()
+                self.signal_open.emit(file)
                 self.hide()
         except Exception as e:
             logging.exception(e)
@@ -132,26 +152,44 @@ class Index(QMainWindow):
             logging.exception(e)
 
     def build(self):
-        files=glob(os.path.join(config["document_directory"], "**", "*.mpaz"), recursive=True)
-        self.index=[]
-        for file in files:
-            try:
-                with ZipFile(file) as zf:
-                    try:
-                        with zf.open("prescription.json") as pf:
-                            pres=json.loads(pf.read())
-                            self.index.append([pres["pid"], pres["id"], pres["name"], pres["dob"], pres["age"], pres["sex"], pres["date"], pres["diagnosis"], file])
-                    except KeyError as e:
-                        logging.warning(e)
-                    except Exception as e:
-                        logging.exception(e)
-            except Exception as e:
-                logging.exception(e)
+        try:
+            files=glob(os.path.join(config["document_directory"], "**", "*.mpaz"), recursive=True)
+            self.index={}
+            for file in files:
+                self.add(file)
+        except Exception as e:
+            logging.exception(e)
+
+    def add(self, file):
+        try:
+            with ZipFile(file) as zf:
+                try:
+                    with zf.open("prescription.json") as pf:
+                        pres=json.loads(pf.read())
+                        self.index[file]=[pres["pid"], pres["id"], pres["name"], pres["dob"], pres["age"], pres["sex"], pres["date"], pres["diagnosis"], file]
+                except KeyError as e:
+                    logging.warning(e)
+                except Exception as e:
+                    logging.exception(e)
+        except Exception as e:
+            logging.exception(e)
+
+    def delete(self, file):
+        try:
+            del self.index[file]
+        except KeyError as e:
+            logging.warning(e)
+        except Exception as e:
+            logging.exception(e)
+
+    def change(self, file):
+        self.delete(file)
+        self.add(file)
 
     def load(self):
         model=QStandardItemModel()
         model.setHorizontalHeaderLabels(["Patient ID", "Prescription ID", "Name", "Date of Birth", "Age", "Sex", "Date", "Diagnosis", "File"])
-        for item in self.index:
+        for key, item in self.index.items():
             row=[]
             for i in item:
                 row.append(QStandardItem(i))
@@ -160,3 +198,20 @@ class Index(QMainWindow):
         self.proxymodel.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.table.setModel(self.proxymodel)
         self.table.resizeColumnsToContents()
+
+class WatchHandler(FileSystemEventHandler):
+    def __init__(self, signal):
+        super().__init__()
+        self.signal=signal
+    def on_any_event(self, event):
+        if not event.is_directory:
+            self.signal.emit(event.event_type, event.src_path)
+
+class Worker(QThread):
+    signal_update=pyqtSignal(str, str)
+    def run(self):
+        watchHandler=WatchHandler(self.signal_update)
+        observer=Observer()
+        observer.schedule(watchHandler, path=config["document_directory"], recursive=True)
+        observer.start()
+        observer.join()
