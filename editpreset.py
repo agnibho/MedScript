@@ -51,7 +51,7 @@ class EditPreset(QMainWindow):
         try:
             item=self.input_file.currentText()
             file=os.path.join(config["preset_directory"], item+".csv")
-            with open(file, "w") as f:
+            with open(file, "w", newline="") as f:
                 writer=csv.writer(f, delimiter=config["preset_delimiter"])
                 writer.writerow(["KEY", "VALUE"])
                 for i in self.editors:
