@@ -87,6 +87,14 @@ class EditPreset(QMainWindow):
                 next(reader)
                 for idx,row in enumerate(reader):
                     tablerow=[]
+                    try:
+                        row[0]
+                    except IndexError:
+                        row.append("")
+                    try:
+                        row[1]
+                    except IndexError:
+                        row.append("")
                     tablerow.append(QStandardItem(row[0]))
                     tablerow.append(QStandardItem(row[1]))
                     self.model.appendRow(tablerow)

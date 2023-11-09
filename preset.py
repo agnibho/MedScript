@@ -28,9 +28,12 @@ class Preset():
                     if skip_first:
                         next(reader)
                     for row in reader:
-                        self.data[row[0]]=row[1]
-                        if text_as_key:
-                            buf[row[1].strip()]=row[1]
+                        try:
+                            self.data[row[0]]=row[1]
+                            if text_as_key:
+                                buf[row[1].strip()]=row[1]
+                        except IndexError as e:
+                            logging.warning(e)
             self.data = buf | self.data
         except FileNotFoundError as e:
             logging.warning(e)
@@ -39,4 +42,4 @@ class Preset():
         except StopIteration as e:
             logging.warning(e)
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
