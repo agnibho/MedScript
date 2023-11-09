@@ -64,7 +64,7 @@ class Installer(QMainWindow):
                             QMessageBox.information(self, "File exists", "PLUGIN <strong>"+name+"</strong> is already installed.")
             QMessageBox.information(self, "Restart", "Please restart MedScript for the changes to take effect.")
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def cmd_uninstall(self):
         txt=self.installed.currentItem().text().split("\t")
@@ -168,4 +168,4 @@ class Installer(QMainWindow):
             for i in self.plugin["name"]:
                 self.installed.addItem("[plugin]\t"+i)
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)

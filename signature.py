@@ -32,7 +32,7 @@ class Signature():
             if(not Signature.verify_chain(certificate)):
                 return False
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
             return False
 
         with open(certificate, "rb") as f:
@@ -45,7 +45,7 @@ class Signature():
                 subattr+=i.oid._name+":"+i.value+"\n"
             return subattr
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
             return False
 
     def verify_chain(cert_chain_path):

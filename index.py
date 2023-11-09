@@ -90,35 +90,46 @@ class Index(QMainWindow):
 
     def cmd_view(self):
         try:
-            with ZipFile(self.getSelectedFile()) as zf:
-                with zf.open("prescription.json") as pf:
-                    prescription=json.loads(pf.read())
-            self.unrenderbox.show(prescription).exec()
+            file=self.getSelectedFile()
+            if(file):
+                with ZipFile(file) as zf:
+                    with zf.open("prescription.json") as pf:
+                        prescription=json.loads(pf.read())
+                self.unrenderbox.show(prescription).exec()
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def cmd_open(self):
         try:
-            self.signal_open.emit(self.getSelectedFile())
-            self.hide()
+            file=self.getSelectedFile()
+            if(file):
+                self.signal_open.emit()
+                self.hide()
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def cmd_copy(self):
         try:
-            with ZipFile(self.getSelectedFile()) as zf:
-                with zf.open("prescription.json") as pf:
-                    pres=json.loads(pf.read())
-            self.signal_copy.emit(pres)
-            self.hide()
+            file=self.getSelectedFile()
+            if(file):
+                with ZipFile(file) as zf:
+                    with zf.open("prescription.json") as pf:
+                        pres=json.loads(pf.read())
+                self.signal_copy.emit(pres)
+                self.hide()
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
 
     def getSelectedFile(self):
-        selection=self.table.selectedIndexes()
-        file=selection[-1].data()
-        return file
+        try:
+            selection=self.table.selectedIndexes()
+            file=selection[-1].data()
+            return file
+        except IndexError as e:
+            logging.warning(e)
+        except Exception as e:
+            logging.exception(e)
 
     def build(self):
         files=glob(os.path.join(config["document_directory"], "**", "*.mpaz"), recursive=True)
@@ -130,10 +141,12 @@ class Index(QMainWindow):
                         with zf.open("prescription.json") as pf:
                             pres=json.loads(pf.read())
                             self.index.append([pres["pid"], pres["id"], pres["name"], pres["dob"], pres["age"], pres["sex"], pres["date"], pres["diagnosis"], file])
-                    except Exception as e:
+                    except KeyError as e:
                         logging.warning(e)
+                    except Exception as e:
+                        logging.exception(e)
             except Exception as e:
-                logging.warning(e)
+                logging.exception(e)
 
     def load(self):
         model=QStandardItemModel()

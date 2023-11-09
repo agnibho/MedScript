@@ -63,9 +63,11 @@ class MainWindow(QMainWindow):
                 self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
                 self.load_attachment(self.current_file.list())
                 self.unchanged_state=True
+            except FileNotFoundError as e:
+                logging.warning(e)
             except Exception as e:
                 QMessageBox.warning(self,"Open failed", "Failed to open file.")
-                logging.warning(e)
+                logging.exception(e)
 
     def cmd_copy(self, data):
         self.cmd_new()
@@ -104,7 +106,7 @@ class MainWindow(QMainWindow):
                 self.save_state=md5(self.prescription.get_json().encode()).hexdigest()
             except Exception as e:
                 QMessageBox.warning(self,"Save failed", "Failed to save file.")
-                logging.warning(e)
+                logging.exception(e)
 
     def cmd_save_as(self):
         suggest=self.prescription.id if(self.prescription.id) else self.prescription.name
@@ -164,10 +166,10 @@ class MainWindow(QMainWindow):
                         logging.warning(e)
                         QMessageBox.information(self, "Failed to load", "Failed to sign. Please check if certificate and key match.")
                     except Exception as e:
-                        logging.warning(e)
+                        logging.exception(e)
                         QMessageBox.information(self, "Failed", "Failed to sign.")
                 except Exception as e:
-                    logging.warning(e)
+                    logging.exception(e)
         else:
            QMessageBox.information(self, "Save first", "Please save the file before signing.")
 
@@ -190,7 +192,7 @@ class MainWindow(QMainWindow):
             logging.warning(e)
             QMessageBox.warning(self, "No Siganture", "No signature was found.")
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
             QMessageBox.warning(self, "Failed", "Failed to verify.")
 
     def cmd_tabular(self):
@@ -199,7 +201,7 @@ class MainWindow(QMainWindow):
             Tabular.export(filename)
             QMessageBox.information(self, "Data Exported", "Data exported to."+filename)
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
             QMessageBox.critical(self, "Export failed", "Failed to export the data.")
 
     def cmd_index(self):
@@ -343,7 +345,7 @@ class MainWindow(QMainWindow):
                     d=QDateTime.fromString(pdate.strftime("%Y-%m-%d %H:%M:%S"), "yyyy-MM-dd hh:mm:ss")
                 except Exception as e:
                     QMessageBox.warning(self,"Failed to load", str(e))
-                    logging.warning(e)
+                    logging.exception(e)
             self.input_date.setDateTime(d)
             self.input_id.setText(id)
             self.input_pid.setText(pid)
@@ -377,7 +379,7 @@ class MainWindow(QMainWindow):
             self.label_prescriber.setText(self.prescriber.name)
         except Exception as e:
             QMessageBox.warning(self,"Failed to load", "Failed to load the data into the application.")
-            logging.warning(e)
+            logging.exception(e)
 
     def load_interface_from_instance(self):
         if(self.current_file.has_template()):
@@ -470,7 +472,7 @@ class MainWindow(QMainWindow):
                 self.input_attachment.addItem(new)
         except Exception as e:
             QMessageBox.warning(self,"Attach failed", "Failed to attach file.")
-            logging.warning(e)
+            logging.exception(e)
 
     def remove_attachment(self):
         index=self.input_attachment.currentRow()
@@ -484,7 +486,7 @@ class MainWindow(QMainWindow):
         try:
             shutil.copyfile(self.input_attachment.currentItem().text(), QFileDialog.getSaveFileName(self, "Save Attachment", os.path.join(config["document_directory"], os.path.basename(self.input_attachment.currentItem().text())))[0])
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def load_attachment(self, attachments):
         for attach in attachments:
@@ -634,7 +636,7 @@ class MainWindow(QMainWindow):
                     action_plugin[-1].triggered.connect(partial(self.plugin.run, i[0], self.prescription))
                     action_plugin[-1].triggered.connect(self.load_interface_from_instance)
             except Exception as e:
-                logging.warning(e)
+                logging.exception(e)
             menu_plugin=menubar.addMenu("Plugin")
             for i in action_plugin:
                 menu_plugin.addAction(i)
@@ -662,7 +664,7 @@ class MainWindow(QMainWindow):
             templates.remove(os.path.basename(config["template"]))
             templates.insert(0, os.path.basename(config["template"]))
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
         self.input_template.addItems(templates)
         toolbar.addWidget(self.input_template)
         spacer=QWidget(self)

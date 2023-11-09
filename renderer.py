@@ -29,7 +29,7 @@ class Renderer:
                 try:
                     data["date"]=datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M:%S")
                 except Exception as e:
-                    logging.warning(e)
+                    logging.exception(e)
                 output=template_data.render(data)
                 target_file.write(output)
         return(target)

@@ -37,7 +37,7 @@ class Prescriber:
             else:
                 self.properties = None
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def read_from(self, file):
         try:
@@ -120,7 +120,7 @@ class Prescription:
             else:
                 self.properties = None
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def get_json(self):
         return(json.dumps(self, default=lambda o: o.__dict__, indent=4))
@@ -132,7 +132,7 @@ class Prescription:
             except AttributeError as e:
                 pass
             except Exception as e:
-                logging.warning(e)
+                logging.exception(e)
             f.write(self.get_json())
         self.file=file
 

@@ -53,7 +53,7 @@ class EditConfiguration(QDialog):
             self.input_root.setText(self.config["root_bundle"])
         except Exception as e:
             QMessageBox.critical(self,"Failed to load", "Failed to load the data into the application.")
-            logging.warning(e)
+            logging.exception(e)
 
     def save(self):
         if(QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm Save", "This action will overwrite the previous configuration. Continue?")):
@@ -77,7 +77,7 @@ class EditConfiguration(QDialog):
                 self.close()
             except Exception as e:
                 QMessageBox.critical(self,"Failed to save", "Failed to save the data to the file.")
-                logging.warning(e)
+                logging.exception(e)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,7 +86,7 @@ class EditConfiguration(QDialog):
             with open(config_file) as f:
                 self.config=json.loads(f.read()) | config
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
             self.config=config
 
         self.setWindowTitle("Configuration")

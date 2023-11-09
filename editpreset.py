@@ -61,7 +61,7 @@ class EditPreset(QMainWindow):
             self.load(file)
             QMessageBox.information(self,"File saved", "Changes saved. Please restart the program.")
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def cmd_row(self):
         tablerow=[]
@@ -107,7 +107,7 @@ class EditPreset(QMainWindow):
             self.table.resizeRowsToContents()
             textedit=QTextEdit()
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def confirm(self):
         return QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm action", "Unsaved changes may be lost. Continue?")

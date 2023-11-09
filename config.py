@@ -53,8 +53,11 @@ try:
     with open(config_file) as conf:
         read = json.loads(conf.read())
     config = default | read
+except FileNotFoundError as e:
+    logging.critical(e)
+    config=default
 except Exception as e:
-    logging.warning(e)
+    logging.exception(e)
     config=default
 
 config["filename"]=args.filename

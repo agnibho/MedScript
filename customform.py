@@ -23,7 +23,7 @@ class CustomForm(QWidget):
                 try:
                     self.forms.append(json.loads(f.read()))
                 except Exception as e:
-                    logging.warning(e)
+                    logging.exception(e)
         for i in self.forms:
             try:
                 for j in i["form"]:
@@ -40,8 +40,10 @@ class CustomForm(QWidget):
                         self.inputs.append([j["description"], QCheckBox()])
                     else:
                         self.inputs.append([j["description"], QLineEdit()])
+            except KeyError as e:
+                logging.warning(e)
             except Exception as e:
-                raise(e)
+                logging.exception(e)
 
     def getData(self):
         try:
@@ -55,7 +57,7 @@ class CustomForm(QWidget):
                 elif(isinstance(self.inputs[index][1], QDateTimeEdit)):
                     self.custom[index][list(item)[0]]=self.inputs[index][1].text()
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
         return(self.custom)
 
     def setData(self, custom=False):
@@ -74,7 +76,7 @@ class CustomForm(QWidget):
                     d=QDateTime.fromString(pdate.strftime("%Y-%m-%d %H:%M:%S"), "yyyy-MM-dd hh:mm:ss")
                     self.inputs[index][1].setDateTime(d)
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
 
     def __init__(self, *args, **kwargs):

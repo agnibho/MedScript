@@ -91,14 +91,14 @@ class FileHandler():
         try:
             os.unlink(os.path.join(self.directory.name, "attachment", os.path.basename(item)))
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def delete_sign(self):
         try:
             os.unlink(os.path.join(self.directory.name, "certificate.pem"))
             os.unlink(os.path.join(self.directory.name, "signature"))
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def has_template(self):
         return(os.path.exists(os.path.join(self.directory.name, "template", "index.html")))

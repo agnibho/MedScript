@@ -56,7 +56,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
             except Exception as e:
-                logging.warning(e)
+                logging.exception(e)
 
     def open(self, prescription):
         for i in self.plugins:
@@ -68,7 +68,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
             except Exception as e:
-                logging.warning(e)
+                logging.exception(e)
 
     def save(self, prescription):
         for i in self.plugins:
@@ -80,7 +80,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
             except Exception as e:
-                logging.warning(e)
+                logging.exception(e)
 
     def refresh(self, prescription):
         for i in self.plugins:
@@ -92,7 +92,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
             except Exception as e:
-                logging.warning(e)
+                logging.exception(e)
 
     def run(self, module, prescription):
         try:
@@ -115,7 +115,7 @@ class Plugin():
                     if(message):
                         self.showMessage(message)
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def input(self):
         try:
@@ -125,7 +125,7 @@ class Plugin():
             else:
                 return ""
         except Exception as e:
-            logging.warning(e)
+            logging.exception(e)
 
     def showMessage(self, message, index=None):
         QMessageBox.information(None, "Information", message)
@@ -148,6 +148,9 @@ class Worker(QThread):
         self.index=index
 
     def run(self):
-        prescription_copy=copy.deepcopy(self.prescription)
-        message=self.function(prescription_copy)
-        self.pluginComplete.emit(message, self.index)
+        try:
+            prescription_copy=copy.deepcopy(self.prescription)
+            message=self.function(prescription_copy)
+            self.pluginComplete.emit(message, self.index)
+        except Exception as e:
+            logging.exception(e)

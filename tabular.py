@@ -13,15 +13,20 @@ import logging, os, json, csv
 class Tabular():
 
     def export(filename):
-        files=glob(os.path.join(config["document_directory"], "**", "*.mpaz"), recursive=True)
-        with open(filename, "w", newline="") as ss:
-            writer=csv.writer(ss, delimiter=config["preset_delimiter"], quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(["pid", "id", "date", "name", "dob", "age", "sex", "address", "contact", "extra", "mode", "daw", "diagnosis", "note", "report", "advice", "investigation", "medication", "additional", "certificate", "prescriber"])
-            for file in files:
-                try:
-                    with ZipFile(file) as zf:
-                        with zf.open("prescription.json") as pf:
-                            pres=json.loads(pf.read())
-                            writer.writerow([pres["pid"], pres["id"], pres["date"], pres["name"], pres["dob"], pres["age"], pres["sex"], pres["address"], pres["contact"], pres["extra"], pres["mode"], pres["daw"], pres["diagnosis"], pres["note"], pres["report"], pres["advice"], pres["investigation"], pres["medication"], pres["additional"], pres["certificate"], pres["prescriber"]["name"]])
-                except Exception as e:
-                    logging.warning(e)
+        try:
+            files=glob(os.path.join(config["document_directory"], "**", "*.mpaz"), recursive=True)
+            with open(filename, "w", newline="") as ss:
+                writer=csv.writer(ss, delimiter=config["preset_delimiter"], quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(["pid", "id", "date", "name", "dob", "age", "sex", "address", "contact", "extra", "mode", "daw", "diagnosis", "note", "report", "advice", "investigation", "medication", "additional", "certificate", "prescriber"])
+                for file in files:
+                    try:
+                        with ZipFile(file) as zf:
+                            with zf.open("prescription.json") as pf:
+                                pres=json.loads(pf.read())
+                                writer.writerow([pres["pid"], pres["id"], pres["date"], pres["name"], pres["dob"], pres["age"], pres["sex"], pres["address"], pres["contact"], pres["extra"], pres["mode"], pres["daw"], pres["diagnosis"], pres["note"], pres["report"], pres["advice"], pres["investigation"], pres["medication"], pres["additional"], pres["certificate"], pres["prescriber"]["name"]])
+                    except Exception as e:
+                        logging.exception(e)
+        except FileNotFoundError as e:
+            logging.warning(e)
+        except Exception as e:
+            logging.exception(e)

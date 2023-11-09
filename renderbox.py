@@ -73,7 +73,7 @@ class RenderBox(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self,"Display failed", "Failed to display file.")
             self.hide()
-            logging.warning(e)
+            logging.exception(e)
 
 
 class UnrenderBox(QDialog):
