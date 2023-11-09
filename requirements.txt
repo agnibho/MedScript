@@ -6,3 +6,4 @@ packaging==23.2
 PyQt6==6.5.3
 PyQt6_sip==13.6.0
 python_dateutil==2.8.2
+watchdog==2.3.0
