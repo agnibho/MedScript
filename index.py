@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTableView, QAbstractItemView
+from PyQt6.QtWidgets import QWidget, QMainWindow, QFormLayout, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTableView, QAbstractItemView, QFileDialog
 from PyQt6.QtGui import QIcon, QStandardItemModel, QStandardItem
 from PyQt6.QtCore import Qt, pyqtSignal, QSortFilterProxyModel, QThread
 from glob import glob
@@ -56,10 +56,13 @@ class Index(QMainWindow):
         button_copy.clicked.connect(self.cmd_copy)
         button_rebuild=QPushButton("Rebuild Index")
         button_rebuild.clicked.connect(self.cmd_rebuild)
+        button_browse=QPushButton("File Browser")
+        button_browse.clicked.connect(self.cmd_browse)
         layout3.addWidget(button_view)
         layout3.addWidget(button_open)
         layout3.addWidget(button_copy)
         layout3.addWidget(button_rebuild)
+        layout3.addWidget(button_browse)
         layout.addLayout(layout2)
         layout.addLayout(layout3)
         layout.addWidget(self.table)
@@ -140,6 +143,16 @@ class Index(QMainWindow):
         except Exception as e:
             logging.exception(e)
 
+    def cmd_browse(self):
+        try:
+            file=QFileDialog.getOpenFileName(self, "Browse", config["document_directory"], "Prescriptions (*.mpaz);; PDF (*.pdf);; All Files (*)")[0]
+            if(file):
+                with ZipFile(file) as zf:
+                    with zf.open("prescription.json") as pf:
+                        prescription=json.loads(pf.read())
+                self.unrenderbox.show(prescription).exec()
+        except Exception as e:
+            logging.exception(e)
 
     def getSelectedFile(self):
         try:
