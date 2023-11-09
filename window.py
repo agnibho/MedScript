@@ -92,6 +92,8 @@ class MainWindow(QMainWindow):
             try:
                 if not os.path.exists(self.current_file.file):
                     filename=QFileDialog.getSaveFileName(self, "Save File", suggest, "Prescriptions (*.mpaz);; All Files (*)")[0]
+                    if(len(filename)<=0):
+                        return
                     if(not filename.endswith(".mpaz")):
                        filename=filename+".mpaz"
                     self.current_file.set_file(filename)
@@ -114,9 +116,13 @@ class MainWindow(QMainWindow):
     def cmd_save_as(self):
         suggest=self.prescription.id if(self.prescription.id) else self.prescription.name
         suggest=os.path.abspath(os.path.join(config["document_directory"], suggest)+".mpaz")
-        self.current_file.set_file(QFileDialog.getSaveFileName(self, "Save File", suggest, "Prescriptions (*.mpaz);; All Files (*)")[0])
-        Path(self.current_file.file).touch()
-        self.cmd_save(save_as=True)
+        filename=QFileDialog.getSaveFileName(self, "Save File", suggest, "Prescriptions (*.mpaz);; All Files (*)")[0]
+        if(len(filename)>0):
+            if not filename.endswith(".mpaz"):
+                filename=filename+".mpaz"
+            self.current_file.set_file(filename)
+            Path(self.current_file.file).touch()
+            self.cmd_save(save_as=True)
 
     def cmd_refresh(self):
         self.refresh()
