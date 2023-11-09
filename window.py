@@ -512,6 +512,25 @@ class MainWindow(QMainWindow):
             self.input_age.setText("")
             self.input_age.setEnabled(False)
 
+    def load_presets(self):
+        self.preset_note=Preset("note")
+        self.preset_report=Preset("report")
+        self.preset_advice=Preset("advice")
+        self.preset_investigation=Preset("investigation")
+        self.preset_medication=Preset("medication", text_as_key=True)
+        self.preset_additional=Preset("additional")
+        self.preset_certificate=Preset("certificate")
+
+    def reload_presets(self):
+        self.load_presets()
+        self.input_note_preset.addItems(self.preset_note.data.keys())
+        self.input_report_preset.addItems(self.preset_note.data.keys())
+        self.input_advice_preset.addItems(self.preset_note.data.keys())
+        self.input_investigation_preset.addItems(self.preset_note.data.keys())
+        self.input_medication_preset.addItems(self.preset_note.data.keys())
+        self.input_additional_preset.addItems(self.preset_note.data.keys())
+        self.input_certificate_preset.addItems(self.preset_note.data.keys())
+
     def confirm_close(self):
         self.update_instance()
         flag=(self.save_state==md5(self.prescription.get_json().encode()).hexdigest() or QMessageBox.StandardButton.Yes==QMessageBox.question(self,"Confirm action", "Unsaved changes may be lost. Continue?"))
@@ -537,13 +556,7 @@ class MainWindow(QMainWindow):
         icon_refresh=QIcon(os.path.join(config["resource"], "icon_refresh.svg"))
         icon_view=QIcon(os.path.join(config["resource"], "icon_view.svg"))
 
-        self.preset_note=Preset("note")
-        self.preset_report=Preset("report")
-        self.preset_advice=Preset("advice")
-        self.preset_investigation=Preset("investigation")
-        self.preset_medication=Preset("medication", text_as_key=True)
-        self.preset_additional=Preset("additional")
-        self.preset_certificate=Preset("certificate")
+        self.load_presets()
 
         action_new=QAction("New File", self)
         action_new.setShortcut("Ctrl+N")
@@ -939,6 +952,7 @@ class MainWindow(QMainWindow):
         self.viewbox=ViewBox()
         self.index=Index()
         self.edit_preset=EditPreset()
+        self.edit_preset.presetEdited.connect(self.reload_presets)
         self.installer=Installer()
         self.index.signal_open.connect(self.cmd_open)
         self.index.signal_copy.connect(self.cmd_copy)

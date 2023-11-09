@@ -22,19 +22,23 @@ class Preset():
     def load(self, skip_first=True, text_as_key=False):
         try:
             buf={}
-            for file in glob(os.path.join(config["preset_directory"], self.target+"*"+".csv")):
-                with open(file, "r") as f:
-                    reader=csv.reader(f, delimiter=config["preset_delimiter"])
-                    if skip_first:
-                        next(reader)
-                    for row in reader:
-                        try:
-                            self.data[row[0]]=row[1]
-                            if text_as_key:
-                                buf[row[1].strip()]=row[1]
-                        except IndexError as e:
-                            logging.warning(e)
+            filelist=glob(os.path.join(config["preset_directory"], self.target+"*"+".csv"))
+            filelist.append(filelist.pop(filelist.index(os.path.join(config["preset_directory"], self.target+".csv"))))
+            for file in filelist:
+                if(file!=os.path.join(config["preset_directory"], self.target+".csv")):
+                    with open(file, "r") as f:
+                        reader=csv.reader(f, delimiter=config["preset_delimiter"])
+                        if skip_first:
+                            next(reader)
+                        for row in reader:
+                            try:
+                                self.data[row[0]]=row[1]
+                                if text_as_key:
+                                    buf[row[1].strip()]=row[1]
+                            except IndexError as e:
+                                logging.warning(e)
             self.data = buf | self.data
+            self.data=dict(sorted(self.data.items()))
         except FileNotFoundError as e:
             logging.warning(e)
         except IndexError as e:

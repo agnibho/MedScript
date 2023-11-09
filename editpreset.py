@@ -7,11 +7,13 @@
 
 from PyQt6.QtWidgets import QWidget, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QTextEdit, QTableView, QMessageBox
 from PyQt6.QtGui import QIcon, QStandardItemModel, QStandardItem
+from PyQt6.QtCore import pyqtSignal
 from config import config
 import logging, os, csv
 
 class EditPreset(QMainWindow):
 
+    presetEdited=pyqtSignal()
     editors=[]
     model=QStandardItemModel()
 
@@ -59,7 +61,8 @@ class EditPreset(QMainWindow):
                     if row[0].strip()!="" or row[1].strip()!="":
                         writer.writerow(row)
             self.load(file)
-            QMessageBox.information(self,"File saved", "Changes saved. Please restart the program.")
+            self.presetEdited.emit()
+            QMessageBox.information(self,"File saved", "Edited data has been saved.")
         except Exception as e:
             logging.exception(e)
 
