@@ -24,7 +24,6 @@ from setting import EditConfiguration, EditPrescriber, SelectPrescriber
 from editpreset import EditPreset
 from viewbox import ViewBox
 from preset import Preset
-from tabular import Tabular
 from index import Index
 from customform import CustomForm
 from plugin import Plugin
@@ -204,29 +203,16 @@ class MainWindow(QMainWindow):
             logging.exception(e)
             QMessageBox.warning(self, "Failed", "Failed to verify.")
 
-    def cmd_tabular(self):
-        try:
-            filename=QFileDialog.getSaveFileName(self, "Export CSV File", os.path.join(config["data_directory"], "data.csv"), "CSV (*.csv);; All Files (*)")[0]
-            Tabular.export(filename)
-            QMessageBox.information(self, "Data Exported", "Data exported to."+filename)
-        except Exception as e:
-            logging.exception(e)
-            QMessageBox.critical(self, "Export failed", "Failed to export the data.")
-
     def cmd_index(self):
         self.index.show()
 
     def cmd_configuration(self):
         self.edit_configuration.exec()
 
-    def cmd_prescriber(self, file=None):
-        self.edit_prescriber.load(file)
-        self.edit_prescriber.exec()
-
-    def cmd_switch(self):
+    def cmd_prescriber(self):
         try:
-            self.select_prescriber.load()
-            self.select_prescriber.exec()
+            self.selectPrescriber.load()
+            self.selectPrescriber.exec()
         except FileNotFoundError as e:
             logging.warning(e)
 
@@ -468,6 +454,10 @@ class MainWindow(QMainWindow):
         self.prescriber.read_from(file)
         self.refresh()
 
+    def edit_prescriber(self, file=None):
+        self.editPrescriber.load(file)
+        self.editPrescriber.exec()
+
     def refresh(self):
         self.update_instance()
         self.plugin.refresh(self.prescription)
@@ -600,16 +590,12 @@ class MainWindow(QMainWindow):
         action_verify.triggered.connect(self.cmd_verify)
         action_configuration=QAction("Edit Configuration", self)
         action_configuration.triggered.connect(self.cmd_configuration)
-        action_prescriber=QAction("Current Prescriber", self)
-        action_prescriber.triggered.connect(self.cmd_prescriber)
-        action_switch=QAction("Select Prescriber", self)
-        action_switch.triggered.connect(self.cmd_switch)
         action_preset=QAction("Edit Presets", self)
         action_preset.triggered.connect(self.cmd_preset)
+        action_prescriber=QAction("Select Prescriber", self)
+        action_prescriber.triggered.connect(self.cmd_prescriber)
         action_installer=QAction("Package Installer", self)
         action_installer.triggered.connect(self.cmd_installer)
-        action_tabular=QAction("Export CSV", self)
-        action_tabular.triggered.connect(self.cmd_tabular)
         action_index=QAction("Show Index", self)
         action_index.triggered.connect(self.cmd_index)
         action_index.setShortcut("Ctrl+I")
@@ -625,12 +611,13 @@ class MainWindow(QMainWindow):
 
         menubar=self.menuBar()
         menu_file=menubar.addMenu("File")
+        menu_file.addAction(action_index)
         menu_file.addAction(action_new)
         menu_file.addAction(action_open)
         menu_file.addAction(action_save)
         menu_file.addAction(action_save_as)
         menu_file.addAction(action_quit)
-        menu_prepare=menubar.addMenu("Prepare")
+        menu_prepare=menubar.addMenu("Process")
         menu_prepare.addAction(action_unrender)
         menu_prepare.addAction(action_render)
         menu_prepare.addAction(action_refresh)
@@ -640,13 +627,9 @@ class MainWindow(QMainWindow):
             menu_prepare.addAction(action_verify)
         menu_settings=menubar.addMenu("Settings")
         menu_settings.addAction(action_configuration)
-        menu_settings.addAction(action_prescriber)
-        menu_settings.addAction(action_switch)
         menu_settings.addAction(action_preset)
+        menu_settings.addAction(action_prescriber)
         menu_settings.addAction(action_installer)
-        menu_data=menubar.addMenu("Data")
-        menu_data.addAction(action_index)
-        menu_data.addAction(action_tabular)
 
         if(config["enable_plugin"]):
             action_plugin=[]
@@ -943,16 +926,16 @@ class MainWindow(QMainWindow):
         self.renderbox=RenderBox()
         self.unrenderbox=UnrenderBox()
         self.signal_view.connect(self.renderbox.update)
-        self.edit_configuration=EditConfiguration()
-        self.edit_prescriber=EditPrescriber()
-        self.edit_prescriber.signal_save.connect(self.change_prescriber)
-        self.select_prescriber=SelectPrescriber()
-        self.select_prescriber.signal_edit.connect(self.cmd_prescriber)
-        self.select_prescriber.signal_select.connect(self.change_prescriber)
+        self.editConfiguration=EditConfiguration()
+        self.editPrescriber=EditPrescriber()
+        self.editPrescriber.signal_save.connect(self.change_prescriber)
+        self.selectPrescriber=SelectPrescriber()
+        self.selectPrescriber.signal_edit.connect(self.edit_prescriber)
+        self.selectPrescriber.signal_select.connect(self.change_prescriber)
         self.viewbox=ViewBox()
         self.index=Index()
-        self.edit_preset=EditPreset()
-        self.edit_preset.presetEdited.connect(self.reload_presets)
+        self.editPreset=EditPreset()
+        self.editPreset.presetEdited.connect(self.reload_presets)
         self.installer=Installer()
         self.index.signal_open.connect(self.cmd_open)
         self.index.signal_copy.connect(self.cmd_copy)
@@ -963,7 +946,7 @@ class MainWindow(QMainWindow):
             self.cmd_open(config["filename"])
 
         if(len(self.prescription.prescriber.name.strip())<1):
-            self.cmd_prescriber()
+            self.editPrescriber()
 
         if(config["check_update"]):
             threading.Thread(target=self.cmd_update, args=[True]).start()
