@@ -139,12 +139,15 @@ class MainWindow(QMainWindow):
         if(self.save_state==md5(self.prescription.get_json().encode()).hexdigest()):
             try:
                 target=self.renderer.render(self.current_file.directory.name)
-                self.signal_view.emit(target)
-                self.renderbox.showMaximized()
+                if target is not None:
+                    self.signal_view.emit(target)
+                    self.renderbox.showMaximized()
+                else:
+                    QMessageBox.critical(self, "Render failed", "Presciption rendering failed. Please check if prescription file or template is corrupted.")
+                    logging.error("Prescription rendering failed.")
             except FileNotFoundError as e:
                 logging.warning(e)
                 QMessageBox.information(self, "Save first", "Please save the file before rendering.")
-
         else:
            QMessageBox.information(self, "Save first", "Please save the file before rendering.")
 

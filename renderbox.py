@@ -18,14 +18,20 @@ class RenderBox(QMainWindow):
     file=""
 
     def cmd_pdf(self):
-        file=QFileDialog.getSaveFileName(self, "Save PDF", os.path.abspath(os.path.join(config["document_directory"], ".pdf")), "PDF (*.pdf);; All Files (*)")
-        page=QPageSize(QPageSize.PageSizeId[self.input_size.currentText()])
-        self.webview.printToPdf(file[0], QPageLayout(page, QPageLayout.Orientation.Portrait, QMarginsF()))
+        try:
+            file=QFileDialog.getSaveFileName(self, "Save PDF", os.path.abspath(os.path.join(config["document_directory"], ".pdf")), "PDF (*.pdf);; All Files (*)")
+            page=QPageSize(QPageSize.PageSizeId[self.input_size.currentText()])
+            self.webview.printToPdf(file[0], QPageLayout(page, QPageLayout.Orientation.Portrait, QMarginsF()))
+        except Exception as e:
+            logging.exception(e)
 
     def cmd_print(self):
-        dialog=QPrintDialog(self.printer)
-        if(dialog.exec()):
-            self.webview.print(self.printer)
+        try:
+            dialog=QPrintDialog(self.printer)
+            if(dialog.exec()):
+                self.webview.print(self.printer)
+        except Exception as e:
+            logging.exception(e)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

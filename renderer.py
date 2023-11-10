@@ -15,24 +15,27 @@ class Renderer:
     tempdir=None
 
     def render(self, data_directory):
-        source=os.path.join(data_directory, "prescription.json")
-        target=os.path.join(data_directory, "template", "output.html")
-        template=os.path.join(data_directory, "template", "index.html")
-        if not os.path.exists(template):
-            shutil.copytree(config["template"], os.path.join(data_directory, "template"), dirs_exist_ok=True)
-        with open(source, "r") as source_file, open(target, "w") as target_file:
-            with open(template) as template_file:
-                template_data = Template(template_file.read())
-                data=self.process_medication(self.process_diagnosis(json.loads(source_file.read())))
-                if config["markdown"]:
-                    data=self.render_markdown(data)
-                try:
-                    data["date"]=datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M:%S")
-                except Exception as e:
-                    logging.exception(e)
-                output=template_data.render(data)
-                target_file.write(output)
-        return(target)
+        try:
+            source=os.path.join(data_directory, "prescription.json")
+            target=os.path.join(data_directory, "template", "output.html")
+            template=os.path.join(data_directory, "template", "index.html")
+            if not os.path.exists(template):
+                shutil.copytree(config["template"], os.path.join(data_directory, "template"), dirs_exist_ok=True)
+            with open(source, "r") as source_file, open(target, "w") as target_file:
+                with open(template) as template_file:
+                    template_data = Template(template_file.read())
+                    data=self.process_medication(self.process_diagnosis(json.loads(source_file.read())))
+                    if config["markdown"]:
+                        data=self.render_markdown(data)
+                    try:
+                        data["date"]=datetime.datetime.strptime(data["date"], "%Y-%m-%d %H:%M:%S")
+                    except Exception as e:
+                        logging.exception(e)
+                    output=template_data.render(data)
+                    target_file.write(output)
+            return(target)
+        except Exception as e:
+            logging.exception(e)
 
     def process_diagnosis(self, data):
         diagnosis_list=[]
