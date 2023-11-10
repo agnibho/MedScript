@@ -82,13 +82,10 @@ The required Python libraries are as follows:
 6. Markdown
 7. cryptography
 8. packaging
+9. watchdog
 
 Usage
 -----
-
-The common functionalities of the program can be used within the graphical
-interface. Editing of some configuration files are needed only for the
-advanced features such as custom presets.
 
 When starting the program, the main window of is shown.The menu bar at the top
 can be used to access most of the functions. The toolbar below it contains the
@@ -144,7 +141,7 @@ not printed with the prescription.
 ### Viewing the prescription
 
 The prescription can be quickly viewed by using the "Quick Display" option
-under the "Prepare" menu. Viewing the prescriptions this way only shows the
+under the "Process" menu. Viewing the prescriptions this way only shows the
 prescription data without considering the formatting. To display the
 prescription in a printable format, use the rendering option instead.
 
@@ -168,7 +165,7 @@ argument when starting from the command line.
 
 ### Rendering a prescription
 
-The prescriptions can be rendered and subsequently printed from the "Prepare"
+The prescriptions can be rendered and subsequently printed from the "Process"
 menu by selecting the "Render Prescription" option. Note that the files must
 be saved before rendering. The rendered prescription is opened in a separate
 window. It can be saved as PDF or printed directly.
@@ -177,16 +174,14 @@ window. It can be saved as PDF or printed directly.
 
 The prescription files in the default document folder are incorporated into an
 index which can be used to quickly find a particular prescription. To use this
-feature, select the "Show Index" option in the "Data" menu.
+feature, select the "Show Index" option in the "File" menu. Any changes to the
+directory including creation, modification or deletion of files is monitored
+by the index and reflected accordingly.
 
 The index can be filtered by using patient id, prescription id or patient's
 name. The entries can be viewed directly, opened in the program for
 editing/rendering or copied into a new prescription. This can be useful while
 consulting follow up patients.
-
-Data from the prescription files can be combined into a table and
-exported to a CSV file for analysis from the "Export CSV" option in the "Data"
-menu.
 
 ### Template
 
@@ -389,6 +384,9 @@ Please note that an option associated with the plugin is added to the "Plugin"
 menu if the plugin implements a `run` function. By default the name of the
 option is the name of the plugin. However, this can be overridden by setting a
 global variable called `name` with the desired name.
+
+Plugins may ask for user confirmation before executing the `run` function by
+setting a global variable called `confirm` containing the confirmation prompt.
 
 Each function mentioned above may return a string which will be displayed to
 the user by the program.
