@@ -30,7 +30,7 @@ class RenderBox(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle("MedScript")
+        self.setWindowTitle("MedScript Prescription")
         self.setGeometry(100, 100, 600, 400)
 
         self.printer=QPrinter(QPrinter.PrinterMode.HighResolution)
@@ -81,7 +81,7 @@ class UnrenderBox(QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle("MedScript")
+        self.setWindowTitle("MedScript Viewer")
         self.setMinimumSize(600, 400)
         self.setSizeGripEnabled(True)
 

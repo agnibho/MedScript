@@ -89,7 +89,7 @@ class EditConfiguration(QDialog):
             logging.exception(e)
             self.config=config
 
-        self.setWindowTitle("Configuration")
+        self.setWindowTitle("Configuration Editor")
 
         layout=QFormLayout(self)
         self.input_directory=QLineEdit(self)
@@ -205,7 +205,7 @@ class EditPrescriber(QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle("Prescriber")
+        self.setWindowTitle("Prescriber Editor")
 
         layout=QFormLayout(self)
         self.input_name=QLineEdit(self)
@@ -283,7 +283,7 @@ class SelectPrescriber(QDialog):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle("Prescriber")
+        self.setWindowTitle("Prescriber Selector")
 
         layout=QVBoxLayout(self)
         self.showAll=QListWidget()

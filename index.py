@@ -26,7 +26,7 @@ class Index(QMainWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.setWindowTitle("MedScript")
+        self.setWindowTitle("MedScript Index")
         self.setGeometry(200, 200, 600, 400)
 
         widget=QWidget(self)
