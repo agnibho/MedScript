@@ -97,6 +97,9 @@ class Plugin():
     def run(self, module, prescription):
         try:
             if(hasattr(module, "run") and callable(module.run)):
+                if(hasattr(module, "confirm") and module.confirm):
+                    if(QMessageBox.StandardButton.Yes!=QMessageBox.question(None,"Confirm", module.confirm)):
+                        return
                 if(hasattr(module, "input") and callable(module.input)):
                     module.input(self.input())
                 if(hasattr(module, "fileopen") and callable(module.fileopen)):
