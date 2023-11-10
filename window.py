@@ -589,7 +589,7 @@ class MainWindow(QMainWindow):
         action_render2.triggered.connect(self.cmd_render)
         action_unrender=QAction("Quick Display", self)
         action_unrender.setShortcut("Ctrl+D")
-        action_unrender2=QAction(icon_view, "View", self)
+        action_unrender2=QAction(icon_view, "Display", self)
         action_unrender.triggered.connect(self.cmd_unrender)
         action_unrender2.triggered.connect(self.cmd_unrender)
         action_sign=QAction("Sign Prescription", self)
