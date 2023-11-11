@@ -10,7 +10,7 @@
     "enable_form": false,
     "age_default": true,
     "plugin_directory": "plugin",
-    "enable_plugin": false,
+    "enable_plugin": true,
     "log_directory": "log",
     "preset_newline": true,
     "preset_delimiter": ",",

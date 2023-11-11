@@ -37,7 +37,7 @@ default = {
         "enable_form": False,
         "age_default": True,
         "plugin_directory": "plugin",
-        "enable_plugin": False,
+        "enable_plugin": True,
         "log_directory": "log",
         "preset_newline": True,
         "preset_delimiter": ",",
