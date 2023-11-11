@@ -949,10 +949,11 @@ class MainWindow(QMainWindow):
             self.cmd_open(config["filename"])
 
         if(len(self.prescription.prescriber.name.strip())<1):
-            self.editPrescriber()
+            self.edit_prescriber()
 
         if(config["check_update"]):
             threading.Thread(target=self.cmd_update, args=[True]).start()
+
 
         self.setWindowIcon(QIcon(os.path.join(config["resource"], "icon_medscript.ico")))
         self.showMaximized()
