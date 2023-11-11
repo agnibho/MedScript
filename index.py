@@ -69,9 +69,9 @@ class Index(QMainWindow):
 
         self.unrenderbox=UnrenderBox()
 
-        worker=Worker()
-        worker.signal_update.connect(self.update)
-        worker.start()
+        self.worker=Worker()
+        self.worker.signal_update.connect(self.update)
+        self.worker.start()
 
         self.setCentralWidget(widget)
         self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
@@ -223,8 +223,8 @@ class WatchHandler(FileSystemEventHandler):
 class Worker(QThread):
     signal_update=pyqtSignal(str, str)
     def run(self):
-        watchHandler=WatchHandler(self.signal_update)
-        observer=Observer()
-        observer.schedule(watchHandler, path=config["document_directory"], recursive=True)
-        observer.start()
-        observer.join()
+        self.watchHandler=WatchHandler(self.signal_update)
+        self.observer=Observer()
+        self.observer.schedule(self.watchHandler, path=config["document_directory"], recursive=True)
+        self.observer.start()
+        self.observer.join()
