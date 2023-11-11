@@ -160,12 +160,16 @@ class Installer(QMainWindow):
                    self.plugin["path"].append(i)
 
             for i in self.preset["name"]:
-                self.installed.addItem("[preset]\t"+i)
+                if i not in self.protected:
+                    self.installed.addItem("[preset]\t"+i)
             for i in self.template["name"]:
-                self.installed.addItem("[template]\t"+i)
+                if i not in self.protected:
+                    self.installed.addItem("[template]\t"+i)
             for i in self.form["name"]:
-                self.installed.addItem("[form]\t"+i)
+                if i not in self.protected:
+                    self.installed.addItem("[form]\t"+i)
             for i in self.plugin["name"]:
-                self.installed.addItem("[plugin]\t"+i)
+                if i not in self.protected:
+                    self.installed.addItem("[plugin]\t"+i)
         except Exception as e:
             logging.exception(e)
