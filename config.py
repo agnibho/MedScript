@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import logging, argparse, json, os, sys, shutil
+import logging, argparse, json, os, sys, shutil, copy
 
 default_config_file=os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), "data", "config.json"))
 
@@ -31,7 +31,7 @@ default = {
         "prescriber_directory": "prescriber",
         "prescriber": "prescriber",
         "template_directory": "template",
-        "template": "default_prescription",
+        "template": "default",
         "preset_directory": "preset",
         "form_directory": "form",
         "enable_form": False,
@@ -60,6 +60,7 @@ except Exception as e:
     logging.exception(e)
     config=default
 
+config_orig=copy.deepcopy(config)
 config["filename"]=args.filename
 config["data_directory"]=os.path.abspath(os.path.join(real_dir, os.path.expanduser(config["data_directory"])))
 config["document_directory"]=os.path.join(config["data_directory"], config["document_directory"])

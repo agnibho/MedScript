@@ -11,7 +11,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from glob import glob
 import logging, os, json
 from prescription import Prescriber
-from config import config, config_file
+from config import config, config_orig, config_file
 
 class EditConfiguration(QDialog):
 
@@ -84,10 +84,14 @@ class EditConfiguration(QDialog):
 
         try:
             with open(config_file) as f:
-                self.config=json.loads(f.read()) | config
+                read=json.loads(f.read())
+                self.config=config_orig | read
+        except FileNotFoundError as e:
+            logging.critical(e)
+            self.config=config_orig
         except Exception as e:
             logging.exception(e)
-            self.config=config
+            self.config=config_orig
 
         self.setWindowTitle("Configuration Editor")
 
