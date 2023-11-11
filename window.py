@@ -210,7 +210,7 @@ class MainWindow(QMainWindow):
         self.index.show()
 
     def cmd_configuration(self):
-        self.edit_configuration.exec()
+        self.editConfiguration.exec()
 
     def cmd_prescriber(self):
         try:
@@ -220,7 +220,7 @@ class MainWindow(QMainWindow):
             logging.warning(e)
 
     def cmd_preset(self):
-        self.edit_preset.show()
+        self.editPreset.show()
 
     def cmd_installer(self):
         self.installer.show()
