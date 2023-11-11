@@ -62,7 +62,7 @@ class EditPreset(QMainWindow):
                         writer.writerow(row)
             self.load(file)
             self.presetEdited.emit()
-            QMessageBox.information(self,"File saved", "Edited data has been saved.")
+            self.hide()
         except Exception as e:
             logging.exception(e)
 
