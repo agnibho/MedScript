@@ -942,6 +942,7 @@ class MainWindow(QMainWindow):
         self.installer=Installer()
         self.index.signal_open.connect(self.cmd_open)
         self.index.signal_copy.connect(self.cmd_copy)
+        self.plugin.update.connect(lambda: self.load_interface_from_instance())
         self.signal_update.connect(self.show_update)
 
         self.new_doc()

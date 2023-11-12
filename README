@@ -424,6 +424,15 @@ An example plugin, that modifies the name of the patient, may be as follows:
         global text
         text=data.strip()
 
+Plugins may also contain a web app written in HTML/JavaScript. To use it the
+plugin must contain a function called `web` which takes the prescription object
+and returns the URL of the web app. The run function of such a plugin must
+take two arguments, the prescription and the data returned from the web app.
+
+The web app itself must include the qtwebchannel.js from PyQt6. The webchannel
+exposes an object named `js` to the web app. The web app may return data by
+calling the `run` function of the exposed `js` object.
+
 Template Development
 --------------------
 

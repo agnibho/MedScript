@@ -6,18 +6,24 @@
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
 import logging, os, importlib, copy
-from PyQt6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
-from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtWidgets import QMessageBox, QMainWindow, QInputDialog, QFileDialog, QVBoxLayout
+from PyQt6.QtCore import QObject, QThread, QUrl, pyqtSignal, pyqtSlot
+from PyQt6.QtWebChannel import QWebChannel
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWebEngineWidgets import QWebEngineView
 from glob import glob
 from config import config
 
-class Plugin():
+class Plugin(QObject):
+
+    update=pyqtSignal()
 
     plugins=[]
     names=[]
     workers=[]
 
     def __init__(self):
+        super().__init__()
         if(config["enable_plugin"]):
             self.load()
 
@@ -96,7 +102,13 @@ class Plugin():
 
     def run(self, module, prescription):
         try:
-            if(hasattr(module, "run") and callable(module.run)):
+            if(hasattr(module, "web") and callable(module.web)):
+                    self.webapp=WebApp()
+                    self.webapp.done.connect(lambda: self.update.emit())
+                    url=module.web(prescription)
+                    self.webapp.load(module, QUrl(url), prescription)
+                    self.webapp.show()
+            elif(hasattr(module, "run") and callable(module.run)):
                 if(hasattr(module, "confirm") and module.confirm):
                     if(QMessageBox.StandardButton.Yes!=QMessageBox.question(None,"Confirm", module.confirm)):
                         return
@@ -134,6 +146,49 @@ class Plugin():
         QMessageBox.information(None, "Information", message)
         if index is not None:
             self.workers[index]=None
+
+class WebApp(QMainWindow):
+
+    done=pyqtSignal()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.setWindowTitle("WebApp Plugin")
+        self.setGeometry(100, 100, 400, 400)
+        self.setWindowIcon(QIcon(os.path.join("resource", "icon_medscript.ico")))
+
+        self.webview=QWebEngineView()
+        self.setCentralWidget(self.webview)
+
+    def load(self, module, url, prescription):
+        self.module=module
+        self.webview.load(url)
+        self.channel=QWebChannel()
+        self.js=JS(module, prescription)
+        self.channel.registerObject("js", self.js)
+        self.webview.page().setWebChannel(self.channel)
+        self.js.done.connect(lambda: self.done.emit())
+
+class JS(QObject):
+
+    done=pyqtSignal()
+
+    def __init__(self, module, prescription):
+        super().__init__()
+        self.module=module
+        self.prescription=prescription
+
+    @pyqtSlot(str)
+    def run(self, data):
+        try:
+            message=self.module.run(self.prescription, data)
+            if(message):
+                QMessageBox.information(None, "Information", message)
+            self.done.emit()
+        except Exception as e:
+            logging.error(self.module)
+            logging.exception(e)
 
 class Worker(QThread):
 
