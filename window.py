@@ -372,7 +372,8 @@ class MainWindow(QMainWindow):
             self.input_medication.setText(medication)
             self.input_additional.setText(additional)
             self.input_certificate.setText(certificate)
-            self.input_custom.setData(custom)
+            if(config["enable_form"] and custom is not None):
+                self.input_custom.setData(custom)
             self.label_prescriber.setText(self.prescriber.name)
         except Exception as e:
             QMessageBox.warning(self,"Failed to load", "Failed to load the data into the application.")
