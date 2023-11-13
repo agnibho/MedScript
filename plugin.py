@@ -5,7 +5,7 @@
 # MedScript is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License along with MedScript. If not, see <https://www.gnu.org/licenses/>.
 
-import logging, os, importlib, copy
+import logging, os, importlib, copy, json
 from PyQt6.QtWidgets import QMessageBox, QMainWindow, QInputDialog, QFileDialog, QVBoxLayout
 from PyQt6.QtCore import QObject, QThread, QUrl, pyqtSignal, pyqtSlot
 from PyQt6.QtWebChannel import QWebChannel
@@ -105,8 +105,8 @@ class Plugin(QObject):
             if(hasattr(module, "web") and callable(module.web)):
                     self.webapp=WebApp()
                     self.webapp.done.connect(lambda: self.update.emit())
-                    url=module.web(prescription)
-                    self.webapp.load(module, QUrl(url), prescription)
+                    url, data=module.web(prescription)
+                    self.webapp.load(module, QUrl(url), prescription, data)
                     self.webapp.show()
             elif(hasattr(module, "run") and callable(module.run)):
                 if(hasattr(module, "confirm") and module.confirm):
@@ -161,11 +161,11 @@ class WebApp(QMainWindow):
         self.webview=QWebEngineView()
         self.setCentralWidget(self.webview)
 
-    def load(self, module, url, prescription):
+    def load(self, module, url, prescription, data):
         self.module=module
         self.webview.load(url)
         self.channel=QWebChannel()
-        self.js=JS(module, prescription)
+        self.js=JS(module, prescription, data)
         self.channel.registerObject("js", self.js)
         self.webview.page().setWebChannel(self.channel)
         self.js.done.connect(lambda: self.done.emit())
@@ -174,21 +174,31 @@ class JS(QObject):
 
     done=pyqtSignal()
 
-    def __init__(self, module, prescription):
+    def __init__(self, module, prescription, data):
         super().__init__()
         self.module=module
         self.prescription=prescription
+        self.data=data
 
-    @pyqtSlot(str)
-    def run(self, data):
+    @pyqtSlot(str, str)
+    def run(self, prescription, result):
+        self.prescription.set_data_from_json(json.loads(prescription))
         try:
-            message=self.module.run(self.prescription, data)
+            message=self.module.run(self.prescription, result)
             if(message):
                 QMessageBox.information(None, "Information", message)
             self.done.emit()
         except Exception as e:
             logging.error(self.module)
             logging.exception(e)
+
+    @pyqtSlot(result=str)
+    def getPrescription(self):
+        return self.prescription.get_json()
+
+    @pyqtSlot(result=str)
+    def getData(self):
+        return self.data
 
 class Worker(QThread):
 

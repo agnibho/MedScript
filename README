@@ -55,7 +55,7 @@ configurable. An example directory structure is given below:
     |-- preset (for storing preset files)
     |   |-- additional.csv
     |   |-- advice.csv
-    |   |-- certify.csv
+    |   |-- certificate.csv
     |   |-- investigation.csv
     |   |-- medication.csv
     |   |-- note.csv
@@ -426,12 +426,18 @@ An example plugin, that modifies the name of the patient, may be as follows:
 
 Plugins may also contain a web app written in HTML/JavaScript. To use it the
 plugin must contain a function called `web` which takes the prescription object
-and returns the URL of the web app. The run function of such a plugin must
+and returns a tuple containing the URL of the web app and a json string
+containing any data to be passed on to the web app. The `run` function of such a plugin must
 take two arguments, the prescription and the data returned from the web app.
 
-The web app itself must include the qtwebchannel.js from PyQt6. The webchannel
-exposes an object named `js` to the web app. The web app may return data by
-calling the `run` function of the exposed `js` object.
+The web app itself must include the `qtwebchannel.js` from PyQt6
+(qrc:///qtwebchannel/qwebchannel.js). The webchannel exposes an object named
+`js` to the web app. The web app may access the prescription by using the
+`js.getPrescription()` and the data from the plugin by using the `js.getData()`
+function. The webapp may return data to the plugin by calling the `run`
+function of the exposed `js` object with two arguments, first being a json
+string containing the prescription object and the second being any data as
+string to be passed onto the plugin.
 
 Template Development
 --------------------
