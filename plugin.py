@@ -180,9 +180,8 @@ class JS(QObject):
         self.prescription=prescription
         self.data=data
 
-    @pyqtSlot(str, str)
-    def run(self, prescription, result):
-        self.prescription.set_data_from_json(json.loads(prescription))
+    @pyqtSlot(str)
+    def run(self, result):
         try:
             message=self.module.run(self.prescription, result)
             if(message):
@@ -193,11 +192,7 @@ class JS(QObject):
             logging.exception(e)
 
     @pyqtSlot(result=str)
-    def getPrescription(self):
-        return self.prescription.get_json()
-
-    @pyqtSlot(result=str)
-    def getData(self):
+    def get(self):
         return self.data
 
 class Worker(QThread):
