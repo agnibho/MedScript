@@ -19,7 +19,7 @@ class Installer(QMainWindow):
     form={"name":[], "path":[]}
     plugin={"name":[], "path":[]}
 
-    protected=["note", "report", "advice", "investigation", "medication", "additional", "certificate", "default", "medcert"]
+    protected=["note", "report", "advice", "investigation", "medication", "additional", "certificate", "default", "medcert", "<unchanged>"]
     directory=None
 
     def cmd_install(self):
