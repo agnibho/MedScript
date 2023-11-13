@@ -37,7 +37,7 @@ class Plugin(QObject):
                     spec.loader.exec_module(mod)
                     self.plugins.append(mod)
             except Exception as e:
-                logging.warning(i, ":", e)
+                logging.warning(i+":"+str(e))
 
     def get_name(self, mod):
             try:
