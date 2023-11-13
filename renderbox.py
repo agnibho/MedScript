@@ -117,9 +117,10 @@ class UnrenderBox(QDialog):
         for attr, value in prescription["prescriber"].items():
             if(attr not in ["properties"] and len(value)>0):
                 text=text+"<strong>"+value.upper()+"</strong><br>"
-        text=text+"<hr>"
+        text=text.replace("\n", "<br>")+"<hr>"
         for attr, value in prescription.items():
             if(attr not in ["prescriber", "custom", "properties", "file"] and len(str(value))>0 and (attr not in ["daw"] or value)):
                 text=text+"<strong>"+attr.upper()+"</strong><br>"
-                text=text+str(value)+"<br>"
+                text=text+str(value).strip()
+                text=text.replace("\n", "<br>")+"<br>"
         self.display.setText(text)
