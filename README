@@ -439,7 +439,8 @@ The web app itself must include the `qtwebchannel.js` from PyQt6
 `js` to the web app. The web app may access the data from the plugin by using
 the `js.get()` function. The web app may return data to the plugin by calling
 the `run` function of the exposed `js` object with the return data as the
-argument.
+argument. The web app window may be closed by calling the `close` function of
+the `js` object.
 
 Template Development
 --------------------

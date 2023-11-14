@@ -181,10 +181,12 @@ class WebApp(QMainWindow):
         self.channel.registerObject("js", self.js)
         self.webview.page().setWebChannel(self.channel)
         self.js.done.connect(lambda: self.done.emit())
+        self.js.hide.connect(lambda: self.close())
 
 class JS(QObject):
 
     done=pyqtSignal()
+    hide=pyqtSignal()
 
     def __init__(self, module, prescription, data):
         super().__init__()
@@ -208,6 +210,10 @@ class JS(QObject):
     @pyqtSlot(result=str)
     def get(self):
         return self.data
+
+    @pyqtSlot()
+    def close(self):
+        self.hide.emit()
 
 class Worker(QThread):
 
