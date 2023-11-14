@@ -15,7 +15,7 @@ class Prescriber:
         else:
             self.read_from(file)
 
-    def set_data(self, name="", qualification="", registration="", address="", contact="", extra="", properties=None):
+    def set_data(self, name="", qualification="", registration="", address="", contact="", extra="", properties={}):
         self.name = name
         self.qualification = qualification
         self.registration = registration
@@ -35,10 +35,10 @@ class Prescriber:
             self.address = data["address"]
             self.contact = data["contact"]
             self.extra = data["extra"]
-            if("properties" in data):
+            if("properties" in data and type(properties) is dict):
                 self.properties = data["properties"]
             else:
-                self.properties = None
+                self.properties = {}
         except Exception as e:
             logging.exception(e)
 
@@ -53,20 +53,20 @@ class Prescriber:
             self.address = ""
             self.contact = ""
             self.extra = ""
-            self.properties = ""
+            self.properties = {}
 
 class Prescription:
 
     file=""
 
-    def __init__(self, date="", id="", pid="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties=None, prescriber=None):
+    def __init__(self, date="", id="", pid="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties={}, prescriber=None):
         self.set_data(date, name, dob, age, sex, address, contact, extra, mode, daw, diagnosis, note, report, advice, investigation, medication, additional, certificate, custom, properties)
         if prescriber is None:
             self.prescriber = Prescriber()
         else:
             self.prescriber = prescriber
 
-    def set_data(self, date="", id="", pid="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties=None):
+    def set_data(self, date="", id="", pid="", name="", dob="", age="", sex="", address="", contact="", extra="", mode="", daw="", diagnosis="", note="", report="", advice="", investigation="", medication="", additional="", certificate="", custom=None, properties={}):
         self.date = date
         self.id = id
         self.pid = pid
@@ -99,7 +99,7 @@ class Prescription:
             self.prescriber.set_data_from_json(data.get("prescriber"))
             self.date = data.get("date")
             self.id = data.get("id")
-            self.id = data.get("pid")
+            self.pid = data.get("pid")
             self.name = data.get("name")
             self.dob = data.get("dob")
             self.age = data.get("age")
@@ -121,9 +121,41 @@ class Prescription:
             if("properties" in data):
                 self.properties = data["properties"]
             else:
-                self.properties = None
+                self.properties = {}
         except Exception as e:
             logging.exception(e)
+
+    def set_data_from_copy(self, prescription_copy):
+        try:
+            self.date = prescription_copy.date
+            self.id = prescription_copy.id
+            self.pid = prescription_copy.pid
+            self.name = prescription_copy.name
+            self.dob = prescription_copy.dob
+            self.age = prescription_copy.age
+            self.sex = prescription_copy.sex
+            self.address = prescription_copy.address
+            self.contact = prescription_copy.contact
+            self.extra = prescription_copy.extra
+            self.mode = prescription_copy.mode
+            self.daw = prescription_copy.daw
+            self.diagnosis = prescription_copy.diagnosis
+            self.note = prescription_copy.note
+            self.report = prescription_copy.report
+            self.advice = prescription_copy.advice
+            self.investigation = prescription_copy.investigation
+            self.medication = prescription_copy.medication
+            self.additional = prescription_copy.additional
+            self.certificate = prescription_copy.certificate
+            self.custom = prescription_copy.custom
+            if(type(prescription_copy.properties) is dict):
+                self.properties = prescription_copy.properties
+            else:
+                self.properties = {}
+            self.prescriber = prescription_copy.prescriber
+        except Exception as e:
+            logging.exception(e)
+
 
     def get_json(self):
         return(json.dumps(self, default=lambda o: o.__dict__, indent=4))

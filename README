@@ -324,7 +324,7 @@ structure of the Prescription object is as follows:
     |-- additional (string: any additional advice/instructions)
     |-- certificate (string: content of a medical certificate)
     |-- custom (list: contents of custom input forms)
-    |-- properties (object: unused, included for future/plugin use)
+    |-- properties (dictionary: plugin data, each plugin in separate key)
     |-- prescriber (Prescriber object)
     |   |-- name (string: the name of the prescriber)
     |   |-- qualification (string: the qualification of the prescriber)
@@ -332,7 +332,10 @@ structure of the Prescription object is as follows:
     |   |-- address (string: the address of the prescriber)
     |   |-- contact (string: contact number / email of the prescriber)
     |   |-- extra (string: any extra data about the prescriber)
-    |   |-- properties (object: unused, included for future/plugin use)
+    |   |-- properties (dictionary: plugin data, each plugin in separate key)
+
+Best practice for assigning plugin data to properties is to use a separate
+key for each plugin and store the data as the value associated with that key.
 
 Plugin
 ------
@@ -529,6 +532,7 @@ The following names are not allowed as component names:
 7. certificate
 8. default
 9. medcert
+10. <unchanged>
 
 
 Website

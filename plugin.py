@@ -58,7 +58,9 @@ class Plugin(QObject):
                 if(hasattr(i, "new") and callable(i.new)):
                     if(hasattr(i, "input") and callable(i.input)):
                         i.input(self.input())
-                    message=i.new(prescription)
+                    prescription_copy=copy.deepcopy(prescription)
+                    message=i.new(prescription_copy)
+                    prescription.set_data_from_copy(prescription_copy)
                     if(message):
                         self.showMessage(message)
             except Exception as e:
@@ -70,7 +72,9 @@ class Plugin(QObject):
                 if(hasattr(i, "open") and callable(i.open)):
                     if(hasattr(i, "input") and callable(i.input)):
                         i.input(self.input())
-                    message=i.open(prescription)
+                    prescription_copy=copy.deepcopy(prescription)
+                    message=i.open(prescription_copy)
+                    prescription.set_data_from_copy(prescription_copy)
                     if(message):
                         self.showMessage(message)
             except Exception as e:
@@ -82,7 +86,9 @@ class Plugin(QObject):
                 if(hasattr(i, "save") and callable(i.save)):
                     if(hasattr(i, "input") and callable(i.input)):
                         i.input(self.input())
-                    message=i.save(prescription)
+                    prescription_copy=copy.deepcopy(prescription)
+                    message=i.save(prescription_copy)
+                    prescription.set_data_from_copy(prescription_copy)
                     if(message):
                         self.showMessage(message)
             except Exception as e:
@@ -94,7 +100,9 @@ class Plugin(QObject):
                 if(hasattr(i, "refresh") and callable(i.refresh)):
                     if(hasattr(i, "input") and callable(i.input)):
                         i.input(self.input())
-                    message=i.refresh(prescription)
+                    prescription_copy=copy.deepcopy(prescription)
+                    message=i.refresh(prescription_copy)
+                    prescription.set_data_from_copy(prescription_copy)
                     if(message):
                         self.showMessage(message)
             except Exception as e:
@@ -105,7 +113,9 @@ class Plugin(QObject):
             if(hasattr(module, "web") and callable(module.web)):
                     self.webapp=WebApp()
                     self.webapp.done.connect(lambda: self.update.emit())
-                    url, data=module.web(prescription)
+                    prescription_copy=copy.deepcopy(prescription)
+                    url, data=module.web(prescription_copy)
+                    prescription.set_data_from_copy(prescription_copy)
                     self.webapp.load(module, QUrl(url), prescription, data)
                     self.webapp.show()
             elif(hasattr(module, "run") and callable(module.run)):
@@ -126,7 +136,9 @@ class Plugin(QObject):
                     self.workers[index].pluginComplete.connect(self.showMessage)
                     self.workers[index].start()
                 else:
-                    message=module.run(prescription)
+                    prescription_copy=copy.deepcopy(prescription)
+                    message=module.run(prescription_copy)
+                    prescription.set_data_from_copy(prescription_copy)
                     if(message):
                         self.showMessage(message)
         except Exception as e:
@@ -183,7 +195,9 @@ class JS(QObject):
     @pyqtSlot(str)
     def run(self, result):
         try:
-            message=self.module.run(self.prescription, result)
+            prescription_copy=copy.deepcopy(self.prescription)
+            message=self.module.run(prescription_copy, result)
+            self.prescription.set_data_from_copy(prescription_copy)
             if(message):
                 QMessageBox.information(None, "Information", message)
             self.done.emit()
