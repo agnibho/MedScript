@@ -116,7 +116,7 @@ class Plugin(QObject):
                     prescription_copy=copy.deepcopy(prescription)
                     url, data=module.web(prescription_copy)
                     prescription.set_data_from_copy(prescription_copy)
-                    self.webapp.load(module, QUrl(url), prescription, data)
+                    self.webapp.load(module, QUrl(url), prescription_copy, data)
                     self.webapp.show()
             elif(hasattr(module, "run") and callable(module.run)):
                 if(hasattr(module, "confirm") and module.confirm):
