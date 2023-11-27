@@ -112,10 +112,10 @@ class Plugin(QObject):
         try:
             if(hasattr(module, "web") and callable(module.web)):
                     self.webapp=WebApp()
+                    self.webapp.done.connect(lambda: prescription.set_data_from_copy(prescription_copy))
                     self.webapp.done.connect(lambda: self.update.emit())
                     prescription_copy=copy.deepcopy(prescription)
                     url, data=module.web(prescription_copy)
-                    prescription.set_data_from_copy(prescription_copy)
                     self.webapp.load(module, QUrl(url), prescription_copy, data)
                     self.webapp.show()
             elif(hasattr(module, "run") and callable(module.run)):
