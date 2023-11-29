@@ -98,9 +98,10 @@ class Installer(QMainWindow):
     def delete(self, path):
         try:
             os.unlink(path)
-        except IsADirectoryError:
+        except (IsADirectoryError, PermissionError):
             shutil.rmtree(path)
         except Exception as e:
+            QMessageBox.critical(self, "Failed", "Uninstallation failed. Please manually delete package.")
             logging.critical(e)
         self.load()
 
